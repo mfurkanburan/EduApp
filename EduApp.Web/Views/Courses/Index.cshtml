@@ -1,0 +1,18 @@
+@model List<Course>
+
+@{
+    ViewData["Title"] = "Kurslar";
+}
+
+<h1>Kurslar</h1>
+<p>Kurslar aşağıda listelenmektedir.</p>
+
+@foreach (var course in Model)
+{
+    <div>
+        <h2>@course.Title</h2>
+        <p>@course.Description</p>
+    </div>
+}
+
+<a asp-action="Create" class="btn btn-primary mt-3">Yeni Kurs Ekle</a>

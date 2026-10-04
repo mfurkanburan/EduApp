@@ -1,0 +1,25 @@
+using EduApp.Web.Data;
+using EduApp.Web.Models;
+
+namespace EduApp.Web.Services;
+
+public class CourseService : ICourseService
+{
+    private readonly ApplicationDbContext _context;
+
+    public CourseService(ApplicationDbContext context)
+    {
+        _context = context;
+    }
+
+    public List<Course> GetAllCourses()
+    {
+        return _context.Courses.ToList();
+    }
+
+    public void CreateCourse(Course course)
+    {
+        _context.Courses.Add(course);
+        _context.SaveChanges();
+    }
+}

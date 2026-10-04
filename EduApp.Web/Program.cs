@@ -1,7 +1,21 @@
+using EduApp.Web.Data;
+using EduApp.Web.Services;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// DB - EduAppDb
+string connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? "Data Source=eduApp.db";
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlite(connectionString));
+
+// DI - CourseService
+builder.Services.AddScoped<ICourseService, CourseService>();
 
 var app = builder.Build();
 
