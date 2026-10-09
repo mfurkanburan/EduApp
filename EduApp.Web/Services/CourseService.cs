@@ -22,7 +22,7 @@ public class CourseService : ICourseService
             query = query.Where(c => c.Title.Contains(search));
         }
 
-        return query.ToList();
+        return query.OrderByDescending(c => c.CreatedAt).ToList();
     }
 
     public void CreateCourse(Course course)

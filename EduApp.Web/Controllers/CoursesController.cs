@@ -42,7 +42,8 @@ public class CoursesController : Controller
         Course course = new Course
         {
             Title = model.Title.Trim(),
-            Description = model.Description.Trim()
+            Description = model.Description.Trim(),
+            CreatedAt = DateTime.UtcNow
         };
 
         _courseService.CreateCourse(course);
@@ -61,7 +62,8 @@ public class CoursesController : Controller
         {
             Id = course.Id,
             Title = course.Title,
-            Description = course.Description
+            Description = course.Description,
+            CreatedAt = course.CreatedAt
         };
 
         return View(model);

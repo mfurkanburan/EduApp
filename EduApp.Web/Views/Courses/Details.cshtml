@@ -5,6 +5,9 @@
 }
 
 <h1>@Model.Title</h1>
-<p>@Model.Description</p>
+<ul>
+    <li><strong>Açıklama:</strong> @Model.Description</li>
+    <li><strong>Oluşturulma Tarihi:</strong> @Model.CreatedAt</li>
+</ul>
 
 <a asp-action="Index" class="btn btn-secondary">Geri Dön</a>
