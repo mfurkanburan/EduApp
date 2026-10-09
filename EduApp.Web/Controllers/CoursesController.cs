@@ -14,11 +14,17 @@ public class CoursesController : Controller
         _courseService = courseService;
     }
 
-    public IActionResult Index()
+    public IActionResult Index(string? search)
     {
-        List<Course> courses = _courseService.GetAllCourses();
+        List<Course> courses = _courseService.GetAllCourses(search);
 
-        return View(courses);
+        CourseListViewModel model = new CourseListViewModel
+        {
+            Search = search,
+            Courses = courses
+        };
+
+        return View(model);
     }
 
     [HttpGet]

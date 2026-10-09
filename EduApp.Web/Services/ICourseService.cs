@@ -4,7 +4,7 @@ namespace EduApp.Web.Services;
 
 public interface ICourseService
 {
-    List<Course> GetAllCourses();
+    List<Course> GetAllCourses(string? search);
 
     Course? GetCourseById(int id);
 

@@ -1,4 +1,4 @@
-@model List<Course>
+@model CourseListViewModel
 
 @{
     ViewData["Title"] = "Kurslar";
@@ -7,7 +7,14 @@
 <h1>Kurslar</h1>
 <p>Kurslar aşağıda listelenmektedir.</p>
 
-@foreach (var course in Model)
+<form method="get" asp-action="Index">
+    <div class="input-group mb-3">
+        <input type="text" name="search" class="form-control" placeholder="Kurs Ara..." value="@Model.Search" />
+        <button class="btn btn-outline-secondary" type="submit">Ara</button>
+    </div>
+</form>
+
+@foreach (var course in Model.Courses)
 {
     <div>
         <h2>@course.Title</h2>

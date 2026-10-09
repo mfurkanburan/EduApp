@@ -13,9 +13,16 @@ public class CourseService : ICourseService
         _context = context;
     }
 
-    public List<Course> GetAllCourses()
+    public List<Course> GetAllCourses(string? search)
     {
-        return _context.Courses.ToList();
+        IQueryable<Course> query = _context.Courses.AsNoTracking();
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            query = query.Where(c => c.Title.Contains(search));
+        }
+
+        return query.ToList();
     }
 
     public void CreateCourse(Course course)
