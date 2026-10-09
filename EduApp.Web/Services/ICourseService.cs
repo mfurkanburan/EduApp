@@ -6,4 +6,6 @@ public interface ICourseService
 {
     List<Course> GetAllCourses();
     void CreateCourse(Course course);
+
+    Course? GetCourseById(int id);
 }

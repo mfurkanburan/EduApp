@@ -1,5 +1,6 @@
 using EduApp.Web.Data;
 using EduApp.Web.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace EduApp.Web.Services;
 
@@ -21,5 +22,10 @@ public class CourseService : ICourseService
     {
         _context.Courses.Add(course);
         _context.SaveChanges();
+    }
+
+    public Course? GetCourseById(int id)
+    {
+        return _context.Courses.AsNoTracking().FirstOrDefault(c => c.Id == id);
     }
 }

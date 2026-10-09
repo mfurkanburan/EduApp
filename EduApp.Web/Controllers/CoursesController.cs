@@ -46,4 +46,21 @@ public class CoursesController : Controller
 
         return RedirectToAction(nameof(Index));
     }
+
+    [HttpGet]
+    public IActionResult Details(int id)
+    {
+        Course? course = _courseService.GetCourseById(id);
+
+        if (course is null) return NotFound();
+
+        CourseDetailsViewModel model = new CourseDetailsViewModel
+        {
+            Id = course.Id,
+            Title = course.Title,
+            Description = course.Description
+        };
+
+        return View(model);
+    }
 }
