@@ -39,7 +39,13 @@ public class CourseService : ICourseService
 
     public void UpdateCourse(Course course)
     {
-        _context.Courses.Update(course);
+        Course? courseToUpdate = _context.Courses.Find(course.Id);
+
+        if (courseToUpdate is null) return;
+
+        courseToUpdate.Title = course.Title;
+        courseToUpdate.Description = course.Description;
+
         _context.SaveChanges();
     }
 
