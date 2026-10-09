@@ -1,5 +1,6 @@
 using EduApp.Web.Data;
 using EduApp.Web.Models;
+using EduApp.Web.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace EduApp.Web.Services;
@@ -50,5 +51,30 @@ public class CourseService : ICourseService
 
         _context.Courses.Remove(course);
         _context.SaveChanges();
+    }
+
+    public PagedCoursesResult GetAllCoursesPaged(string? search, int page, int pageSize)
+    {
+        IQueryable<Course> query = _context.Courses.AsNoTracking();
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            query = query.Where(c => c.Title.Contains(search));
+        }
+
+        int totalCourses = query.Count();
+        int totalPages = (int)Math.Ceiling(totalCourses / (double)pageSize);
+
+        List<Course> courses = query
+            .OrderByDescending(c => c.CreatedAt)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+
+        return new PagedCoursesResult
+        {
+            TotalPages = totalPages,
+            Courses = courses
+        };
     }
 }

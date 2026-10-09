@@ -14,14 +14,18 @@ public class CoursesController : Controller
         _courseService = courseService;
     }
 
-    public IActionResult Index(string? search)
+    public IActionResult Index(string? search, int page = 1)
     {
-        List<Course> courses = _courseService.GetAllCourses(search);
+        const int pageSize = 10;
+
+        PagedCoursesResult result = _courseService.GetAllCoursesPaged(search, page, pageSize);
 
         CourseListViewModel model = new CourseListViewModel
         {
             Search = search,
-            Courses = courses
+            CurrentPage = page,
+            TotalPages = result.TotalPages,
+            Courses = result.Courses
         };
 
         return View(model);

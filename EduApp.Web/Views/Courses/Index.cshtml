@@ -25,4 +25,14 @@
     </div>
 }
 
+@if (Model.TotalPages > 1)
+{
+    <div>
+        @for (int i = 1; i <= Model.TotalPages; i++)
+        {
+            <a asp-action="Index" asp-route-page="@i" asp-route-search="@Model.Search" class="btn btn-outline-primary @(i == Model.CurrentPage ? "active" : "")">@i</a>
+        }
+    </div>
+}
+
 <a asp-action="Create" class="btn btn-primary mt-3">Yeni Kurs Ekle</a>

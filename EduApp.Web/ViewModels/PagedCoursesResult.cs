@@ -2,12 +2,8 @@ using EduApp.Web.Models;
 
 namespace EduApp.Web.ViewModels;
 
-public class CourseListViewModel
+public class PagedCoursesResult
 {
-    public string? Search { get; set; }
-
-    public int CurrentPage { get; set; }
-
     public int TotalPages { get; set; }
 
     public List<Course> Courses { get; set; } = new List<Course>();
