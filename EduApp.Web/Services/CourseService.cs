@@ -34,4 +34,14 @@ public class CourseService : ICourseService
         _context.Courses.Update(course);
         _context.SaveChanges();
     }
+
+    public void DeleteCourse(int id)
+    {
+        Course? course = _context.Courses.Find(id);
+        
+        if (course is null) return;
+
+        _context.Courses.Remove(course);
+        _context.SaveChanges();
+    }
 }

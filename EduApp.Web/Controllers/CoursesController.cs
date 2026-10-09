@@ -95,4 +95,30 @@ public class CoursesController : Controller
 
         return RedirectToAction(nameof(Index));
     }
+
+    [HttpGet]
+    public IActionResult Delete(int id)
+    {
+        Course? course = _courseService.GetCourseById(id);
+
+        if (course is null) return NotFound();
+
+        CourseDetailsViewModel model = new CourseDetailsViewModel
+        {
+            Id = course.Id,
+            Title = course.Title,
+            Description = course.Description
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult Delete(CourseDetailsViewModel model)
+    {
+        _courseService.DeleteCourse(model.Id);
+
+        return RedirectToAction(nameof(Index));
+    }
 }

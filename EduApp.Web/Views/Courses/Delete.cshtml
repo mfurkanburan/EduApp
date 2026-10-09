@@ -1,0 +1,22 @@
+@model CourseDetailsViewModel
+
+@{
+    ViewData["Title"] = "Kurs Sil";
+}
+
+<h1>Kurs Sil</h1>
+
+<p>
+    Bu kursu silmek istediğinizden emin misiniz? <br />
+
+    <strong>Başlık:</strong> @Model.Title<br />
+    <strong>Açıklama:</strong> @Model.Description<br />
+</p>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <button class="btn btn-danger mt-4" type="submit">Evet, Sil</button>
+</form>
+
+<a asp-action="Index" class="btn btn-secondary mt-3">Hayır, Geri Dön</a>

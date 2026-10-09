@@ -11,4 +11,6 @@ public interface ICourseService
     void CreateCourse(Course course);
 
     void UpdateCourse(Course course);
+
+    void DeleteCourse(int id);
 }
