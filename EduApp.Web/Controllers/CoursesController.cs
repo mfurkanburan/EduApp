@@ -31,10 +31,7 @@ public class CoursesController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult Create(CreateCourseViewModel model)
     {
-        if (!ModelState.IsValid)
-        {
-            return View(model);
-        }
+        if (!ModelState.IsValid) return View(model);
 
         Course course = new Course
         {
@@ -62,5 +59,40 @@ public class CoursesController : Controller
         };
 
         return View(model);
+    }
+
+    [HttpGet]
+    public IActionResult Edit(int id)
+    {
+        Course? course = _courseService.GetCourseById(id);
+
+        if (course is null) return NotFound();
+
+        EditCourseViewModel model = new EditCourseViewModel
+        {
+            Id = course.Id,
+            Title = course.Title,
+            Description = course.Description
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult Edit(EditCourseViewModel model)
+    {
+        if (!ModelState.IsValid) return View(model);
+
+        Course course = new Course
+        {
+            Id = model.Id,
+            Title = model.Title.Trim(),
+            Description = model.Description.Trim()
+        };
+
+        _courseService.UpdateCourse(course);
+
+        return RedirectToAction(nameof(Index));
     }
 }

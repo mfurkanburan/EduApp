@@ -28,4 +28,10 @@ public class CourseService : ICourseService
     {
         return _context.Courses.AsNoTracking().FirstOrDefault(c => c.Id == id);
     }
+
+    public void UpdateCourse(Course course)
+    {
+        _context.Courses.Update(course);
+        _context.SaveChanges();
+    }
 }

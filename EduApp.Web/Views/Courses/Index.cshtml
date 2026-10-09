@@ -12,6 +12,7 @@
     <div>
         <h2>@course.Title</h2>
         <p>@course.Description</p>
+        <a asp-action="Edit" asp-route-id="@course.Id" class="btn btn-secondary">Düzenle</a>
         <a asp-action="Details" asp-route-id="@course.Id" class="btn btn-primary">Detay</a>
     </div>
 }
