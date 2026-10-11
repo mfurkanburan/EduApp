@@ -14,11 +14,11 @@ public class CoursesController : Controller
         _courseService = courseService;
     }
 
-    public IActionResult Index(string? search, int page = 1)
+    public async Task<IActionResult> Index(string? search, int page = 1)
     {
         const int pageSize = 10;
 
-        PagedCoursesResult result = _courseService.GetAllCoursesPaged(search, page, pageSize);
+        PagedCoursesResult result = await _courseService.GetAllCoursesAsync(search, page, pageSize);
 
         CourseListViewModel model = new CourseListViewModel
         {
@@ -39,7 +39,7 @@ public class CoursesController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Create(CreateCourseViewModel model)
+    public async Task<IActionResult> Create(CreateCourseViewModel model)
     {
         if (!ModelState.IsValid) return View(model);
 
@@ -50,15 +50,15 @@ public class CoursesController : Controller
             CreatedAt = DateTime.UtcNow
         };
 
-        _courseService.CreateCourse(course);
+        await _courseService.CreateCourseAsync(course);
 
         return RedirectToAction(nameof(Index));
     }
 
     [HttpGet]
-    public IActionResult Details(int id)
+    public async Task<IActionResult> Details(int id)
     {
-        Course? course = _courseService.GetCourseById(id);
+        Course? course = await _courseService.GetCourseByIdAsync(id);
 
         if (course is null) return NotFound();
 
@@ -74,9 +74,9 @@ public class CoursesController : Controller
     }
 
     [HttpGet]
-    public IActionResult Edit(int id)
+    public async Task<IActionResult> Edit(int id)
     {
-        Course? course = _courseService.GetCourseById(id);
+        Course? course = await _courseService.GetCourseByIdAsync(id);
 
         if (course is null) return NotFound();
 
@@ -92,7 +92,7 @@ public class CoursesController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Edit(EditCourseViewModel model)
+    public async Task<IActionResult> Edit(EditCourseViewModel model)
     {
         if (!ModelState.IsValid) return View(model);
 
@@ -103,15 +103,15 @@ public class CoursesController : Controller
             Description = model.Description.Trim()
         };
 
-        _courseService.UpdateCourse(course);
+        await _courseService.UpdateCourseAsync(course);
 
         return RedirectToAction(nameof(Index));
     }
 
     [HttpGet]
-    public IActionResult Delete(int id)
+    public async Task<IActionResult> Delete(int id)
     {
-        Course? course = _courseService.GetCourseById(id);
+        Course? course = await _courseService.GetCourseByIdAsync(id);
 
         if (course is null) return NotFound();
 
@@ -127,9 +127,9 @@ public class CoursesController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Delete(CourseDetailsViewModel model)
+    public async Task<IActionResult> Delete(CourseDetailsViewModel model)
     {
-        _courseService.DeleteCourse(model.Id);
+        await _courseService.DeleteCourseAsync(model.Id);
 
         return RedirectToAction(nameof(Index));
     }

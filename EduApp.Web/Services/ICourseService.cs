@@ -5,15 +5,13 @@ namespace EduApp.Web.Services;
 
 public interface ICourseService
 {
-    List<Course> GetAllCourses(string? search);
+    Task<PagedCoursesResult> GetAllCoursesAsync(string? search, int page, int pageSize);
 
-    Course? GetCourseById(int id);
+    Task<Course?> GetCourseByIdAsync(int id);
 
-    void CreateCourse(Course course);
+    Task CreateCourseAsync(Course course);
 
-    void UpdateCourse(Course course);
+    Task UpdateCourseAsync(Course course);
 
-    void DeleteCourse(int id);
-
-    PagedCoursesResult GetAllCoursesPaged(string? search, int page, int pageSize);
+    Task DeleteCourseAsync(int id);
 }

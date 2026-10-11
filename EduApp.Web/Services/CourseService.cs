@@ -14,52 +14,40 @@ public class CourseService : ICourseService
         _context = context;
     }
 
-    public List<Course> GetAllCourses(string? search)
-    {
-        IQueryable<Course> query = _context.Courses.AsNoTracking();
-
-        if (!string.IsNullOrWhiteSpace(search))
-        {
-            query = query.Where(c => c.Title.Contains(search));
-        }
-
-        return query.OrderByDescending(c => c.CreatedAt).ToList();
-    }
-
-    public void CreateCourse(Course course)
+    public async Task CreateCourseAsync(Course course)
     {
         _context.Courses.Add(course);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
-    public Course? GetCourseById(int id)
+    public async Task<Course?> GetCourseByIdAsync(int id)
     {
-        return _context.Courses.AsNoTracking().FirstOrDefault(c => c.Id == id);
+        return await _context.Courses.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
     }
 
-    public void UpdateCourse(Course course)
+    public async Task UpdateCourseAsync(Course course)
     {
-        Course? courseToUpdate = _context.Courses.Find(course.Id);
+        Course? courseToUpdate = await _context.Courses.FindAsync(course.Id);
 
         if (courseToUpdate is null) return;
 
         courseToUpdate.Title = course.Title;
         courseToUpdate.Description = course.Description;
 
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
-    public void DeleteCourse(int id)
+    public async Task DeleteCourseAsync(int id)
     {
-        Course? course = _context.Courses.Find(id);
+        Course? course = await _context.Courses.FindAsync(id);
         
         if (course is null) return;
 
         _context.Courses.Remove(course);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
-    public PagedCoursesResult GetAllCoursesPaged(string? search, int page, int pageSize)
+    public async Task<PagedCoursesResult> GetAllCoursesAsync(string? search, int page, int pageSize)
     {
         IQueryable<Course> query = _context.Courses.AsNoTracking();
 
@@ -68,14 +56,14 @@ public class CourseService : ICourseService
             query = query.Where(c => c.Title.Contains(search));
         }
 
-        int totalCourses = query.Count();
+        int totalCourses = await query.CountAsync();
         int totalPages = (int)Math.Ceiling(totalCourses / (double)pageSize);
 
-        List<Course> courses = query
+        List<Course> courses = await query
             .OrderByDescending(c => c.CreatedAt)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .ToList();
+            .ToListAsync();
 
         return new PagedCoursesResult
         {
