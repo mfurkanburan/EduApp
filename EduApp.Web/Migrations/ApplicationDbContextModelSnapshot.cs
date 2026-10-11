@@ -59,6 +59,52 @@ namespace EduApp.Web.Migrations
                     b.ToTable("Courses");
                 });
 
+            modelBuilder.Entity("EduApp.Web.Models.CourseSection", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseId");
+
+                    b.ToTable("CourseSections");
+                });
+
+            modelBuilder.Entity("EduApp.Web.Models.Lesson", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CourseSectionId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseSectionId");
+
+                    b.ToTable("Lessons");
+                });
+
             modelBuilder.Entity("EduApp.Web.Models.Course", b =>
                 {
                     b.HasOne("EduApp.Web.Models.Category", "Category")
@@ -68,6 +114,38 @@ namespace EduApp.Web.Migrations
                         .IsRequired();
 
                     b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("EduApp.Web.Models.CourseSection", b =>
+                {
+                    b.HasOne("EduApp.Web.Models.Course", "Course")
+                        .WithMany("Sections")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+                });
+
+            modelBuilder.Entity("EduApp.Web.Models.Lesson", b =>
+                {
+                    b.HasOne("EduApp.Web.Models.CourseSection", "CourseSection")
+                        .WithMany("Lessons")
+                        .HasForeignKey("CourseSectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CourseSection");
+                });
+
+            modelBuilder.Entity("EduApp.Web.Models.Course", b =>
+                {
+                    b.Navigation("Sections");
+                });
+
+            modelBuilder.Entity("EduApp.Web.Models.CourseSection", b =>
+                {
+                    b.Navigation("Lessons");
                 });
 #pragma warning restore 612, 618
         }

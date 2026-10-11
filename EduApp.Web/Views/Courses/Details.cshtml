@@ -11,4 +11,19 @@
     <li><strong>Kategori:</strong> @Model.CategoryName</li>
 </ul>
 
+<hr />
+
+<div>
+    @foreach (var section in Model.Sections)
+    {
+        <h2 class="h4">@(section.Title)</h2>
+        <ul>
+            @foreach (var lesson in section.Lessons)
+            {
+                <li>@lesson.Title</li>
+            }
+        </ul>
+    }
+</div>
+
 <a asp-action="Index" class="btn btn-secondary">Geri Dön</a>

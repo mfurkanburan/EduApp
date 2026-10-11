@@ -21,6 +21,7 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 var app = builder.Build();
 
+// Seed Data
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -31,6 +32,29 @@ using (var scope = app.Services.CreateScope())
             new Category { Name = "Yazılım" },
             new Category { Name = "Tasarım" },
             new Category { Name = "Siber Güvenlik" }
+        );
+
+        dbContext.SaveChanges();
+    }
+
+    if (!dbContext.CourseSections.Any())
+    {
+        dbContext.CourseSections.AddRange(
+            new CourseSection { Title = "Giriş", Order = 1, CourseId = 1 },
+            new CourseSection { Title = "Temel Kavramlar", Order = 2, CourseId = 1 },
+            new CourseSection { Title = "İleri Düzey Konular", Order = 3, CourseId = 1 }
+        );
+
+        dbContext.SaveChanges();
+    }
+
+    if (!dbContext.Lessons.Any())
+    {
+        dbContext.Lessons.AddRange(
+            new Lesson { Title = "Ön Hazırlık", Order = 1, CourseSectionId = 1 },
+            new Lesson { Title = "Gerekli Program Kurulumları", Order = 2, CourseSectionId = 1 },
+            new Lesson { Title = "Programlama Temelleri", Order = 1, CourseSectionId = 2 },
+            new Lesson { Title = "İleri Düzey Programlama", Order = 2, CourseSectionId = 2 }
         );
 
         dbContext.SaveChanges();

@@ -8,4 +8,5 @@ public class Course
     public DateTime CreatedAt { get; set; }
     public int CategoryId { get; set; }
     public Category? Category { get; set; }
+    public List<CourseSection> Sections { get; set; } = new List<CourseSection>();
 }

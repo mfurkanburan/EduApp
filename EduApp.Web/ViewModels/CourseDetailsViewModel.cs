@@ -17,4 +17,6 @@ public class CourseDetailsViewModel
 
     [Display(Name = "Kategori")]
     public string CategoryName { get; set; } = "";
+
+    public List<SectionViewModel> Sections { get; set; } = new List<SectionViewModel>();
 }

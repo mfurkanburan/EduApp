@@ -76,7 +76,19 @@ public class CoursesController : Controller
             Title = course.Title,
             Description = course.Description,
             CreatedAt = course.CreatedAt,
-            CategoryName = course.Category?.Name ?? "Kategori bulunamadı"
+            CategoryName = course.Category?.Name ?? "Kategori bulunamadı",
+            Sections = course.Sections.Select(s => new SectionViewModel
+            {
+                Id = s.Id,
+                Title = s.Title,
+                Order = s.Order,
+                Lessons = s.Lessons.Select(l => new LessonViewModel
+                {
+                    Id = l.Id,
+                    Title = l.Title,
+                    Order = l.Order
+                }).ToList()
+            }).ToList()
         };
 
         return View(model);

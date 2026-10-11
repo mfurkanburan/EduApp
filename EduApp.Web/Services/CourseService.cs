@@ -22,7 +22,12 @@ public class CourseService : ICourseService
 
     public async Task<Course?> GetCourseByIdAsync(int id)
     {
-        return await _context.Courses.Include(c => c.Category).AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
+        return await _context.Courses
+            .Include(c => c.Category)
+            .Include(c => c.Sections)
+            .ThenInclude(s => s.Lessons)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(c => c.Id == id);
     }
 
     public async Task UpdateCourseAsync(Course course)
