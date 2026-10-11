@@ -14,4 +14,7 @@ public class CourseDetailsViewModel
 
     [Display(Name = "Oluşturulma Tarihi")]
     public DateTime CreatedAt { get; set; }
+
+    [Display(Name = "Kategori")]
+    public string CategoryName { get; set; } = "";
 }

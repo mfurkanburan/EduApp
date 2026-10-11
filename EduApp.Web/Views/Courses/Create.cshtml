@@ -19,6 +19,14 @@
         <span asp-validation-for="Description" class="text-danger"></span>
     </div>
 
+    <div>
+        <label asp-for="CategoryId" class="form-label">Kategori:</label>
+        <select asp-for="CategoryId" class="form-control" asp-items="@(new SelectList(Model.Categories, "Id", "Name"))">
+            <option value="">Kategori Seçiniz</option>
+        </select>
+        <span asp-validation-for="CategoryId" class="text-danger"></span>
+    </div>
+
     <button class="btn btn-primary mt-4" type="submit">Kurs Oluştur</button>
 </form>
 

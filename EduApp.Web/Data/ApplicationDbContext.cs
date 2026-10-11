@@ -10,5 +10,6 @@ public class ApplicationDbContext : DbContext
     {
     }
 
-    public DbSet<Course> Courses { get; set; }
+    public DbSet<Course> Courses => Set<Course>();
+    public DbSet<Category> Categories => Set<Category>();
 }

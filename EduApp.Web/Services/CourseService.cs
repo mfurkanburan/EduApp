@@ -22,7 +22,7 @@ public class CourseService : ICourseService
 
     public async Task<Course?> GetCourseByIdAsync(int id)
     {
-        return await _context.Courses.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
+        return await _context.Courses.Include(c => c.Category).AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
     }
 
     public async Task UpdateCourseAsync(Course course)
@@ -49,7 +49,7 @@ public class CourseService : ICourseService
 
     public async Task<PagedCoursesResult> GetAllCoursesAsync(string? search, int page, int pageSize)
     {
-        IQueryable<Course> query = _context.Courses.AsNoTracking();
+        IQueryable<Course> query = _context.Courses.Include(c => c.Category).AsNoTracking();
 
         if (!string.IsNullOrWhiteSpace(search))
         {

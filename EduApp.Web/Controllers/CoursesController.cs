@@ -8,10 +8,12 @@ namespace EduApp.Web.Controllers;
 public class CoursesController : Controller
 {
     private readonly ICourseService _courseService;
+    private readonly ICategoryService _categoryService;
 
-    public CoursesController(ICourseService courseService)
+    public CoursesController(ICourseService courseService, ICategoryService categoryService)
     {
         _courseService = courseService;
+        _categoryService = categoryService;
     }
 
     public async Task<IActionResult> Index(string? search, int page = 1)
@@ -34,7 +36,12 @@ public class CoursesController : Controller
     [HttpGet]
     public IActionResult Create()
     {
-        return View();
+        CreateCourseViewModel model = new CreateCourseViewModel
+        {
+            Categories = _categoryService.GetAllCategories()
+        };
+
+        return View(model);
     }
 
     [HttpPost]
@@ -47,6 +54,7 @@ public class CoursesController : Controller
         {
             Title = model.Title.Trim(),
             Description = model.Description.Trim(),
+            CategoryId = model.CategoryId,
             CreatedAt = DateTime.UtcNow
         };
 
@@ -67,7 +75,8 @@ public class CoursesController : Controller
             Id = course.Id,
             Title = course.Title,
             Description = course.Description,
-            CreatedAt = course.CreatedAt
+            CreatedAt = course.CreatedAt,
+            CategoryName = course.Category?.Name ?? "Kategori bulunamadı"
         };
 
         return View(model);

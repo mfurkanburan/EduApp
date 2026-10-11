@@ -1,4 +1,5 @@
 using EduApp.Web.Data;
+using EduApp.Web.Models;
 using EduApp.Web.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,8 +17,25 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 // DI - CourseService
 builder.Services.AddScoped<ICourseService, CourseService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    
+    if (!dbContext.Categories.Any())
+    {
+        dbContext.Categories.AddRange(
+            new Category { Name = "Yazılım" },
+            new Category { Name = "Tasarım" },
+            new Category { Name = "Siber Güvenlik" }
+        );
+
+        dbContext.SaveChanges();
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
