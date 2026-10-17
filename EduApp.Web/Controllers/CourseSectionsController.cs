@@ -59,4 +59,90 @@ public class CourseSectionsController : Controller
 
         return RedirectToAction("Details", "Courses", new { id = courseId });
     }
+
+    [HttpGet]
+    public async Task<IActionResult> Edit(int id)
+    {
+        CourseSection? section = await _courseSectionService.GetCourseSectionByIdAsync(id);
+
+        if (section is null) return NotFound();
+
+        EditSectionViewModel model = new EditSectionViewModel
+        {
+            Id = section.Id,
+            CourseId = section.CourseId,
+            CourseTitle = section.Course?.Title ?? "",
+            Title = section.Title,
+            Order = section.Order
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(EditSectionViewModel model)
+    {
+        CourseSection? section = await _courseSectionService.GetCourseSectionByIdAsync(model.Id);
+
+        if (section is null) return NotFound();
+
+        if (section.CourseId != model.CourseId) return BadRequest();
+
+        if (!ModelState.IsValid)
+        {
+            model.CourseTitle = section.Course?.Title ?? "";
+
+            return View(model);
+        }
+
+        CourseSection updatedSection = new CourseSection
+        {
+            Id = model.Id,
+            CourseId = model.CourseId,
+            Title = model.Title.Trim(),
+            Order = model.Order
+        };
+
+        await _courseSectionService.UpdateCourseSectionAsync(updatedSection);
+        await _courseSectionService.ReorderCourseSectionsAsync(model.CourseId);
+        
+        return RedirectToAction("Details", "Courses", new { id = model.CourseId });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Delete(int id)
+    {
+        CourseSection? section = await _courseSectionService.GetCourseSectionByIdAsync(id);
+
+        if (section is null) return NotFound();
+
+        DeleteSectionViewModel model = new DeleteSectionViewModel
+        {
+            Id = section.Id,
+            CourseId = section.CourseId,
+            CourseTitle = section.Course?.Title ?? "",
+            Title = section.Title,
+            LessonCount = section.Lessons.Count
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(DeleteSectionViewModel model)
+    {
+        CourseSection? section = await _courseSectionService.GetCourseSectionByIdAsync(model.Id);
+
+        if (section is null) return NotFound();
+
+        if (section.CourseId != model.CourseId) return BadRequest();
+
+        bool deleted = await _courseSectionService.DeleteCourseSectionAsync(model.Id);
+
+        if (!deleted) return NotFound();
+
+        return RedirectToAction("Details", "Courses", new { id = model.CourseId });
+    }
 }

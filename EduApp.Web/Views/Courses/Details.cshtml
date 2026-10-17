@@ -23,6 +23,10 @@ else
         @foreach (var section in Model.Sections)
         {
             <h2 class="h4">@(section.Order). @(section.Title)</h2>
+            <div>
+                <a asp-action="Edit" asp-controller="CourseSections" asp-route-id="@(section.Id)">Düzenle</a>
+                <a asp-action="Delete" asp-controller="CourseSections" asp-route-id="@(section.Id)">Sil</a>
+            </div>
             <ol>
                 @if (section.Lessons.Count == 0)
                 {

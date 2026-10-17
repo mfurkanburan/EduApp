@@ -1,0 +1,32 @@
+@model EditSectionViewModel
+
+@{
+    ViewData["Title"] = "Bölüm Düzenle";
+}
+
+<h1>Bölüm Düzenle</h1>
+
+<p>
+    <strong>Kurs:</strong> @Model.CourseTitle
+</p>
+
+<form asp-action="Edit" asp-controller="CourseSections" method="post">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="CourseId" />
+
+    <div class="form-group">
+        <label asp-for="Title" class="form-label">Bölüm Başlığı</label>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+
+    <div>
+        <label asp-for="Order" class="form-label">Bölüm Sırası</label>
+        <input asp-for="Order" type="number" min="1" class="form-control" />
+        <span asp-validation-for="Order" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Kaydet</button>
+</form>
+
+<a asp-action="Details" asp-controller="Courses" asp-route-id="@Model.CourseId" class="btn btn-secondary mt-3">Geri Dön</a>

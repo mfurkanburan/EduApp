@@ -77,7 +77,8 @@ namespace EduApp.Web.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CourseId");
+                    b.HasIndex("CourseId", "Order")
+                        .IsUnique();
 
                     b.ToTable("CourseSections");
                 });
@@ -100,7 +101,8 @@ namespace EduApp.Web.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CourseSectionId");
+                    b.HasIndex("CourseSectionId", "Order")
+                        .IsUnique();
 
                     b.ToTable("Lessons");
                 });

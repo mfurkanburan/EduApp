@@ -1,0 +1,41 @@
+@model DeleteSectionViewModel
+
+@{
+    ViewData["Title"] = "Bölüm Sil";
+}
+
+<h1>Bölüm Sil</h1>
+
+<p>
+    <strong>Kurs:</strong> @Model.CourseTitle
+</p>
+
+<p>
+    <strong>Bölüm Başlığı:</strong> @Model.Title
+</p>
+
+@if (Model.LessonCount > 0)
+{
+    <p>
+        Bu bölümde @Model.LessonCount ders bulunmaktadır. Bölümü silerseniz, bu dersler de silinecektir.
+    </p>
+}
+else
+{
+    <p>
+        Bu bölümde ders bulunmamaktadır.
+    </p>
+}
+
+<p>
+    Bu bölümü silmek istediğinizden emin misiniz?
+</p>
+
+<form asp-action="Delete" asp-controller="CourseSections" method="post">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="CourseId" />
+
+    <button type="submit" class="btn btn-danger">Sil</button>
+</form>
+
+<a asp-action="Details" asp-controller="Courses" asp-route-id="@Model.CourseId" class="btn btn-secondary">Geri Dön</a>
