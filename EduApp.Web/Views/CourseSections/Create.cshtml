@@ -1,0 +1,25 @@
+@model CreateSectionViewModel
+
+@{
+    ViewData["Title"] = "Yeni Bölüm Ekle";
+}
+
+<h1>Yeni Bölüm Ekle</h1>
+
+<p>
+    <strong>Kurs:</strong> @Model.CourseTitle
+</p>
+
+<form asp-action="Create" asp-controller="CourseSections" asp-route-courseId="@Model.CourseId" method="post">
+    <input type="hidden" asp-for="CourseId" />
+
+    <div class="form-group">
+        <label asp-for="Title" class="form-label">Bölüm Başlığı</label>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Oluştur</button>
+</form>
+
+<a asp-action="Details" asp-controller="Courses" asp-route-id="@Model.CourseId" class="btn btn-secondary mt-3">Geri Dön</a>

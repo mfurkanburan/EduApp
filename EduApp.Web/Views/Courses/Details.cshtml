@@ -7,23 +7,41 @@
 <h1>@Model.Title</h1>
 <ul>
     <li><strong>Açıklama:</strong> @Model.Description</li>
-    <li><strong>Oluşturulma Tarihi:</strong> @Model.CreatedAt</li>
+    <li><strong>Oluşturulma Tarihi:</strong> @Model.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</li>
     <li><strong>Kategori:</strong> @Model.CategoryName</li>
 </ul>
 
 <hr />
 
-<div>
-    @foreach (var section in Model.Sections)
-    {
-        <h2 class="h4">@(section.Title)</h2>
-        <ul>
-            @foreach (var lesson in section.Lessons)
-            {
-                <li>@lesson.Title</li>
-            }
-        </ul>
-    }
-</div>
+@if (Model.Sections.Count == 0)
+{
+    <p>Bu kurs için henüz bölüm eklenmemiştir.</p>
+}
+else
+{
+    <div>
+        @foreach (var section in Model.Sections)
+        {
+            <h2 class="h4">@(section.Order). @(section.Title)</h2>
+            <ol>
+                @if (section.Lessons.Count == 0)
+                {
+                    <li>Bu bölüm için henüz ders eklenmemiştir.</li>
+                }
+                else
+                {
+                    @foreach (var lesson in section.Lessons)
+                    {
+                        <li>@lesson.Title</li>
+                    }
+                }
+            </ol>
+        }
+    </div>
+}
+
+<a asp-action="Create" asp-controller="CourseSections" asp-route-courseId="@Model.Id" class="btn btn-primary">Yeni Bölüm Ekle</a>
+
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Düzenle</a>
 
 <a asp-action="Index" class="btn btn-secondary">Geri Dön</a>
