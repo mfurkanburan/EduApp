@@ -89,8 +89,15 @@ namespace EduApp.Web.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("CourseSectionId")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("MaterialPath")
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("Order")
                         .HasColumnType("INTEGER");

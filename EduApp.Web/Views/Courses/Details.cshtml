@@ -26,8 +26,9 @@ else
             <div>
                 <a asp-action="Edit" asp-controller="CourseSections" asp-route-id="@(section.Id)">Düzenle</a>
                 <a asp-action="Delete" asp-controller="CourseSections" asp-route-id="@(section.Id)">Sil</a>
+                <a asp-action="Create" asp-controller="Lessons" asp-route-sectionId="@(section.Id)">Yeni Ders Ekle</a>
             </div>
-            <ol>
+            <ul>
                 @if (section.Lessons.Count == 0)
                 {
                     <li>Bu bölüm için henüz ders eklenmemiştir.</li>
@@ -36,10 +37,21 @@ else
                 {
                     @foreach (var lesson in section.Lessons)
                     {
-                        <li>@lesson.Title</li>
+                        <li>
+                            <h4>@lesson.Order. @lesson.Title</h4>
+                        </li>
+
+                        <p>
+                            @lesson.Content
+                        </p>
+
+                        @if (!string.IsNullOrWhiteSpace(lesson.MaterialFilePath))
+                        {
+                            <a href="@Url.Content(lesson.MaterialFilePath)" target="_blank" class="btn btn-info">Materyali Aç</a>
+                        }
                     }
                 }
-            </ol>
+            </ul>
         }
     </div>
 }

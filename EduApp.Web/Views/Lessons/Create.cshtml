@@ -1,0 +1,64 @@
+@model CreateLessonViewModel
+@{
+    ViewData["Title"] = "Yeni Ders Ekle";
+}
+
+<h1>Yeni Ders Ekle</h1>
+<ul>
+    <li>
+        <strong>Kurs:</strong> @Model.CourseTitle
+    </li>
+    <li>
+        <strong>Bölüm:</strong> @Model.SectionTitle
+    </li>
+</ul>
+
+<form asp-action="Create" asp-controller="Lessons" asp-route-sectionId="@Model.CourseSectionId" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="CourseSectionId" />
+    <input type="hidden" asp-for="CourseId" />
+    
+    <div class="form-group">
+        <label asp-for="Title"></label>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Content"></label>
+        <textarea asp-for="Content" rows="10" class="form-control"></textarea>
+        <span asp-validation-for="Content" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="MaterialFile"></label>
+        <input asp-for="MaterialFile" type="file" accept=".pdf,.doc,.docx,.ppt,.pptx,.zip" class="form-control" />
+        <p class="form-text text-muted">
+            İzin verilen dosya türleri: PDF, Word, PowerPoint ve ZIP.
+        </p>
+        <span asp-validation-for="MaterialFile" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Dersi Ekle</button>
+</form>
+
+<a asp-action="Details" asp-controller="Courses" asp-route-id="@Model.CourseId" class="btn btn-secondary mt-3">Kursa Dön</a>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        const materialInput = document.querySelector('input[name="MaterialFile"]');
+
+        materialInput.addEventListener('change', function () {
+            const file = this.files[0];
+
+            if (!file) return;
+
+            const maximumSize = 10 * 1024 * 1024;
+
+            if (file.size > maximumSize) {
+                alert('Dosya boyutu 10 MB\'yi geçemez.');
+                this.value = '';
+            }
+        });
+    </script>
+}

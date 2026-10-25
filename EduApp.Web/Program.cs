@@ -19,6 +19,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ICourseSectionService, CourseSectionService>();
+builder.Services.AddScoped<ILessonService, LessonService>();
 
 var app = builder.Build();
 
@@ -33,6 +34,17 @@ using (var scope = app.Services.CreateScope())
             new Category { Name = "Yazılım" },
             new Category { Name = "Tasarım" },
             new Category { Name = "Siber Güvenlik" }
+        );
+
+        dbContext.SaveChanges();
+    }
+
+    if (!dbContext.Courses.Any())
+    {
+        dbContext.Courses.AddRange(
+            new Course { Title = "C# Programlama", Description = "C# programlama dili hakkında temel ve ileri düzey konuları kapsayan bir kurs.", CategoryId = 1 },
+            new Course { Title = "Web Tasarım", Description = "Web tasarımının temellerini ve modern web tasarım tekniklerini öğreten bir kurs.", CategoryId = 2 },
+            new Course { Title = "Siber Güvenlik Temelleri", Description = "Siber güvenlik alanında temel bilgileri ve uygulamaları öğreten bir kurs.", CategoryId = 3 }
         );
 
         dbContext.SaveChanges();

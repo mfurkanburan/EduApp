@@ -82,12 +82,16 @@ public class CoursesController : Controller
                 Id = s.Id,
                 Title = s.Title,
                 Order = s.Order,
-                Lessons = s.Lessons.Select(l => new LessonViewModel
-                {
-                    Id = l.Id,
-                    Title = l.Title,
-                    Order = l.Order
-                }).ToList()
+                Lessons = s.Lessons
+                    .OrderBy(l => l.Order)
+                    .Select(l => new LessonViewModel
+                    {
+                        Id = l.Id,
+                        Title = l.Title,
+                        Content = l.Content,
+                        MaterialFilePath = l.MaterialPath,
+                        Order = l.Order
+                    }).ToList()
             }).ToList()
         };
 
