@@ -33,7 +33,7 @@ public class LessonsController : Controller
         _environment = environment;
     }
 
-    [HttpGet]
+    [HttpGet("Lessons/Create/{sectionId:int}")]
     public async Task<IActionResult> Create(int sectionId)
     {
         CourseSection? section = await _sectionService.GetCourseSectionByIdAsync(sectionId);
@@ -51,7 +51,7 @@ public class LessonsController : Controller
         return View(model);
     }
 
-    [HttpPost]
+    [HttpPost("Lessons/Create/{sectionId:int}")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(
         int sectionId,
@@ -152,5 +152,160 @@ public class LessonsController : Controller
         model.CourseId = section.CourseId;
         model.CourseTitle = section.Course?.Title ?? "";
         model.SectionTitle = section.Title;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Edit(int id)
+    {
+        Lesson? lesson = await _lessonService.GetLessonByIdAsync(id);
+
+        if (lesson is null) return NotFound();
+
+        EditLessonViewModel model = new()
+        {
+            Id = lesson.Id,
+            CourseSectionId = lesson.CourseSectionId,
+            CourseId = lesson.CourseSection?.CourseId ?? 0,
+            CourseTitle = lesson.CourseSection?.Course?.Title ?? "",
+            SectionTitle = lesson.CourseSection?.Title ?? "",
+            Title = lesson.Title,
+            Content = lesson.Content,
+            ExistingMaterialPath = lesson.MaterialPath
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(EditLessonViewModel model)
+    {
+        Lesson? existingLesson = await _lessonService.GetLessonByIdAsync(model.Id);
+
+        if (existingLesson is null) return NotFound();
+
+        if (existingLesson.CourseSectionId != model.CourseSectionId) return BadRequest();
+
+        int actualCourseId = existingLesson.CourseSection?.CourseId ?? 0;
+
+        if (actualCourseId != model.CourseId) return BadRequest();
+
+        ValidateMaterialFile(model.MaterialFile);
+
+        if (!ModelState.IsValid)
+        {
+            PrepareEditViewModel(model, existingLesson);
+
+            return View(model);
+        }
+
+        string? materialFilePath = existingLesson.MaterialPath;
+
+        if (model.MaterialFile is not null)
+        {
+            string? newMaterialFilePath = await SaveMaterialFileAsync(model.MaterialFile);
+
+            if (!ModelState.IsValid)
+            {
+                PrepareEditViewModel(model, existingLesson);
+
+                return View(model);
+            }
+
+            DeleteMaterialFile(existingLesson.MaterialPath);
+            materialFilePath = newMaterialFilePath;
+        }
+        else if (model.RemoveExistingMaterial)
+        {
+            DeleteMaterialFile(existingLesson.MaterialPath);
+            materialFilePath = null;
+        }
+
+        Lesson updatedLesson = new()
+        {
+            Id = existingLesson.Id,
+            Title = model.Title.Trim(),
+            Content = model.Content.Trim(),
+            MaterialPath = materialFilePath,
+        };
+
+        await _lessonService.UpdateLessonAsync(updatedLesson);
+
+        return RedirectToAction("Details", "Courses", new { id = model.CourseId });
+    }
+
+    private static void PrepareEditViewModel(EditLessonViewModel model, Lesson existingLesson)
+    {
+        model.CourseSectionId = existingLesson.CourseSectionId;
+        model.CourseId = existingLesson.CourseSection?.CourseId ?? 0;
+        model.CourseTitle = existingLesson.CourseSection?.Course?.Title ?? "";
+        model.SectionTitle = existingLesson.CourseSection?.Title ?? "";
+        model.ExistingMaterialPath = existingLesson.MaterialPath;
+    }
+
+    private void DeleteMaterialFile(string? materialPath)
+    {
+        if (string.IsNullOrWhiteSpace(materialPath)) return;
+
+        string materialsDirectory = Path.Combine(_environment.WebRootPath, "uploads", "materials");
+
+        string fileName = Path.GetFileName(materialPath);
+
+        if (string.IsNullOrWhiteSpace(fileName)) return;
+
+        string pyhsicalFilePath = Path.Combine(materialsDirectory, fileName);
+
+        if (!pyhsicalFilePath.StartsWith(materialsDirectory, StringComparison.OrdinalIgnoreCase)) return;
+
+        if (System.IO.File.Exists(pyhsicalFilePath))
+        {
+            System.IO.File.Delete(pyhsicalFilePath);
+        }
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Delete(int id)
+    {
+        Lesson? lesson = await _lessonService.GetLessonByIdAsync(id);
+
+        if (lesson is null) return NotFound();
+
+        DeleteLessonViewModel model = new()
+        {
+            Id = lesson.Id,
+            CourseSectionId = lesson.CourseSectionId,
+            CourseId = lesson.CourseSection?.CourseId ?? 0,
+            CourseTitle = lesson.CourseSection?.Course?.Title ?? "",
+            SectionTitle = lesson.CourseSection?.Title ?? "",
+            Title = lesson.Title,
+            MaterialPath = lesson.MaterialPath
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(DeleteLessonViewModel model)
+    {
+        Lesson? existingLesson = await _lessonService.GetLessonByIdAsync(model.Id);
+
+        if (existingLesson is null) return NotFound();
+
+        if (existingLesson.CourseSectionId != model.CourseSectionId) return BadRequest();
+
+        int actualCourseId = existingLesson.CourseSection?.CourseId ?? 0;
+
+        if (actualCourseId != model.CourseId) return BadRequest();
+
+        string? materialPath = existingLesson.MaterialPath;
+
+        bool deleted = await _lessonService.DeleteLessonAsync(existingLesson.Id);
+
+        if (!deleted) return NotFound();
+
+        DeleteMaterialFile(materialPath);
+
+        return RedirectToAction("Details", "Courses", new { id = model.CourseId });
     }
 }

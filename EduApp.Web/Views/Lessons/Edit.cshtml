@@ -1,0 +1,89 @@
+@model EduApp.Web.ViewModels.EditLessonViewModel
+
+@{
+    ViewData["Title"] = "Dersi Düzenle";
+}
+
+<h1>Dersi Düzenle</h1>
+
+<p>
+    <strong>Kurs:</strong>
+    @Model.CourseTitle
+</p>
+
+<p>
+    <strong>Bölüm:</strong>
+    @Model.SectionTitle
+</p>
+
+<form asp-action="Edit" asp-controller="Lessons" method="post" enctype="multipart/form-data">
+    <input asp-for="Id" type="hidden" />
+    <input asp-for="CourseSectionId" type="hidden" />
+    <input asp-for="CourseId" type="hidden" />
+    <input asp-for="ExistingMaterialPath" type="hidden" />
+
+    <div class="form-group">
+        <label asp-for="Title" class="form-label"></label>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Content" class="form-label"></label>
+        <textarea asp-for="Content" rows="10" class="form-control"></textarea>
+        <span asp-validation-for="Content" class="text-danger"></span>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(
+        Model.ExistingMaterialPath))
+    {
+        <div class="form-group">
+            <a class="btn btn-primary" href="@Model.ExistingMaterialPath" target="_blank" rel="noopener">Mevcut Materyali Aç</a>
+
+            <label>
+                <input asp-for="RemoveExistingMaterial" class="form-check-input" />
+
+                Mevcut materyali kaldır
+            </label>
+        </div>
+    }
+
+    <div>
+        <label asp-for="MaterialFile" class="form-label"></label>
+        <input asp-for="MaterialFile" class="form-control" id="materialFile" type="file" accept=".pdf,.doc,.docx,.ppt,.pptx,.zip" />
+        <span asp-validation-for="MaterialFile" class="text-danger"></span>
+        <p class="form-text text-muted">
+            Yeni dosya seçerseniz mevcut materyal değiştirilir.
+            Maksimum dosya boyutu 10 MB'dir.
+        </p>
+    </div>
+
+    <button class="btn btn-primary" type="submit">
+        Değişiklikleri Kaydet
+    </button>
+</form>
+
+<a asp-action="Details" asp-controller="Courses" asp-route-id="@Model.CourseId" class="btn btn-secondary mt-3">
+    Kursa Dön
+</a>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        const materialInput = document.querySelector("#materialFile");
+
+        materialInput.addEventListener("change", function () {
+            const file = this.files[0];
+
+            if (!file) return;
+
+            const maximumSize = 10 * 1024 * 1024;
+
+            if (file.size > maximumSize) {
+                alert('Dosya boyutu 10 MB\'yi geçemez.');
+                this.value = "";
+            }
+        });
+    </script>
+}

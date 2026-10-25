@@ -49,6 +49,9 @@ else
                         {
                             <a href="@Url.Content(lesson.MaterialFilePath)" target="_blank" class="btn btn-info">Materyali Aç</a>
                         }
+
+                        <a asp-action="Edit" asp-controller="Lessons" asp-route-id="@lesson.Id" class="btn btn-sm btn-outline-primary">Dersi Düzenle</a>
+                        <a asp-action="Delete" asp-controller="Lessons" asp-route-id="@lesson.Id" class="btn btn-sm btn-outline-danger">Dersi Sil</a>
                     }
                 }
             </ul>

@@ -1,0 +1,42 @@
+@model DeleteLessonViewModel
+@{
+    ViewData["Title"] = "Ders Sil";
+}
+
+<h1>Ders Sil</h1>
+
+<ul>
+    <li>
+        <strong>Kurs:</strong> @Model.CourseTitle
+    </li>
+    <li>
+        <strong>Bölüm:</strong> @Model.SectionTitle
+    </li>
+    <li>
+        <strong>Ders:</strong> @Model.Title
+    </li>
+</ul>
+
+@if (!string.IsNullOrWhiteSpace(Model.MaterialPath))
+{
+    <p class="text-danger">
+        Bu derse bağlı bir materyal dosyası bulunmaktadır. Ders silindiğinde bu materyal dosyası da silinecektir.
+    </p>
+
+    <a href="@Model.MaterialPath" target="_blank" class="btn btn-primary">Materyali Görüntüle</a>
+}
+
+
+<p>
+    Bu dersi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.
+</p>
+
+<form asp-action="Delete" asp-controller="Lessons" method="post">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="CourseSectionId" />
+    <input type="hidden" asp-for="CourseId" />
+
+    <button type="submit" class="btn btn-danger">Dersi Sil</button>
+</form>
+
+<a asp-action="Details" asp-controller="Courses" asp-route-id="@Model.CourseId" class="btn btn-secondary">Ders Detaylarına Dön</a>
