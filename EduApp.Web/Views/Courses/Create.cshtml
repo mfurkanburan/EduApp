@@ -6,7 +6,7 @@
 
 <h1>Yeni Kurs Ekle</h1>
 
-<form asp-action="Create" method="post">
+<form asp-action="Create" method="post" enctype="multipart/form-data">
     <div class="form-group">
         <label asp-for="Title" class="form-label">Başlık:</label>
         <input asp-for="Title" class="form-control" />
@@ -27,7 +27,55 @@
         <span asp-validation-for="CategoryId" class="text-danger"></span>
     </div>
 
+    <div class="form-group mt-3">
+        <label asp-for="Level" class="form-label">Seviye:</label>
+        <select asp-for="Level" class="form-control">
+            <option value="">Seviye Seçiniz</option>
+            <option value="1">Başlangıç</option>
+            <option value="2">Orta</option>
+            <option value="3">İleri</option>
+        </select>
+        <span asp-validation-for="Level" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mt-3">
+        <label asp-for="RequirementsText" class="form-label">Kurs Gereksinimleri:</label>
+        <textarea asp-for="RequirementsText" rows="4" placeholder="Her satıra bir gereksinim yazın." class="form-control"></textarea>
+        <span asp-validation-for="RequirementsText" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mt-3">
+        <label asp-for="CoverImage" class="form-label">Kapak Resmi:</label>
+        <input asp-for="CoverImage" id="coverImage" type="file" accept=".jpg,.jpeg,.png,.webp" class="form-control" />
+        <span asp-validation-for="CoverImage" class="text-danger"></span>
+
+        <p class="form-text text-muted mt-2">
+            JPG, JPEG, PNG veya WEBP formatında bir resim yükleyebilirsiniz. Maksimum dosya boyutu 5MB olmalıdır.
+        </p>
+    </div>
+
     <button class="btn btn-primary mt-4" type="submit">Kurs Oluştur</button>
 </form>
 
 <a asp-action="Index" class="btn btn-secondary mt-3">Geri Dön</a>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        const coverImageInput = document.getElementById('coverImage');
+
+        coverImageInput.addEventListener('change', function () {
+            const file = this.files[0];
+
+            if (!file) return;
+
+            const maximumSize = 5 * 1024 * 1024; // 5MB
+
+            if (file.size > maximumSize) {
+                alert('Dosya boyutu 5MB\'yi geçemez. Lütfen daha küçük bir dosya seçin.');
+                this.value = '';
+            }
+        });
+    </script>
+}

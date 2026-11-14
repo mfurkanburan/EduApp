@@ -33,10 +33,43 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<Lesson>()
             .HasIndex(lesson => new { lesson.CourseSectionId, lesson.Order })
             .IsUnique();
+
+        modelBuilder.Entity<Course>()
+            .HasMany(course => course.Requirements)
+            .WithOne(requirement => requirement.Course)
+            .HasForeignKey(requirement => requirement.CourseId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<CourseRequirement>()
+            .HasIndex(requirement => new { requirement.CourseId, requirement.Order })
+            .IsUnique();
+
+        // Fluent API
+        modelBuilder.Entity<Course>(entity =>
+        {
+            entity.Property(course => course.Title)
+                .IsRequired()
+                .HasMaxLength(150);
+
+            entity.Property(course => course.Description)
+                .IsRequired()
+                .HasMaxLength(5000);
+
+            entity.Property(course => course.CoverImagePath)
+                .HasMaxLength(500);
+        });
+
+        modelBuilder.Entity<CourseRequirement>(entity =>
+        {
+            entity.Property(requirement => requirement.Text)
+                .IsRequired()
+                .HasMaxLength(500);
+        });
     }
 
     public DbSet<Course> Courses => Set<Course>();
     public DbSet<Category> Categories => Set<Category>();
     public DbSet<CourseSection> CourseSections => Set<CourseSection>();
     public DbSet<Lesson> Lessons => Set<Lesson>();
+    public DbSet<CourseRequirement> CourseRequirements => Set<CourseRequirement>();
 }

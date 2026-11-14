@@ -41,15 +41,24 @@ namespace EduApp.Web.Migrations
                     b.Property<int>("CategoryId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("CoverImagePath")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
                         .IsRequired()
+                        .HasMaxLength(5000)
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("Level")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Title")
                         .IsRequired()
+                        .HasMaxLength(150)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -57,6 +66,31 @@ namespace EduApp.Web.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Courses");
+                });
+
+            modelBuilder.Entity("EduApp.Web.Models.CourseRequirement", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseId", "Order")
+                        .IsUnique();
+
+                    b.ToTable("CourseRequirements");
                 });
 
             modelBuilder.Entity("EduApp.Web.Models.CourseSection", b =>
@@ -125,6 +159,17 @@ namespace EduApp.Web.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("EduApp.Web.Models.CourseRequirement", b =>
+                {
+                    b.HasOne("EduApp.Web.Models.Course", "Course")
+                        .WithMany("Requirements")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+                });
+
             modelBuilder.Entity("EduApp.Web.Models.CourseSection", b =>
                 {
                     b.HasOne("EduApp.Web.Models.Course", "Course")
@@ -149,6 +194,8 @@ namespace EduApp.Web.Migrations
 
             modelBuilder.Entity("EduApp.Web.Models.Course", b =>
                 {
+                    b.Navigation("Requirements");
+
                     b.Navigation("Sections");
                 });
 

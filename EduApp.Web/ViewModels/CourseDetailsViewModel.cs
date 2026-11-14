@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using EduApp.Web.Enums;
 
 namespace EduApp.Web.ViewModels;
 
@@ -17,6 +18,15 @@ public class CourseDetailsViewModel
 
     [Display(Name = "Kategori")]
     public string CategoryName { get; set; } = "";
+
+    [Display(Name = "Seviye")]
+    public CourseLevel Level { get; set; }
+
+    [Display(Name = "Kapak Resmi Yolu")]
+    public string? CoverImagePath { get; set; }
+
+    [Display(Name = "Gereksinimler")]
+    public List<CourseRequirementViewModel> Requirements { get; set; } = new List<CourseRequirementViewModel>();
 
     public List<SectionViewModel> Sections { get; set; } = new List<SectionViewModel>();
 }

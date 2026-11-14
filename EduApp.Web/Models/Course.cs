@@ -1,3 +1,5 @@
+using EduApp.Web.Enums;
+
 namespace EduApp.Web.Models;
 
 public class Course
@@ -5,8 +7,11 @@ public class Course
     public int Id { get; set; }
     public string Title { get; set; } = "";
     public string Description { get; set; } = "";
+    public CourseLevel Level { get; set; }
+    public string? CoverImagePath { get; set; }
     public DateTime CreatedAt { get; set; }
     public int CategoryId { get; set; }
     public Category? Category { get; set; }
     public List<CourseSection> Sections { get; set; } = new List<CourseSection>();
+    public List<CourseRequirement> Requirements { get; set; } = new List<CourseRequirement>();
 }

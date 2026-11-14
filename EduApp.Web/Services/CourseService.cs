@@ -24,6 +24,7 @@ public class CourseService : ICourseService
     {
         return await _context.Courses
             .Include(c => c.Category)
+            .Include(c => c.Requirements)
             .Include(c => c.Sections)
             .ThenInclude(s => s.Lessons)
             .AsNoTracking()
