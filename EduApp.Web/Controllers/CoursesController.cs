@@ -151,7 +151,17 @@ public class CoursesController : Controller
         {
             Id = course.Id,
             Title = course.Title,
-            Description = course.Description
+            Description = course.Description,
+            CategoryId = course.CategoryId,
+            Level = course.Level,
+            ExistingCoverImagePath = course.CoverImagePath,
+            RequirementsText = 
+                string.Join(
+                    Environment.NewLine,
+                    course.Requirements
+                        .OrderBy(r => r.Order)
+                        .Select(r => r.Text)),
+            Categories = _categoryService.GetAllCategories()
         };
 
         return View(model);
@@ -161,18 +171,88 @@ public class CoursesController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(EditCourseViewModel model)
     {
-        if (!ModelState.IsValid) return View(model);
+        Course? existingCourse = await _courseService.GetCourseByIdAsync(model.Id);
 
-        Course course = new Course
+        if (existingCourse is null) return NotFound();
+
+        ValidateOptionalCoverImage(model.CoverImage);
+
+        List<CourseRequirement> requirements = CreateRequirements(model.RequirementsText);
+
+        if (requirements.Count == 0)
         {
-            Id = model.Id,
+            ModelState.AddModelError(nameof(EditCourseViewModel.RequirementsText), "En az bir gereksinim eklemelisiniz.");
+        }
+
+        List<Category> categories = _categoryService.GetAllCategories();
+
+        bool categoryExists = categories.Any(c => c.Id == model.CategoryId);
+
+        if (!categoryExists)
+        {
+            ModelState.AddModelError(nameof(EditCourseViewModel.CategoryId), "Seçilen kategori bulunamadı. Lütfen geçerli bir kategori seçin.");
+        }
+
+        bool willHaveNewCoverImage = !string.IsNullOrWhiteSpace(model.ExistingCoverImagePath) && !model.RemoveExistingCoverImage;
+    
+        if (model.CoverImage is not null)
+        {
+            willHaveNewCoverImage = true;
+        }
+
+        if (!willHaveNewCoverImage)
+        {
+            ModelState.AddModelError(nameof(EditCourseViewModel.CoverImage), "Kurs kapak görseli zorunludur. Lütfen yeni bir kapak görseli yükleyin veya mevcut kapak görselini kaldırmayın.");
+        }
+
+        if (!ModelState.IsValid)
+        {
+            model.Categories = categories;
+            model.ExistingCoverImagePath = existingCourse.CoverImagePath;
+            return View(model);
+        }
+
+        string? coverImagePath = existingCourse.CoverImagePath;
+        string? oldCoverImagePath = existingCourse.CoverImagePath;
+
+        if (model.CoverImage is not null)
+        {
+            coverImagePath = await SaveCoverImageAsync(model.CoverImage);
+        }
+        else if (model.RemoveExistingCoverImage)
+        {
+            coverImagePath = null;
+        }
+
+        Course updatedCourse = new Course
+        {
+            Id = existingCourse.Id,
             Title = model.Title.Trim(),
-            Description = model.Description.Trim()
+            Description = model.Description.Trim(),
+            CategoryId = model.CategoryId,
+            Level = model.Level!.Value,
+            CoverImagePath = coverImagePath,
+            Requirements = requirements
         };
 
-        await _courseService.UpdateCourseAsync(course);
+        bool updated = await _courseService.UpdateCourseAsync(updatedCourse);
 
-        return RedirectToAction(nameof(Index));
+        if (!updated)
+        {
+            if (model.CoverImage is not null)
+            {
+                DeleteCoverImage(coverImagePath);
+            }
+
+            return NotFound();
+        }
+
+        if (oldCoverImagePath != coverImagePath)
+        {
+            DeleteCoverImage(oldCoverImagePath);
+        }
+
+        return RedirectToAction(nameof(Details), new { id = model.Id });
     }
 
     [HttpGet]
@@ -196,9 +276,50 @@ public class CoursesController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(CourseDetailsViewModel model)
     {
-        await _courseService.DeleteCourseAsync(model.Id);
+        Course? course = await _courseService.GetCourseForDeleteAsync(model.Id);
+
+        if (course is null) return NotFound();
+
+        string? coverImagePath = course.CoverImagePath;
+
+        List<string> materialPaths = course.Sections
+            .SelectMany(s => s.Lessons)
+            .Where(l => !string.IsNullOrWhiteSpace(l.MaterialPath))
+            .Select(l => l.MaterialPath!)
+            .ToList();
+
+        bool deleted = await _courseService.DeleteCourseAsync(model.Id);
+
+        if (!deleted) return NotFound();
+
+        DeleteCoverImage(coverImagePath);
+
+        foreach (string materialPath in materialPaths)
+        {
+            DeleteMaterialFileFromCourse(materialPath);
+        }
 
         return RedirectToAction(nameof(Index));
+    }
+
+    private void DeleteMaterialFileFromCourse(string? materialPath)
+    {
+        if (string.IsNullOrWhiteSpace(materialPath)) return;
+
+        string materialsDirectory = Path.Combine(_environment.WebRootPath, "uploads", "course-materials");
+
+        string fileName = Path.GetFileName(materialPath);
+
+        if (string.IsNullOrWhiteSpace(fileName)) return;
+
+        string physicalPath = Path.Combine(materialsDirectory, fileName);
+
+        if (!physicalPath.StartsWith(materialsDirectory, StringComparison.OrdinalIgnoreCase)) return;
+
+        if (System.IO.File.Exists(physicalPath))
+        {
+            System.IO.File.Delete(physicalPath);
+        }
     }
 
     private void ValidateCoverImage(IFormFile? coverImage)
@@ -245,7 +366,7 @@ public class CoursesController : Controller
     
         await coverImage.CopyToAsync(stream);
 
-        return Path.Combine("uploads", "course-covers", generatedFileName).Replace("\\", "/");
+        return $"/uploads/course-covers/{generatedFileName}";
     }
 
     private static List<CourseRequirement> CreateRequirements(string requirementsText)
@@ -270,5 +391,49 @@ public class CoursesController : Controller
         }
 
         return requirements;
+    }
+
+    private void ValidateOptionalCoverImage(IFormFile? coverImage)
+    {
+        if (coverImage is null) return;
+
+        if (coverImage.Length == 0)
+        {
+            ModelState.AddModelError(nameof(EditCourseViewModel.CoverImage), "Kurs kapak görseli boş olamaz.");
+            return;
+        }
+
+        if (coverImage.Length > MaximumCoverImageSize)
+        {
+            ModelState.AddModelError(nameof(EditCourseViewModel.CoverImage), "Kurs kapak görseli 5 MB'den büyük olamaz.");
+            return;
+        }
+
+        string extension = Path.GetExtension(coverImage.FileName).ToLowerInvariant();
+
+        if (string.IsNullOrWhiteSpace(extension) || !AllowedCoverImageExtensions.Contains(extension))
+        {
+            ModelState.AddModelError(nameof(EditCourseViewModel.CoverImage), "Kurs kapak görseli yalnızca .jpg, .jpeg, .png veya .webp formatında olmalıdır.");
+        }
+    }
+
+    private void DeleteCoverImage(string? coverImagePath)
+    {
+        if (string.IsNullOrWhiteSpace(coverImagePath)) return;
+
+        string coversDirectory = Path.Combine(_environment.WebRootPath, "uploads", "course-covers");
+
+        string fileName = Path.GetFileName(coverImagePath);
+
+        if (string.IsNullOrWhiteSpace(fileName)) return;
+
+        string physicalFilePath = Path.Combine(coversDirectory, fileName);
+
+        if (!physicalFilePath.StartsWith(coversDirectory, StringComparison.OrdinalIgnoreCase)) return;
+
+        if (System.IO.File.Exists(physicalFilePath))
+        {
+            System.IO.File.Delete(physicalFilePath);
+        }
     }
 }

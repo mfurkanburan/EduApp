@@ -31,26 +31,40 @@ public class CourseService : ICourseService
             .FirstOrDefaultAsync(c => c.Id == id);
     }
 
-    public async Task UpdateCourseAsync(Course course)
+    public async Task<bool> UpdateCourseAsync(Course course)
     {
-        Course? courseToUpdate = await _context.Courses.FindAsync(course.Id);
+        Course? existingCourse = await _context.Courses
+            .Include(c => c.Requirements)
+            .FirstOrDefaultAsync(c => c.Id == course.Id);
 
-        if (courseToUpdate is null) return;
+        if (existingCourse is null) return false;
 
-        courseToUpdate.Title = course.Title;
-        courseToUpdate.Description = course.Description;
+        existingCourse.Title = course.Title;
+        existingCourse.Description = course.Description;
+        existingCourse.CategoryId = course.CategoryId;
+        existingCourse.Level = course.Level;
+        existingCourse.CoverImagePath = course.CoverImagePath;
+
+        _context.CourseRequirements.RemoveRange(existingCourse.Requirements);
+
+        existingCourse.Requirements = course.Requirements;
 
         await _context.SaveChangesAsync();
+        
+        return true;
     }
 
-    public async Task DeleteCourseAsync(int id)
+    public async Task<bool> DeleteCourseAsync(int id)
     {
-        Course? course = await _context.Courses.FindAsync(id);
+        Course? course = await _context.Courses.FirstOrDefaultAsync(c => c.Id == id);
         
-        if (course is null) return;
+        if (course is null) return false;
 
         _context.Courses.Remove(course);
+
         await _context.SaveChangesAsync();
+
+        return true;
     }
 
     public async Task<PagedCoursesResult> GetAllCoursesAsync(string? search, int page, int pageSize)
@@ -76,5 +90,14 @@ public class CourseService : ICourseService
             TotalPages = totalPages,
             Courses = courses
         };
+    }
+
+    public async Task<Course?> GetCourseForDeleteAsync(int id)
+    {
+        return await _context.Courses
+            .Include(c => c.Sections)
+            .ThenInclude(s => s.Lessons)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(c => c.Id == id);
     }
 }

@@ -11,7 +11,9 @@ public interface ICourseService
 
     Task CreateCourseAsync(Course course);
 
-    Task UpdateCourseAsync(Course course);
+    Task<bool> UpdateCourseAsync(Course course);
 
-    Task DeleteCourseAsync(int id);
+    Task<bool> DeleteCourseAsync(int id);
+
+    Task<Course?> GetCourseForDeleteAsync(int id);
 }
