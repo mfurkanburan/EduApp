@@ -65,6 +65,16 @@ public class ApplicationDbContext : DbContext
                 .IsRequired()
                 .HasMaxLength(500);
         });
+
+        modelBuilder.Entity<Category>(entity =>
+        {
+            entity.Property(category => category.Name)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            entity.HasIndex(category => category.Name)
+                .IsUnique();
+        });
     }
 
     public DbSet<Course> Courses => Set<Course>();

@@ -40,11 +40,11 @@ public class CoursesController : Controller
     }
 
     [HttpGet]
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
         CreateCourseViewModel model = new CreateCourseViewModel
         {
-            Categories = _categoryService.GetAllCategories()
+            Categories = await _categoryService.GetAllCategoriesAsync()
         };
 
         return View(model);
@@ -63,7 +63,7 @@ public class CoursesController : Controller
             ModelState.AddModelError(nameof(CreateCourseViewModel.RequirementsText), "En az bir gereksinim eklemelisiniz.");
         }
 
-        List<Category> categories = _categoryService.GetAllCategories();
+        List<Category> categories = await _categoryService.GetAllCategoriesAsync();
 
         bool categoryExists = categories.Any(c => c.Id == model.CategoryId);
 
@@ -161,7 +161,7 @@ public class CoursesController : Controller
                     course.Requirements
                         .OrderBy(r => r.Order)
                         .Select(r => r.Text)),
-            Categories = _categoryService.GetAllCategories()
+            Categories = await _categoryService.GetAllCategoriesAsync()
         };
 
         return View(model);
@@ -184,7 +184,7 @@ public class CoursesController : Controller
             ModelState.AddModelError(nameof(EditCourseViewModel.RequirementsText), "En az bir gereksinim eklemelisiniz.");
         }
 
-        List<Category> categories = _categoryService.GetAllCategories();
+        List<Category> categories = await _categoryService.GetAllCategoriesAsync();
 
         bool categoryExists = categories.Any(c => c.Id == model.CategoryId);
 

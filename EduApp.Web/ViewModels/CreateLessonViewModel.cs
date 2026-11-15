@@ -5,8 +5,11 @@ namespace EduApp.Web.ViewModels;
 public class CreateLessonViewModel
 {
     public int CourseSectionId { get; set; }
+
     public int CourseId { get; set; }
+
     public string CourseTitle { get; set; } = "";
+
     public string SectionTitle { get; set; } = "";
 
     [Required(ErrorMessage = "Ders başlığı boş bırakılamaz.")]

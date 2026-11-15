@@ -1,0 +1,24 @@
+@model EditCategoryViewModel
+@{
+    ViewData["Title"] = "Kategori Düzenle";
+}
+
+<h1>Kategori Düzenle</h1>
+
+<form asp-action="Edit" method="post">
+    <input asp-for="Id" type="hidden" />
+
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Düzenle</button>
+</form>
+
+<a asp-action="Index" class="btn btn-secondary mt-3">Geri Dön</a>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

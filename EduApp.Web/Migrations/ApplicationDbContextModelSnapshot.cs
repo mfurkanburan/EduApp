@@ -25,9 +25,13 @@ namespace EduApp.Web.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Categories");
                 });
@@ -151,7 +155,7 @@ namespace EduApp.Web.Migrations
             modelBuilder.Entity("EduApp.Web.Models.Course", b =>
                 {
                     b.HasOne("EduApp.Web.Models.Category", "Category")
-                        .WithMany()
+                        .WithMany("Courses")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -190,6 +194,11 @@ namespace EduApp.Web.Migrations
                         .IsRequired();
 
                     b.Navigation("CourseSection");
+                });
+
+            modelBuilder.Entity("EduApp.Web.Models.Category", b =>
+                {
+                    b.Navigation("Courses");
                 });
 
             modelBuilder.Entity("EduApp.Web.Models.Course", b =>
