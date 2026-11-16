@@ -10,5 +10,5 @@ public class CourseListViewModel
 
     public int TotalPages { get; set; }
 
-    public List<Course> Courses { get; set; } = new List<Course>();
+    public List<CourseListItemViewModel> Courses { get; set; } = new List<CourseListItemViewModel>();
 }

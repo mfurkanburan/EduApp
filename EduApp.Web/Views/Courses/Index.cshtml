@@ -4,36 +4,107 @@
     ViewData["Title"] = "Kurslar";
 }
 
-<h1>Kurslar</h1>
-<p>Kurslar aşağıda listelenmektedir.</p>
+<section>
+    <form method="get" asp-action="Index">
+        <div class="flex items-center space-x-4">
+            <input type="text" name="search" class="h-12 w-full flex items-center px-4 bg-white rounded-2xl border-2 border-gray-200 text-sm text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="Kurs adına göre arama yapın..." value="@Model.Search" />
 
-<form method="get" asp-action="Index">
-    <div class="input-group mb-3">
-        <input type="text" name="search" class="form-control" placeholder="Kurs Ara..." value="@Model.Search" />
-        <button class="btn btn-outline-secondary" type="submit">Ara</button>
-    </div>
-</form>
+            <a asp-controller="Courses" asp-action="Create" class="h-12 flex items-center justify-center px-4 bg-indigo-500 text-white rounded-2xl border-2 border-indigo-500 text-sm font-semibold hover:bg-indigo-600 hover:border-indigo-600 focus:outline-none focus:border-transparent shrink-0">Yeni Kurs Ekle</a>
+        </div>
+    </form>
 
-@foreach (var course in Model.Courses)
-{
-    <div>
-        <h2>@course.Title</h2>
-        <p>@course.Description</p>
-        <p>Kategori: @course.Category?.Name</p>
-        <a asp-action="Edit" asp-route-id="@course.Id" class="btn btn-secondary">Düzenle</a>
-        <a asp-action="Delete" asp-route-id="@course.Id" class="btn btn-danger">Sil</a>
-        <a asp-action="Details" asp-route-id="@course.Id" class="btn btn-primary">Detay</a>
+    @if (!string.IsNullOrEmpty(Model.Search))
+    {
+        <a asp-controller="Courses" asp-action="Index" class="flex items-center justify-center text-xs p-2 bg-indigo-500/20 text-indigo-500 hover:bg-indigo-500/15 rounded-xl font-medium uppercase mt-4">Aramayı Temizle</a>
+    }
+</section>
+
+<section class="space-y-4">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold">Kurs Kataloğu</h1>
+            <p class="text-sm font-light text-gray-500">Kendinize uygun kursları keşfedin.</p>
+        </div>
+        <div class="flex items-center space-x-0.5">
+            <a href="#" class="px-3 py-1.5 rounded-full border-2 border-indigo-500 text-indigo-500 text-xs font-semibold">Tümü</a>
+            <a href="#" class="px-3 py-1.5 rounded-full bg-white/10 text-gray-500 text-xs font-semibold">Başlangıç</a>
+            <a href="#" class="px-3 py-1.5 rounded-full bg-white/10 text-gray-500 text-xs font-semibold">Orta</a>
+            <a href="#" class="px-3 py-1.5 rounded-full bg-white/10 text-gray-500 text-xs font-semibold">İleri</a>
+        </div>
     </div>
-}
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        @if (Model.Courses.Count == 0)
+        {
+            <div class="flex flex-col items-center justify-center col-span-3 space-y-4 text-gray-500 p-8">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-8">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                </svg>
+                <p class="text-gray-500 text-sm">Kurs bulunamadı.</p>
+            </div>
+        }
+        else
+        {
+            @foreach (var course in Model.Courses)
+            {
+                <article class="bg-white border-2 border-gray-200 rounded-2xl p-4 flex flex-col group">
+                    <div class="relative overflow-hidden rounded-xl h-42 mb-3 bg-gray-100">
+                        <img src="@(string.IsNullOrWhiteSpace(course.CoverImagePath)
+                                    ? "https://placehold.co/600x400/E1E7FF/4F46E5?text=Kurs+Görseli"
+                                    : course.CoverImagePath)"
+                            alt="@course.Name"
+                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                        <div class="absolute top-2.5 left-2.5 flex space-x-1.5">
+                            @switch (course.Level)
+                            {
+                                case CourseLevel.Beginner:
+                                    <span class="bg-gray-600/90 backdrop-blur-xs text-white text-[11px] font-bold px-2.5 py-0.5 rounded-lg shadow-xs">@CourseLevel.Beginner.ToDisplayName()</span>
+                                    break;
+                                case CourseLevel.Intermediate:
+                                    <span class="bg-amber-600/90 backdrop-blur-xs text-white text-[11px] font-bold px-2.5 py-0.5 rounded-lg shadow-xs">@CourseLevel.Intermediate.ToDisplayName()</span>
+                                    break;
+                                case CourseLevel.Advanced:
+                                    <span class="bg-rose-600/90 backdrop-blur-xs text-white text-[11px] font-bold px-2.5 py-0.5 rounded-lg shadow-xs">@CourseLevel.Advanced.ToDisplayName()</span>
+                                    break;
+                            }
+                        </div>
+                        <div class="absolute bottom-2.5 right-2.5 bg-white/90 backdrop-blur-xs text-gray-800 text-[11px] font-semibold px-2 py-0.5 rounded-lg shadow-xs">
+                            @course.CreatedAt.ToLocalTime().ToString("dd MMM yyyy")
+                        </div>
+                    </div>
+
+                    <div class="flex-1 flex flex-col justify-between">
+                        <div>
+                            <div class="text-lg font-bold leading-tight group-hover:text-indigo-500">@course.Name</div>
+                            <p class="text-xs font-light text-gray-500 mt-1.5 line-clamp-3">
+                                @(course.Description.Length > 100 ? course.Description.Substring(0, 100) + "..." : course.Description)
+                            </p>
+                        </div>
+                        <div class="pt-4 mt-4 border-t border-gray-100 flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <img src="https://avatars.githubusercontent.com/u/101507088" class="w-6 h-6 rounded-full">
+                                <span class="text-xs font-medium">Yok</span>
+                            </div>
+                            <a asp-controller="Courses" asp-action="Details" asp-route-id="@course.Id" class="flex items-center space-x-1 px-3.5 py-2 rounded-xl bg-indigo-50 text-indigo-500 text-xs font-bold hover:bg-indigo-500 hover:text-white">
+                                <span>İncele</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-3 stroke-2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+            }
+        }
+    </div>
+</section>
 
 @if (Model.TotalPages > 1)
 {
-    <div>
+    <section class="flex items-center justify-center space-x-1">
         @for (int i = 1; i <= Model.TotalPages; i++)
         {
-            <a asp-action="Index" asp-route-page="@i" asp-route-search="@Model.Search" class="btn btn-outline-primary @(i == Model.CurrentPage ? "active" : "")">@i</a>
+            <a asp-controller="Courses" asp-action="Index" asp-route-page="@i" asp-route-search="@Model.Search" class="bg-white border-2 border-b-4 border-gray-200 text-sm text-gray-500 font-bold h-10 w-10 flex items-center justify-center rounded-xl @(i == Model.CurrentPage ? "border-indigo-500 text-indigo-500" : "")">@i</a>
         }
-    </div>
+    </section>
 }
-
-<a asp-action="Create" class="btn btn-primary mt-3">Yeni Kurs Ekle</a>

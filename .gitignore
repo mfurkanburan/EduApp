@@ -487,3 +487,4 @@ $RECYCLE.BIN/
 *.db-wal
 
 EduApp.Web/wwwroot/uploads/
+EduApp.Web/wwwroot/css/tailwind.css

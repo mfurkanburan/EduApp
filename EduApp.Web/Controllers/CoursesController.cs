@@ -24,16 +24,35 @@ public class CoursesController : Controller
 
     public async Task<IActionResult> Index(string? search, int page = 1)
     {
-        const int pageSize = 10;
+        const int pageSize = 9;
+
+        if (page < 1) page = 1;
 
         PagedCoursesResult result = await _courseService.GetAllCoursesAsync(search, page, pageSize);
+
+        if (result.TotalPages > 0 && page > result.TotalPages)
+        {
+            page = result.TotalPages;
+
+            result = await _courseService.GetAllCoursesAsync(search, page, pageSize);
+        }
 
         CourseListViewModel model = new CourseListViewModel
         {
             Search = search,
             CurrentPage = page,
             TotalPages = result.TotalPages,
-            Courses = result.Courses
+            
+            Courses = result.Courses.Select(c => new CourseListItemViewModel
+            {
+                Id = c.Id,
+                Name = c.Title,
+                Description = c.Description,
+                CategoryName = c.Category?.Name ?? "Kategori bulunamadı",
+                Level = c.Level,
+                CoverImagePath = c.CoverImagePath,
+                CreatedAt = c.CreatedAt
+            }).ToList()
         };
 
         return View(model);

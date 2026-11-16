@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+@source "../../Views/**/*.cshtml";
+@source "../../Areas/**/*.cshtml";
+@source "../../Controllers/**/*.cs";
+
+@import "../../node_modules/preline/variants.css";
+@source "../../node_modules/preline/dist/*.js";
+
+@plugin "@tailwindcss/forms";
+
+@import "../../node_modules/preline/theme.css";
+
+/* Font Family */
+@layer base {
+    html {
+        font-family: 'Nunito', sans-serif;
+    }
+}
