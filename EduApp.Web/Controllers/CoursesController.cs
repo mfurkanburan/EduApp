@@ -325,7 +325,7 @@ public class CoursesController : Controller
     {
         if (string.IsNullOrWhiteSpace(materialPath)) return;
 
-        string materialsDirectory = Path.Combine(_environment.WebRootPath, "uploads", "course-materials");
+        string materialsDirectory = Path.Combine(_environment.WebRootPath, "uploads", "materials");
 
         string fileName = Path.GetFileName(materialPath);
 
