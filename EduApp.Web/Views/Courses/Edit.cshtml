@@ -88,6 +88,7 @@
                         <div class="space-y-1.5">
                             <label asp-for="Level" class="block text-xs font-bold text-gray-700 uppercase tracking-wide">Seviye:</label>
                             <select asp-for="Level" class="h-10 flex items-center w-full bg-gray-50 border-2 border-gray-200 rounded-xl text-sm font-medium focus:bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                                <option value="">Seviye Seçiniz</option>
                                 <option value="1">Başlangıç</option>
                                 <option value="2">Orta</option>
                                 <option value="3">İleri</option>
@@ -164,8 +165,8 @@
                             </svg>
                         </div>
                         <div>
-                            <h2 class="text-base font-bold text-gray-900">Kapak Görseli</h2>
-                            <p class="text-xs text-gray-500">Kurs listesinde görünecek kapak görseli.</p>
+                            <h2 class="text-base font-bold text-gray-900">Kapak Resmi</h2>
+                            <p class="text-xs text-gray-500">Kurs listesinde görünecek kapak resmi.</p>
                         </div>
                     </div>
                     
@@ -196,7 +197,7 @@
                         <span asp-validation-for="CoverImage" class="text-xs text-red-500 block"></span>
 
                         <p class="text-xs text-gray-500">
-                            Yeni görsel yüklediğinizde mevcut kapak resmi kaldırılacaktır. Yüklenen görselin boyutu 5 MB'yi geçmemelidir.
+                            Yeni görsel yüklediğinizde mevcut kapak resmi kaldırılacaktır. Yüklenen resmin boyutu 5 MB'yi geçmemelidir.
                         </p>
                     </div>
                 </div>
