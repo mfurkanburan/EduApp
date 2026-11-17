@@ -8,5 +8,7 @@ public class SectionViewModel
     
     public int Order { get; set; }
 
-    public List<LessonViewModel> Lessons { get; set; } = new List<LessonViewModel>();
+    public bool ContainsSelectedLesson { get; set; }
+
+    public List<LessonListItemViewModel> Lessons { get; set; } = new List<LessonListItemViewModel>();
 }

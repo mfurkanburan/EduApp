@@ -29,4 +29,6 @@ public class CourseDetailsViewModel
     public List<CourseRequirementViewModel> Requirements { get; set; } = new List<CourseRequirementViewModel>();
 
     public List<SectionViewModel> Sections { get; set; } = new List<SectionViewModel>();
+
+    public SelectedLessonViewModel? SelectedLesson { get; set; }
 }

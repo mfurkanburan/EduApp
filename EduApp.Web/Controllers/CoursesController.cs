@@ -116,11 +116,60 @@ public class CoursesController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Details(int id)
+    public async Task<IActionResult> Details(int id, int? lessonId)
     {
         Course? course = await _courseService.GetCourseByIdAsync(id);
 
         if (course is null) return NotFound();
+
+        List<Lesson> allLessons = course.Sections
+            .OrderBy(s => s.Order)
+            .SelectMany(s => s.Lessons.OrderBy(l => l.Order))
+            .ToList();
+
+        Lesson? selectedLesson = null;
+
+        if (lessonId.HasValue)
+        {
+            selectedLesson = allLessons.FirstOrDefault(l => l.Id == lessonId.Value);
+
+            if (selectedLesson is null) return NotFound();
+        }
+
+        selectedLesson ??= allLessons.FirstOrDefault();
+
+        CourseSection? selectedSection = selectedLesson is null ? null : course.Sections.FirstOrDefault(s => s.Id == selectedLesson.CourseSectionId);
+
+        List<SectionViewModel> sectionModels = course.Sections
+            .OrderBy(s => s.Order)
+            .Select(s => new SectionViewModel
+            {
+                Id = s.Id,
+                Title = s.Title,
+                Order = s.Order,
+
+                ContainsSelectedLesson = selectedSection is not null && s.Id == selectedSection.Id,
+
+                Lessons = s.Lessons
+                    .OrderBy(l => l.Order)
+                    .Select(l => new LessonListItemViewModel
+                    {
+                        Id = l.Id,
+                        Title = l.Title,
+                        Order = l.Order,
+                        IsSelected = selectedLesson is not null && l.Id == selectedLesson.Id
+                    }).ToList()
+            }).ToList();
+
+        SelectedLessonViewModel? selectedLessonModel = selectedLesson is null ? null : new SelectedLessonViewModel
+        {
+            Id = selectedLesson.Id,
+            Title = selectedLesson.Title,
+            Content = selectedLesson.Content,
+            MaterialFilePath = selectedLesson.MaterialPath,
+            Order = selectedLesson.Order,
+            SectionTitle = selectedSection?.Title ?? "Bölüm bulunamadı"
+        };
 
         CourseDetailsViewModel model = new CourseDetailsViewModel
         {
@@ -129,22 +178,6 @@ public class CoursesController : Controller
             Description = course.Description,
             CreatedAt = course.CreatedAt,
             CategoryName = course.Category?.Name ?? "Kategori bulunamadı",
-            Sections = course.Sections.Select(s => new SectionViewModel
-            {
-                Id = s.Id,
-                Title = s.Title,
-                Order = s.Order,
-                Lessons = s.Lessons
-                    .OrderBy(l => l.Order)
-                    .Select(l => new LessonViewModel
-                    {
-                        Id = l.Id,
-                        Title = l.Title,
-                        Content = l.Content,
-                        MaterialFilePath = l.MaterialPath,
-                        Order = l.Order
-                    }).ToList()
-            }).ToList(),
             Level = course.Level,
             CoverImagePath = course.CoverImagePath,
             Requirements = course.Requirements
@@ -153,7 +186,9 @@ public class CoursesController : Controller
                 {
                     Text = r.Text,
                     Order = r.Order
-                }).ToList()
+                }).ToList(),
+            Sections = sectionModels,
+            SelectedLesson = selectedLessonModel
         };
 
         return View(model);
