@@ -1,9 +1,11 @@
 using EduApp.Web.Models;
+using EduApp.Web.Models.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace EduApp.Web.Data;
 
-public class ApplicationDbContext : DbContext
+public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
@@ -74,6 +76,22 @@ public class ApplicationDbContext : DbContext
 
             entity.HasIndex(category => category.Name)
                 .IsUnique();
+        });
+
+        modelBuilder.Entity<ApplicationUser>(entity =>
+        {
+            entity.Property(user => user.FirstName)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            entity.Property(user => user.LastName)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            entity.Property(user => user.ProfileImagePath)
+                .HasMaxLength(500);
+
+            entity.Ignore(user => user.FullName);  
         });
     }
 
