@@ -53,13 +53,13 @@
                     <div class="space-y-1.5">
                         <label asp-for="Title" class="block text-xs font-bold text-gray-700 uppercase tracking-wide">Başlık:</label>
                         <input asp-for="Title" class="h-10 flex items-center w-full bg-gray-50 border-2 border-gray-200 rounded-xl text-sm font-medium focus:bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" />
-                        <span asp-validation-for="Title" class="text-xs text-red-500"></span>
+                        <span asp-validation-for="Title" class="text-xs text-rose-500"></span>
                     </div>
 
                     <div class="space-y-1.5">
                         <label asp-for="Description" class="block text-xs font-bold text-gray-700 uppercase tracking-wide">Açıklama:</label>
                         <textarea asp-for="Description" class="h-32 flex items-center w-full bg-gray-50 border-2 border-gray-200 rounded-xl text-sm font-medium focus:bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"></textarea>
-                        <span asp-validation-for="Description" class="text-xs text-red-500"></span>
+                        <span asp-validation-for="Description" class="text-xs text-rose-500"></span>
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
@@ -73,7 +73,7 @@
                                     <option value="@category.Id">@category.Name</option>
                                 }
                             </select>
-                            <span asp-validation-for="CategoryId" class="text-xs text-red-500"></span>
+                            <span asp-validation-for="CategoryId" class="text-xs text-rose-500"></span>
                         </div>
                         <div class="space-y-1.5">
                             <label asp-for="Level" class="block text-xs font-bold text-gray-700 uppercase tracking-wide">Seviye:</label>
@@ -83,7 +83,7 @@
                                 <option value="2">Orta</option>
                                 <option value="3">İleri</option>
                             </select>
-                            <span asp-validation-for="Level" class="text-xs text-red-500"></span>
+                            <span asp-validation-for="Level" class="text-xs text-rose-500"></span>
                         </div>
                     </div>
                 </div>
@@ -119,7 +119,7 @@
                     <div class="space-y-1.5">
                         <label asp-for="RequirementsText" class="block text-xs font-bold text-gray-700 uppercase tracking-wide">Gereksinimler:</label>
                         <textarea asp-for="RequirementsText" class="h-32 flex items-center w-full bg-gray-50 border-2 border-gray-200 rounded-xl text-sm font-medium focus:bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"></textarea>
-                        <span asp-validation-for="RequirementsText" class="text-xs text-red-500"></span>
+                        <span asp-validation-for="RequirementsText" class="text-xs text-rose-500"></span>
 
                         <div class="mt-4 flex items-center space-x-2 bg-indigo-50 border border-indigo-200 text-indigo-500 text-xs font-medium rounded-xl px-3.5 py-2.5">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4">
@@ -170,7 +170,7 @@
                                 file:cursor-pointer
                                 file:me-4
                                 file:py-3 file:px-4">
-                        <span asp-validation-for="CoverImage" class="text-xs text-red-500 block"></span>
+                        <span asp-validation-for="CoverImage" class="text-xs text-rose-500 block"></span>
 
                         <p class="text-xs text-gray-500">
                             JPG, JPEG, PNG veya WEBP formatında bir resim yükleyebilirsiniz. Maksimum dosya boyutu 5 MB olmalıdır.
