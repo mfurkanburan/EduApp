@@ -1,5 +1,4 @@
-﻿@using EduApp.Web.Constants
-@{
+﻿@{
     var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
 	var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
 }
@@ -47,13 +46,16 @@
 				</svg>
 				<span>Kurslar</span>
 			</a>
-			<a asp-controller="Categories" asp-action="Index" class="flex items-center space-x-2 @(currentController == "Categories" ? "bg-indigo-100 text-indigo-500 rounded-full" : "text-gray-500") px-4 py-3 font-bold text-xs">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 stroke-2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6Z" />
-                </svg>
-				<span>Kategoriler</span>
-			</a>
+			@if (User.IsInRole(ApplicationRoles.Admin))
+			{
+				<a asp-controller="Categories" asp-action="Index" class="flex items-center space-x-2 @(currentController == "Categories" ? "bg-indigo-100 text-indigo-500 rounded-full" : "text-gray-500") px-4 py-3 font-bold text-xs">
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 stroke-2">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" />
+						<path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6Z" />
+					</svg>
+					<span>Kategoriler</span>
+				</a>
+			}
 		</nav>
 
 		<!-- Authentication -->

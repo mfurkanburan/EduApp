@@ -1,11 +1,14 @@
+using EduApp.Web.Constants;
 using EduApp.Web.Enums;
 using EduApp.Web.Models;
 using EduApp.Web.Services;
 using EduApp.Web.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EduApp.Web.Controllers;
 
+[Authorize(Roles = ApplicationRoles.Admin)]
 public class CategoriesController : Controller
 {
     private readonly ICategoryService _categoryService;

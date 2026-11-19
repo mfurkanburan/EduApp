@@ -9,8 +9,11 @@
         <div class="flex items-center space-x-4">
             <input type="text" name="search" class="h-12 w-full flex items-center px-4 bg-white rounded-2xl border-2 border-gray-200 text-sm text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="Kurs adına göre arama yapın..." value="@Model.Search" />
 
-            <a asp-controller="Courses" asp-action="Create" class="h-12 px-4 flex items-center justify-center bg-indigo-500 border-2 border-b-4 text-sm active:border-b-2 border-indigo-600 font-bold text-white rounded-xl shrink-0">Yeni Kurs Ekle</a>
-        </div>
+            @if (User.IsInRole(ApplicationRoles.Instructor) || User.IsInRole(ApplicationRoles.Admin))
+            {
+                <a asp-controller="Courses" asp-action="Create" class="h-12 px-4 flex items-center justify-center bg-indigo-500 border-2 border-b-4 text-sm active:border-b-2 border-indigo-600 font-bold text-white rounded-xl shrink-0">Yeni Kurs Ekle</a>
+            }
+            </div>
     </form>
 
     @if (!string.IsNullOrEmpty(Model.Search))

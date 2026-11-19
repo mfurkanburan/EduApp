@@ -1,6 +1,8 @@
+using EduApp.Web.Constants;
 using EduApp.Web.Models;
 using EduApp.Web.Services;
 using EduApp.Web.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EduApp.Web.Controllers;
@@ -22,6 +24,8 @@ public class CoursesController : Controller
         _environment = environment;
     }
 
+    [AllowAnonymous]
+    [HttpGet]
     public async Task<IActionResult> Index(string? search, int page = 1)
     {
         const int pageSize = 9;
@@ -58,6 +62,7 @@ public class CoursesController : Controller
         return View(model);
     }
 
+    [Authorize(Roles = ApplicationRoles.InstructorOrAdmin)]
     [HttpGet]
     public async Task<IActionResult> Create()
     {
@@ -69,6 +74,7 @@ public class CoursesController : Controller
         return View(model);
     }
 
+    [Authorize(Roles = ApplicationRoles.InstructorOrAdmin)]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(CreateCourseViewModel model)
@@ -115,6 +121,7 @@ public class CoursesController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    [AllowAnonymous]
     [HttpGet]
     public async Task<IActionResult> Details(int id, int? lessonId)
     {
@@ -194,6 +201,7 @@ public class CoursesController : Controller
         return View(model);
     }
 
+    [Authorize(Roles = ApplicationRoles.Admin)]
     [HttpGet]
     public async Task<IActionResult> Edit(int id)
     {
@@ -221,6 +229,7 @@ public class CoursesController : Controller
         return View(model);
     }
 
+    [Authorize(Roles = ApplicationRoles.Admin)]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(EditCourseViewModel model)
@@ -309,6 +318,7 @@ public class CoursesController : Controller
         return RedirectToAction(nameof(Details), new { id = model.Id });
     }
 
+    [Authorize(Roles = ApplicationRoles.Admin)]
     [HttpGet]
     public async Task<IActionResult> Delete(int id)
     {
@@ -326,6 +336,7 @@ public class CoursesController : Controller
         return View(model);
     }
 
+    [Authorize(Roles = ApplicationRoles.Admin)]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(CourseDetailsViewModel model)
