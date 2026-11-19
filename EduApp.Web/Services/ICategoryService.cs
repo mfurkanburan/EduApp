@@ -2,6 +2,8 @@ using EduApp.Web.Enums;
 using EduApp.Web.Models;
 using EduApp.Web.ViewModels;
 
+namespace EduApp.Web.Services;
+
 public interface ICategoryService
 {
     Task<List<Category>> GetAllCategoriesAsync();
