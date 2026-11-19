@@ -1,0 +1,156 @@
+@model RegisterViewModel
+
+@{
+    ViewData["Title"] = "Kayıt Ol";
+}
+
+<section class="relative overflow-hidden bg-white border-2 border-gray-200 p-6 rounded-2xl max-w-2xl mx-auto">
+    <div class="pointer-events-none absolute inset-x-0 top-0 h-44 z-0 opacity-60">
+        <svg class="h-full w-full stroke-indigo-300/30 text-indigo-300/25" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+            <defs>
+                <pattern id="edit-grid-pattern" width="28" height="28" patternUnits="userSpaceOnUse">
+                    <path d="M 28 0 L 0 0 0 28" fill="none" stroke="currentColor" stroke-width="0.75"></path>
+                    <circle cx="14" cy="14" r="1.25" fill="currentColor"></circle>
+                </pattern>
+            </defs>
+            <rect width="100%" height="100%" stroke-width="0" fill="url(#edit-grid-pattern)"></rect>
+        </svg>
+        <div class="absolute inset-x-0 bottom-0 h-16 bg-linear-to-t from-white to-transparent"></div>
+    </div>
+
+    <div class="relative z-10 space-y-6">
+        <div class="flex flex-col items-center text-center space-y-6">
+            <div class="w-14 h-14 rounded-2xl bg-indigo-50 border-2 border-indigo-100 text-indigo-600 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 stroke-2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
+                </svg>
+            </div>
+            <div>
+                <h2 class="text-2xl font-extrabold text-gray-900">
+                    Kayıt Ol
+                </h2>
+                <p class="text-xs font-medium text-gray-500 max-w-sm mt-2">
+                    Eğitim platformumuza katılmak için bir hesap oluşturun. Kayıt işlemi ücretsizdir ve sadece birkaç dakika sürer.
+                </p>
+            </div>
+        </div>
+
+        <form asp-controller="Account" asp-action="Register" method="post" class="space-y-6">
+            <div asp-validation-summary="ModelOnly" class="bg-rose-50 border border-rose-200 text-rose-500 text-xs font-medium rounded-xl px-3.5 py-2.5"></div>
+            
+            <div class="grid grid-cols-2 gap-6">
+                <div class="space-y-1.5">
+                    <label asp-for="FirstName" class="block text-xs font-bold text-gray-700 uppercase tracking-wide">Ad</label>
+                    <input asp-for="FirstName" class="h-10 flex items-center w-full bg-gray-50 border-2 border-gray-200 rounded-xl text-sm font-medium focus:bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" />
+                    <span asp-validation-for="FirstName" class="text-xs text-rose-600"></span>
+                </div>
+
+                <div class="space-y-1.5">
+                    <label asp-for="LastName" class="block text-xs font-bold text-gray-700 uppercase tracking-wide">Soyad</label>
+                    <input asp-for="LastName" class="h-10 flex items-center w-full bg-gray-50 border-2 border-gray-200 rounded-xl text-sm font-medium focus:bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" />
+                    <span asp-validation-for="LastName" class="text-xs text-rose-600"></span>
+                </div>
+            </div>
+
+            <div class="space-y-1.5">
+                <label asp-for="Email" class="block text-xs font-bold text-gray-700 uppercase tracking-wide">E-posta</label>
+                <input asp-for="Email" class="h-10 flex items-center w-full bg-gray-50 border-2 border-gray-200 rounded-xl text-sm font-medium focus:bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" />
+                <span asp-validation-for="Email" class="text-xs text-rose-600"></span>
+            </div>
+
+            <div class="space-y-1.5">
+                <label asp-for="Role" class="block text-xs font-bold text-gray-700 uppercase tracking-wide">Hesap Türü</label>
+                <div class="grid grid-cols-2 gap-6" id="roleCards">
+                    <button type="button" data-role-value="1" class="roleCard flex items-center gap-4 rounded-xl border-2 border-gray-200 p-4 text-left hover:border-indigo-500 cursor-pointer bg-gray-50">
+                        <div class="flex items-center justify-center size-9 shrink-0 rounded-xl bg-white text-indigo-500 border border-gray-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 stroke-2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
+                            </svg>
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-sm font-bold text-gray-900">Öğrenci</p>
+                            <p class="text-xs text-gray-500">Kurslara katıl ve öğren</p>
+                        </div>
+                    </button>
+                    <button type="button" data-role-value="2" class="roleCard flex items-center gap-4 rounded-xl border-2 border-gray-200 p-4 text-left hover:border-indigo-500 cursor-pointer bg-gray-50">
+                        <div class="flex items-center justify-center size-9 shrink-0 rounded-xl bg-white text-indigo-500 border border-gray-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 stroke-2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 20.25h12m-7.5-3v3m3-3v3m-10.125-3h17.25c.621 0 1.125-.504 1.125-1.125V4.875c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125Z" />
+                            </svg>
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-sm font-bold text-gray-900">Eğitmen</p>
+                            <p class="text-xs text-gray-500">Kurs oluştur ve yayınla</p>
+                        </div>
+                    </button>
+                </div>
+
+                <select asp-for="Role" class="sr-only">
+                    <option value="">Hesap Türü Seçin</option>
+                    <option value="1">Öğrenci</option>
+                    <option value="2">Eğitmen</option>
+                </select>
+
+                <span asp-validation-for="Role" class="text-xs text-rose-600"></span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-6">
+                <div class="space-y-1.5">
+                    <label asp-for="Password" class="block text-xs font-bold text-gray-700 uppercase tracking-wide">Şifre</label>
+                    <input asp-for="Password" type="password" class="h-10 flex items-center w-full bg-gray-50 border-2 border-gray-200 rounded-xl text-sm font-medium focus:bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" />
+                    <span asp-validation-for="Password" class="text-xs text-rose-600"></span>
+                </div>
+
+                <div class="space-y-1.5">
+                    <label asp-for="ConfirmPassword" class="block text-xs font-bold text-gray-700 uppercase tracking-wide">Şifreyi Onayla</label>
+                    <input asp-for="ConfirmPassword" type="password" class="h-10 flex items-center w-full bg-gray-50 border-2 border-gray-200 rounded-xl text-sm font-medium focus:bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" />
+                    <span asp-validation-for="ConfirmPassword" class="text-xs text-rose-600"></span>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-2 bg-indigo-50 border border-indigo-200 text-indigo-500 text-xs font-medium rounded-xl px-3.5 py-2.5">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 stroke-2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                </svg>
+                <span>Şifre en az <strong>8 karakter</strong>, bir <strong>büyük harf</strong>, bir <strong>küçük harf</strong> ve bir <strong>rakam</strong> içermelidir.</span>
+            </div>
+
+            <button type="submit" class="mb-0 h-12 w-full flex items-center justify-center bg-indigo-500 border-2 border-b-4 text-sm cursor-pointer active:border-b-2 border-indigo-600 font-bold text-white rounded-xl">
+                Kayıt Ol
+            </button>
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        const roleSelect = document.getElementById('Role');
+        const roleCards = document.querySelectorAll('.roleCard');
+
+        function updateRoleSection(selectedValue) {
+            roleSelect.value = selectedValue;
+            roleCards.forEach(card => {
+                if (card.getAttribute('data-role-value') === selectedValue) {
+                    card.classList.add('border-indigo-500');
+                    card.classList.remove('border-gray-200');
+                } else {
+                    card.classList.remove('border-indigo-500');
+                    card.classList.add('border-gray-200');
+                }
+            });
+        }
+
+        roleCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const selectedValue = card.getAttribute('data-role-value');
+                updateRoleSection(selectedValue);
+            });
+        });
+
+        if (roleSelect.value) {
+            updateRoleSection(roleSelect.value);
+        }
+    </script>
+}

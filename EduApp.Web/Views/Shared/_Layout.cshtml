@@ -1,5 +1,7 @@
-﻿@{
+﻿@using EduApp.Web.Constants
+@{
     var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+	var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
 }
 <!DOCTYPE html>
 <html lang="tr" class="bg-gray-100 text-gray-900">
@@ -32,7 +34,7 @@
 		</div>
 
         <!-- Navigation -->
-        <nav class="flex items-center space-x-1 bg-white border-2 border-gray-200 px-1.5 py-1 rounded-full justify-self-center">
+        <nav class="p-1 flex items-center space-x-1 bg-white border-2 border-gray-200 rounded-full justify-self-center">
 			<a asp-controller="Home" asp-action="Index" class="flex items-center space-x-2 @(currentController == "Home" ? "bg-indigo-100 text-indigo-500 rounded-full" : "text-gray-500") px-4 py-3 font-bold text-xs">
 				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 stroke-2">
 					<path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"></path>
@@ -53,7 +55,62 @@
 				<span>Kategoriler</span>
 			</a>
 		</nav>
-    </div>
+
+		<!-- Authentication -->
+		@if (User.Identity?.IsAuthenticated == true)
+		{
+			<div class="bg-white border-2 border-gray-200 p-1 rounded-full justify-self-end">
+				<div class="flex items-center space-x-2.5">
+					<img src="https://avatars.githubusercontent.com/u/101507088" class="size-10 rounded-full p-0.5 border-2 border-indigo-500">
+					<div class="flex flex-col">
+						<span class="text-sm font-bold">@User.Identity.Name</span>
+						<span class="text-xs font-bold text-indigo-500 uppercase">
+							@if (User.IsInRole(ApplicationRoles.Student))
+							{
+								@:Öğrenci
+							}
+							else if (User.IsInRole(ApplicationRoles.Instructor))
+							{
+								@:Eğitmen
+							}
+							else if (User.IsInRole(ApplicationRoles.Admin))
+							{
+								@:Yönetici
+							}
+							else
+							{
+								@:Bilinmiyor
+							}
+						</span>
+					</div>
+					<form asp-controller="Account" asp-action="Logout" method="post">
+						<button type="submit" class="flex items-center justify-center size-10 rounded-full p-0.5 text-rose-500 bg-rose-100 hover:bg-rose-200 cursor-pointer">
+							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 stroke-2">
+								<path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"></path>
+							</svg>
+						</button>
+					</form>
+				</div>
+			</div>
+		}
+		else
+		{
+			<div class="p-1 flex items-center space-x-1 bg-white border-2 border-gray-200 rounded-full justify-self-end">
+				<a asp-controller="Account" asp-action="Login" class="flex items-center space-x-2 @(currentController == "Account" && currentAction == "Login" ? "bg-indigo-100 text-indigo-500 rounded-full" : "text-gray-500") px-4 py-3 font-bold text-xs">
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 stroke-2">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+					</svg>
+					<span>Giriş Yap</span>
+				</a>
+				<a asp-controller="Account" asp-action="Register" class="flex items-center space-x-2 @(currentController == "Account" && currentAction == "Register" ? "bg-indigo-100 text-indigo-500 rounded-full" : "text-gray-500") px-4 py-3 font-bold text-xs">
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 stroke-2">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z"></path>
+					</svg>
+					<span>Kayıt Ol</span>
+				</a>
+			</div>
+		}
+	</div>
 </header>
 
 <main class="my-6 space-y-6">
