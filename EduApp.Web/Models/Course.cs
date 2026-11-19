@@ -1,4 +1,5 @@
 using EduApp.Web.Enums;
+using EduApp.Web.Models.Identity;
 
 namespace EduApp.Web.Models;
 
@@ -12,6 +13,8 @@ public class Course
     public DateTime CreatedAt { get; set; }
     public int CategoryId { get; set; }
     public Category? Category { get; set; }
+    public string? InstructorId { get; set; }
+    public ApplicationUser? Instructor { get; set; }
     public List<CourseSection> Sections { get; set; } = new List<CourseSection>();
     public List<CourseRequirement> Requirements { get; set; } = new List<CourseRequirement>();
 }

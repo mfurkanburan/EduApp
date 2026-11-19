@@ -57,6 +57,9 @@ namespace EduApp.Web.Migrations
                         .HasMaxLength(5000)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("InstructorId")
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("Level")
                         .HasColumnType("INTEGER");
 
@@ -68,6 +71,8 @@ namespace EduApp.Web.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("InstructorId");
 
                     b.ToTable("Courses");
                 });
@@ -369,7 +374,14 @@ namespace EduApp.Web.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("EduApp.Web.Models.Identity.ApplicationUser", "Instructor")
+                        .WithMany("InstructedCourses")
+                        .HasForeignKey("InstructorId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("Category");
+
+                    b.Navigation("Instructor");
                 });
 
             modelBuilder.Entity("EduApp.Web.Models.CourseRequirement", b =>
@@ -471,6 +483,11 @@ namespace EduApp.Web.Migrations
             modelBuilder.Entity("EduApp.Web.Models.CourseSection", b =>
                 {
                     b.Navigation("Lessons");
+                });
+
+            modelBuilder.Entity("EduApp.Web.Models.Identity.ApplicationUser", b =>
+                {
+                    b.Navigation("InstructedCourses");
                 });
 #pragma warning restore 612, 618
         }

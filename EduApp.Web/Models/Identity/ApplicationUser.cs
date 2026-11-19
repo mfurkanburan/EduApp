@@ -9,4 +9,5 @@ public class ApplicationUser : IdentityUser
     public string? ProfileImagePath { get; set; }
     public DateTime CreatedAt { get; set; }
     public string FullName => $"{FirstName} {LastName}".Trim();
+    public List<Course> InstructedCourses { get; set; } = new List<Course>();
 }

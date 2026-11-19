@@ -11,4 +11,5 @@ public class CourseListItemViewModel
     public CourseLevel Level { get; set; }
     public string? CoverImagePath { get; set; }
     public DateTime CreatedAt { get; set; }
+    public string InstructorName { get; set; } = "";
 }

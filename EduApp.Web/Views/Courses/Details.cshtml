@@ -2,8 +2,6 @@
 
 @{
     ViewData["Title"] = Model.Title;
-
-    bool canManageCourse = User.IsInRole(ApplicationRoles.Admin);
 }
 
 <section class="relative overflow-hidden bg-white border-2 border-gray-200 p-6 rounded-2xl">
@@ -45,7 +43,7 @@
             </div>
 
             <div class="flex items-center space-x-2">
-                @if (canManageCourse)
+                @if (Model.CanManageCourse)
                 {
                     <a asp-controller="Courses" asp-action="Edit" asp-route-id="@Model.Id" class="inline-flex items-center space-x-2 bg-orange-50 border border-orange-200 text-orange-500 text-xs font-bold px-3 py-1 rounded-full hover:bg-orange-100 hover:text-orange-600">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-3.5">
@@ -144,7 +142,7 @@
             <p class="text-sm text-gray-500">Kursun içerdiği bölümler ve dersler.</p>
         </div>
 
-        @if (canManageCourse)
+        @if (Model.CanManageCourse)
         {
             <div class="flex items-center">
                 <a asp-controller="CourseSections" asp-action="Create" asp-route-courseId="@Model.Id" class="h-11 px-4 flex items-center justify-center bg-white border-2 border-b-4 text-sm active:border-b-2 border-gray-200 font-bold text-gray-500 rounded-xl shrink-0">
@@ -176,7 +174,7 @@
                             <h3 class="text-xl font-bold text-gray-900">@Model.SelectedLesson.Title</h3>
                         </div>
 
-                        @if (canManageCourse)
+                        @if (Model.CanManageCourse)
                         {
                             <div class="flex items-center space-x-2">
                                 <a asp-controller="Lessons" asp-action="Edit" asp-route-id="@Model.SelectedLesson.Id" class="inline-flex items-center space-x-2 bg-orange-50 border border-orange-200 text-orange-500 text-xs font-bold px-3 py-1 rounded-full hover:bg-orange-100 hover:text-orange-600">
@@ -284,7 +282,7 @@
                                     </svg>
                                 </button>
 
-                                @if (canManageCourse)
+                                @if (Model.CanManageCourse)
                                 {
                                     <div class="flex flex-col self-stretch">
                                         <a asp-controller="CourseSections" asp-action="Edit" asp-route-id="@(section.Id)" title="Bölümü Düzenle" class="flex flex-1 items-center space-x-2 bg-orange-50 text-orange-500 text-xs font-bold px-3 py-1 hover:bg-orange-100 hover:text-orange-600">

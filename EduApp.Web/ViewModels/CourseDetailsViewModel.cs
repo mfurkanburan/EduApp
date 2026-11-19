@@ -13,6 +13,12 @@ public class CourseDetailsViewModel
     [Display(Name = "Kurs Açıklaması")]
     public string Description { get; set; } = "";
 
+    public string? InstructorId { get; set; }
+
+    public string InstructorName { get; set; } = "";
+
+    public bool CanManageCourse { get; set; }
+
     [Display(Name = "Oluşturulma Tarihi")]
     public DateTime CreatedAt { get; set; }
 

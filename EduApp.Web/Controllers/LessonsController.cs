@@ -1,40 +1,32 @@
 using EduApp.Web.Constants;
 using EduApp.Web.Models;
+using EduApp.Web.Models.Identity;
 using EduApp.Web.Services;
 using EduApp.Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EduApp.Web.Controllers;
 
-[Authorize(Roles = ApplicationRoles.Admin)]
+[Authorize(Roles = ApplicationRoles.InstructorOrAdmin)]
 public class LessonsController : Controller
 {
-    private const long MaximumMaterialFileSize = 10 * 1024 * 1024;
-
-    private static readonly string[] AllowedMaterialExtensions =
-    {
-        ".pdf",
-        ".doc",
-        ".docx",
-        ".ppt",
-        ".pptx",
-        ".zip"
-    };
-
     private readonly ICourseSectionService _sectionService;
     private readonly ILessonService _lessonService;
     private readonly IWebHostEnvironment _environment;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public LessonsController(
-        ICourseSectionService sectionService,
-        ILessonService lessonService,
-        IWebHostEnvironment environment)
+    public LessonsController(ICourseSectionService sectionService, ILessonService lessonService, IWebHostEnvironment environment, UserManager<ApplicationUser> userManager)
     {
         _sectionService = sectionService;
         _lessonService = lessonService;
         _environment = environment;
+        _userManager = userManager;
     }
+
+    private const long MaximumMaterialFileSize = 10 * 1024 * 1024;
+    private static readonly string[] AllowedMaterialExtensions = { ".pdf", ".doc", ".docx", ".ppt", ".pptx", ".zip" };
 
     [HttpGet("Lessons/Create/{sectionId:int}")]
     public async Task<IActionResult> Create(int sectionId)
@@ -42,6 +34,10 @@ public class LessonsController : Controller
         CourseSection? section = await _sectionService.GetCourseSectionByIdAsync(sectionId);
 
         if (section is null) return NotFound();
+
+        if (section.Course is null) return NotFound();
+
+        if (!CanManageCourse(section.Course)) return Forbid();
 
         CreateLessonViewModel model = new()
         {
@@ -67,6 +63,10 @@ public class LessonsController : Controller
 
         if (section is null) return NotFound();
 
+        if (section.Course is null) return NotFound();
+
+        if (!CanManageCourse(section.Course)) return Forbid();
+
         if (section.CourseId != model.CourseId) return BadRequest();
 
         ValidateMaterialFile(model.MaterialFile);
@@ -91,7 +91,7 @@ public class LessonsController : Controller
 
         await _lessonService.CreateLessonAsync(lesson);
 
-        return RedirectToAction("Details", "Courses", new { id = model.CourseId });
+        return RedirectToAction("Details", "Courses", new { id = model.CourseId, lessonId = lesson.Id });
     }
 
     private void ValidateMaterialFile(IFormFile? file)
@@ -122,8 +122,7 @@ public class LessonsController : Controller
         }
     }
 
-    private async Task<string?> SaveMaterialFileAsync(
-        IFormFile? file)
+    private async Task<string?> SaveMaterialFileAsync(IFormFile? file)
     {
         if (file is null || file.Length == 0) return null;
 
@@ -164,6 +163,12 @@ public class LessonsController : Controller
 
         if (lesson is null) return NotFound();
 
+        Course? course = lesson.CourseSection?.Course;
+
+        if (course is null) return NotFound();
+
+        if (!CanManageCourse(course)) return Forbid();
+
         EditLessonViewModel model = new()
         {
             Id = lesson.Id,
@@ -187,11 +192,15 @@ public class LessonsController : Controller
 
         if (existingLesson is null) return NotFound();
 
+        Course? course = existingLesson.CourseSection?.Course;
+
+        if (course is null) return NotFound();
+
+        if (!CanManageCourse(course)) return Forbid();
+
         if (existingLesson.CourseSectionId != model.CourseSectionId) return BadRequest();
 
-        int actualCourseId = existingLesson.CourseSection?.CourseId ?? 0;
-
-        if (actualCourseId != model.CourseId) return BadRequest();
+        if (course.Id != model.CourseId) return BadRequest();
 
         ValidateMaterialFile(model.MaterialFile);
 
@@ -203,24 +212,17 @@ public class LessonsController : Controller
         }
 
         string? materialFilePath = existingLesson.MaterialPath;
+        
+        string? newMaterialFilePath = null;
 
         if (model.MaterialFile is not null)
         {
-            string? newMaterialFilePath = await SaveMaterialFileAsync(model.MaterialFile);
+            newMaterialFilePath = await SaveMaterialFileAsync(model.MaterialFile);
 
-            if (!ModelState.IsValid)
-            {
-                PrepareEditViewModel(model, existingLesson);
-
-                return View(model);
-            }
-
-            DeleteMaterialFile(existingLesson.MaterialPath);
             materialFilePath = newMaterialFilePath;
         }
         else if (model.RemoveExistingMaterial)
         {
-            DeleteMaterialFile(existingLesson.MaterialPath);
             materialFilePath = null;
         }
 
@@ -229,12 +231,21 @@ public class LessonsController : Controller
             Id = existingLesson.Id,
             Title = model.Title.Trim(),
             Content = model.Content.Trim(),
-            MaterialPath = materialFilePath,
+            MaterialPath = materialFilePath
         };
 
         await _lessonService.UpdateLessonAsync(updatedLesson);
 
-        return RedirectToAction("Details", "Courses", new { id = model.CourseId });
+        if (model.MaterialFile is not null && existingLesson.MaterialPath != newMaterialFilePath)
+        {
+            DeleteMaterialFile(existingLesson.MaterialPath);
+        }
+        else if (model.RemoveExistingMaterial)
+        {
+            DeleteMaterialFile(existingLesson.MaterialPath);
+        }
+
+        return RedirectToAction("Details", "Courses", new { id = model.CourseId, lessonId = existingLesson.Id });
     }
 
     private static void PrepareEditViewModel(EditLessonViewModel model, Lesson existingLesson)
@@ -273,6 +284,12 @@ public class LessonsController : Controller
 
         if (lesson is null) return NotFound();
 
+        Course? course = lesson.CourseSection?.Course;
+
+        if (course is null) return NotFound();
+
+        if (!CanManageCourse(course)) return Forbid();
+
         DeleteLessonViewModel model = new()
         {
             Id = lesson.Id,
@@ -291,24 +308,39 @@ public class LessonsController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(DeleteLessonViewModel model)
     {
-        Lesson? existingLesson = await _lessonService.GetLessonByIdAsync(model.Id);
+        Lesson? lesson = await _lessonService.GetLessonByIdAsync(model.Id);
 
-        if (existingLesson is null) return NotFound();
+        if (lesson is null) return NotFound();
 
-        if (existingLesson.CourseSectionId != model.CourseSectionId) return BadRequest();
+        Course? course = lesson.CourseSection?.Course;
 
-        int actualCourseId = existingLesson.CourseSection?.CourseId ?? 0;
+        if (course is null) return NotFound();
 
-        if (actualCourseId != model.CourseId) return BadRequest();
+        if (!CanManageCourse(course)) return Forbid();
 
-        string? materialPath = existingLesson.MaterialPath;
+        if (lesson.CourseSectionId != model.CourseSectionId) return BadRequest();
 
-        bool deleted = await _lessonService.DeleteLessonAsync(existingLesson.Id);
+        if (course.Id != model.CourseId) return BadRequest();
+
+        string? materialPath = lesson.MaterialPath;
+
+        bool deleted = await _lessonService.DeleteLessonAsync(lesson.Id);
 
         if (!deleted) return NotFound();
 
         DeleteMaterialFile(materialPath);
 
-        return RedirectToAction("Details", "Courses", new { id = model.CourseId });
+        return RedirectToAction("Details", "Courses", new { id = course.Id });
+    }
+
+    private bool CanManageCourse(Course course)
+    {
+        if (User.IsInRole(ApplicationRoles.Admin)) return true;
+
+        if (!User.IsInRole(ApplicationRoles.Instructor)) return false;
+
+        string? currentUserId = _userManager.GetUserId(User);
+
+        return !string.IsNullOrWhiteSpace(currentUserId) && course.InstructorId == currentUserId;
     }
 }

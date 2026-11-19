@@ -1,28 +1,31 @@
 using EduApp.Web.Constants;
 using EduApp.Web.Models;
+using EduApp.Web.Models.Identity;
 using EduApp.Web.Services;
 using EduApp.Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EduApp.Web.Controllers;
 
 public class CoursesController : Controller
 {
-    private const long MaximumCoverImageSize = 5 * 1024 * 1024;
-
-    private static readonly string[] AllowedCoverImageExtensions = { ".jpg", ".jpeg", ".png", ".webp" };
-
     private readonly ICourseService _courseService;
     private readonly ICategoryService _categoryService;
     private readonly IWebHostEnvironment _environment;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public CoursesController(ICourseService courseService, ICategoryService categoryService, IWebHostEnvironment environment)
+    public CoursesController(ICourseService courseService, ICategoryService categoryService, IWebHostEnvironment environment, UserManager<ApplicationUser> userManager)
     {
         _courseService = courseService;
         _categoryService = categoryService;
         _environment = environment;
+        _userManager = userManager;
     }
+
+    private const long MaximumCoverImageSize = 5 * 1024 * 1024;
+    private static readonly string[] AllowedCoverImageExtensions = { ".jpg", ".jpeg", ".png", ".webp" };
 
     [AllowAnonymous]
     [HttpGet]
@@ -55,14 +58,15 @@ public class CoursesController : Controller
                 CategoryName = c.Category?.Name ?? "Kategori bulunamadı",
                 Level = c.Level,
                 CoverImagePath = c.CoverImagePath,
-                CreatedAt = c.CreatedAt
+                CreatedAt = c.CreatedAt,
+                InstructorName = c.Instructor?.FullName ?? "Eğitmen atanmamış"
             }).ToList()
         };
 
         return View(model);
     }
 
-    [Authorize(Roles = ApplicationRoles.InstructorOrAdmin)]
+    [Authorize(Roles = ApplicationRoles.Instructor)]
     [HttpGet]
     public async Task<IActionResult> Create()
     {
@@ -74,7 +78,7 @@ public class CoursesController : Controller
         return View(model);
     }
 
-    [Authorize(Roles = ApplicationRoles.InstructorOrAdmin)]
+    [Authorize(Roles = ApplicationRoles.Instructor)]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(CreateCourseViewModel model)
@@ -105,6 +109,10 @@ public class CoursesController : Controller
 
         string coverImagePath = await SaveCoverImageAsync(model.CoverImage!);
 
+        string? instructorId = _userManager.GetUserId(User);
+
+        if (string.IsNullOrWhiteSpace(instructorId)) return Challenge();
+
         Course course = new Course
         {
             Title = model.Title.Trim(),
@@ -113,6 +121,7 @@ public class CoursesController : Controller
             Level = model.Level!.Value,
             CoverImagePath = coverImagePath,
             CreatedAt = DateTime.UtcNow,
+            InstructorId = instructorId,
             Requirements = requirements
         };
 
@@ -183,6 +192,9 @@ public class CoursesController : Controller
             Id = course.Id,
             Title = course.Title,
             Description = course.Description,
+            InstructorId = course.InstructorId,
+            InstructorName = course.Instructor?.FullName ?? "Eğitmen atanmamış",
+            CanManageCourse = CanManageCourse(course),
             CreatedAt = course.CreatedAt,
             CategoryName = course.Category?.Name ?? "Kategori bulunamadı",
             Level = course.Level,
@@ -201,13 +213,15 @@ public class CoursesController : Controller
         return View(model);
     }
 
-    [Authorize(Roles = ApplicationRoles.Admin)]
+    [Authorize(Roles = ApplicationRoles.InstructorOrAdmin)]
     [HttpGet]
     public async Task<IActionResult> Edit(int id)
     {
         Course? course = await _courseService.GetCourseByIdAsync(id);
 
         if (course is null) return NotFound();
+
+        if (!CanManageCourse(course)) return Forbid();
 
         EditCourseViewModel model = new EditCourseViewModel
         {
@@ -229,7 +243,7 @@ public class CoursesController : Controller
         return View(model);
     }
 
-    [Authorize(Roles = ApplicationRoles.Admin)]
+    [Authorize(Roles = ApplicationRoles.InstructorOrAdmin)]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(EditCourseViewModel model)
@@ -237,6 +251,8 @@ public class CoursesController : Controller
         Course? existingCourse = await _courseService.GetCourseByIdAsync(model.Id);
 
         if (existingCourse is null) return NotFound();
+
+        if (!CanManageCourse(existingCourse)) return Forbid();
 
         ValidateOptionalCoverImage(model.CoverImage);
 
@@ -318,13 +334,15 @@ public class CoursesController : Controller
         return RedirectToAction(nameof(Details), new { id = model.Id });
     }
 
-    [Authorize(Roles = ApplicationRoles.Admin)]
+    [Authorize(Roles = ApplicationRoles.InstructorOrAdmin)]
     [HttpGet]
     public async Task<IActionResult> Delete(int id)
     {
         Course? course = await _courseService.GetCourseByIdAsync(id);
 
         if (course is null) return NotFound();
+
+        if (!CanManageCourse(course)) return Forbid();
 
         CourseDetailsViewModel model = new CourseDetailsViewModel
         {
@@ -336,7 +354,7 @@ public class CoursesController : Controller
         return View(model);
     }
 
-    [Authorize(Roles = ApplicationRoles.Admin)]
+    [Authorize(Roles = ApplicationRoles.InstructorOrAdmin)]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(CourseDetailsViewModel model)
@@ -344,6 +362,8 @@ public class CoursesController : Controller
         Course? course = await _courseService.GetCourseForDeleteAsync(model.Id);
 
         if (course is null) return NotFound();
+
+        if (!CanManageCourse(course)) return Forbid();
 
         string? coverImagePath = course.CoverImagePath;
 
@@ -500,5 +520,16 @@ public class CoursesController : Controller
         {
             System.IO.File.Delete(physicalFilePath);
         }
+    }
+
+    private bool CanManageCourse(Course course)
+    {
+        if (User.IsInRole(ApplicationRoles.Admin)) return true;
+
+        if (!User.IsInRole(ApplicationRoles.Instructor)) return false;
+
+        string? currentUserId = _userManager.GetUserId(User);
+
+        return !string.IsNullOrWhiteSpace(currentUserId) && course.InstructorId == currentUserId;
     }
 }

@@ -24,6 +24,7 @@ public class CourseService : ICourseService
     {
         return await _context.Courses
             .Include(c => c.Category)
+            .Include(c => c.Instructor)
             .Include(c => c.Requirements)
             .Include(c => c.Sections)
             .ThenInclude(s => s.Lessons)
@@ -69,7 +70,7 @@ public class CourseService : ICourseService
 
     public async Task<PagedCoursesResult> GetAllCoursesAsync(string? search, int page, int pageSize)
     {
-        IQueryable<Course> query = _context.Courses.Include(c => c.Category).AsNoTracking();
+        IQueryable<Course> query = _context.Courses.Include(c => c.Category).Include(c => c.Instructor).AsNoTracking();
 
         if (!string.IsNullOrWhiteSpace(search))
         {

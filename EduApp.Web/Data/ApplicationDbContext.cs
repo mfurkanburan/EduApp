@@ -46,6 +46,12 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .HasIndex(requirement => new { requirement.CourseId, requirement.Order })
             .IsUnique();
 
+        modelBuilder.Entity<Course>()
+            .HasOne(course => course.Instructor)
+            .WithMany(user => user.InstructedCourses)
+            .HasForeignKey(course => course.InstructorId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         // Fluent API
         modelBuilder.Entity<Course>(entity =>
         {
