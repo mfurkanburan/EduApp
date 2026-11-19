@@ -23,7 +23,7 @@ public class CreateCourseViewModel
     public IFormFile? CoverImage { get; set; }
     
     [Required(ErrorMessage = "Kurs gereksinimleri gereklidir.")]
-    [StringLength(1000, ErrorMessage = "Kurs gereksinimleri 1000 karakteri geçmemelidir.")]
+    [StringLength(1000, MinimumLength = 10, ErrorMessage = "Kurs gereksinimleri 10 ile 1000 karakter arasında olmalıdır.")]
     public string RequirementsText { get; set; } = "";
 
     public List<Category> Categories { get; set; } = new List<Category>();

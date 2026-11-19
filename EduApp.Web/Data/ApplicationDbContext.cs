@@ -51,7 +51,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         {
             entity.Property(course => course.Title)
                 .IsRequired()
-                .HasMaxLength(150);
+                .HasMaxLength(200);
 
             entity.Property(course => course.Description)
                 .IsRequired()
