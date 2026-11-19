@@ -111,7 +111,7 @@ public class AccountController : Controller
         {
             "PasswordTooShort" => "Parola en az 8 karakter olmalıdır.",
             "PasswordRequiresDigit" => "Parola en az bir rakam içermelidir.",
-            "PasswordRequiresLower" => "Parola en az bir küçük harf içermelelidir.",
+            "PasswordRequiresLower" => "Parola en az bir küçük harf içermelidir.",
             "PasswordRequiresUpper" => "Parola en az bir büyük harf içermelidir.",
             "DuplicateEmail" => "Bu e-posta adresi zaten kayıtlı.",
             "DuplicateUserName" => "Bu e-posta adresi zaten kayıtlı.",

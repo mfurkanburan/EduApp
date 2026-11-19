@@ -253,13 +253,13 @@ public class LessonsController : Controller
 
         if (string.IsNullOrWhiteSpace(fileName)) return;
 
-        string pyhsicalFilePath = Path.Combine(materialsDirectory, fileName);
+        string physicalFilePath = Path.Combine(materialsDirectory, fileName);
 
-        if (!pyhsicalFilePath.StartsWith(materialsDirectory, StringComparison.OrdinalIgnoreCase)) return;
+        if (!physicalFilePath.StartsWith(materialsDirectory, StringComparison.OrdinalIgnoreCase)) return;
 
-        if (System.IO.File.Exists(pyhsicalFilePath))
+        if (System.IO.File.Exists(physicalFilePath))
         {
-            System.IO.File.Delete(pyhsicalFilePath);
+            System.IO.File.Delete(physicalFilePath);
         }
     }
 
