@@ -36,6 +36,8 @@
         </div>
 
         <form asp-controller="Account" asp-action="Login" method="post" class="space-y-6">
+            <input asp-for="ReturnUrl" type="hidden" />
+            
             <div asp-validation-summary="ModelOnly" class="bg-rose-50 border border-rose-200 text-rose-500 text-xs font-medium rounded-xl px-3.5 py-2.5"></div>
 
             <div class="space-y-1.5">
