@@ -4,9 +4,9 @@
     ViewData["Title"] = Model.Title;
 }
 
-@if (TempData["EnrollmentSuccess"] is string enrollmentMessage)
+@if (TempData["EnrollmentMessage"] is string enrollmentMessage)
 {
-    string messageType = TempData["EnrollmentSuccessType"] as string ?? "success";
+    string messageType = TempData["EnrollmentMessageType"] as string ?? "Warning";
     string messageClass = messageType == "Success"
         ? "border-l-emerald-500 text-emerald-500"
         : "border-l-rose-500 text-rose-500";
@@ -15,7 +15,6 @@
         @enrollmentMessage
     </div>
 }
-
 
 <section class="relative overflow-hidden bg-white border-2 border-gray-200 p-6 rounded-2xl">
     <div class="pointer-events-none absolute inset-0 z-0 opacity-60">
