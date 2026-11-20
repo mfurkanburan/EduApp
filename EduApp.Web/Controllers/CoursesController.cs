@@ -15,13 +15,20 @@ public class CoursesController : Controller
     private readonly ICategoryService _categoryService;
     private readonly IWebHostEnvironment _environment;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IEnrollmentService _enrollmentService;
 
-    public CoursesController(ICourseService courseService, ICategoryService categoryService, IWebHostEnvironment environment, UserManager<ApplicationUser> userManager)
+    public CoursesController(
+        ICourseService courseService,
+        ICategoryService categoryService,
+        IWebHostEnvironment environment,
+        UserManager<ApplicationUser> userManager,
+        IEnrollmentService enrollmentService)
     {
         _courseService = courseService;
         _categoryService = categoryService;
         _environment = environment;
         _userManager = userManager;
+        _enrollmentService = enrollmentService;
     }
 
     private const long MaximumCoverImageSize = 5 * 1024 * 1024;
@@ -138,6 +145,32 @@ public class CoursesController : Controller
 
         if (course is null) return NotFound();
 
+        string? currentUserId = _userManager.GetUserId(User);
+
+        bool isStudent = User.IsInRole(ApplicationRoles.Student);
+
+        bool isInstructor = User.IsInRole(ApplicationRoles.Instructor);
+
+        bool isAdmin = User.IsInRole(ApplicationRoles.Admin);
+
+        bool isCourseOwner =
+            isInstructor &&
+            !string.IsNullOrWhiteSpace(currentUserId) &&
+            course.InstructorId == currentUserId;
+
+        bool isEnrolled = false;
+
+        if (isStudent && !string.IsNullOrWhiteSpace(currentUserId))
+        {
+            isEnrolled = await _enrollmentService.IsEnrolledAsync(currentUserId, course.Id);
+        }
+
+        bool canManageCourse = isAdmin || isCourseOwner;
+
+        bool canAccessCourseContent = canManageCourse || isEnrolled;
+
+        bool canEnroll = isStudent && !isEnrolled;
+
         List<Lesson> allLessons = course.Sections
             .OrderBy(s => s.Order)
             .SelectMany(s => s.Lessons.OrderBy(l => l.Order))
@@ -181,8 +214,8 @@ public class CoursesController : Controller
         {
             Id = selectedLesson.Id,
             Title = selectedLesson.Title,
-            Content = selectedLesson.Content,
-            MaterialFilePath = selectedLesson.MaterialPath,
+            Content = canAccessCourseContent ? selectedLesson.Content : "Bu dersin içeriğine erişim izniniz yok.",
+            MaterialFilePath = canAccessCourseContent ? selectedLesson.MaterialPath : null,
             Order = selectedLesson.Order,
             SectionTitle = selectedSection?.Title ?? "Bölüm bulunamadı"
         };
@@ -207,7 +240,10 @@ public class CoursesController : Controller
                     Order = r.Order
                 }).ToList(),
             Sections = sectionModels,
-            SelectedLesson = selectedLessonModel
+            SelectedLesson = selectedLessonModel,
+            IsEnrolled = isEnrolled,
+            CanAccessCourseContent = canAccessCourseContent,
+            CanEnroll = canEnroll
         };
 
         return View(model);

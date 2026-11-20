@@ -1,0 +1,41 @@
+@model List<MyCourseViewModel>
+
+@{
+    ViewData["Title"] = "Kurslarım";
+}
+
+<h2>Kurslarım</h2>
+
+@if (Model.Count == 0)
+{
+    <div>Henüz kayıtlı olduğunuz kurs bulunmamaktadır. Kurs kataloğunu inceleyerek ilk kursunuzu ekleyin.</div>
+    <a asp-controller="Courses" asp-action="Index">Kursları Görüntüle</a>
+}
+else
+{
+    <div class="grid grid-cols-4 gap-4">
+        @foreach (var course in Model)
+        {
+            <div class="border-2 border-gray-200 p-2 text-xs">
+                @if (!string.IsNullOrWhiteSpace(course.CoverImagePath))
+                {
+                    <img src="@course.CoverImagePath" alt="@course.Title" style="max-width: 200px; max-height: 200px;" />
+                }
+                else
+                {
+                    <div>Kapak Resmi Yok</div>
+                }
+
+                <ul>
+                    <li>Kategori: @course.CategoryName</li>
+                    <li>Başlık: @course.Title</li>
+                    <li>Eğitmen: @course.InstructorName</li>
+                    <li>Kayıt Tarihi: @course.EnrolledAt.ToLocalTime().ToString("dd.MM.yyyy")</li>
+                    <li>
+                        <a asp-controller="Courses" asp-action="Details" asp-route-id="@course.CourseId">Kursa Devam Et</a>
+                    </li>
+                </ul>
+            </div>
+        }
+    </div>
+}

@@ -17,4 +17,5 @@ public class Course
     public ApplicationUser? Instructor { get; set; }
     public List<CourseSection> Sections { get; set; } = new List<CourseSection>();
     public List<CourseRequirement> Requirements { get; set; } = new List<CourseRequirement>();
+    public List<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
 }

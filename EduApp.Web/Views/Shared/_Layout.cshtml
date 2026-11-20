@@ -46,6 +46,15 @@
 				</svg>
 				<span>Kurslar</span>
 			</a>
+			@if (User.IsInRole(ApplicationRoles.Student))
+			{
+				<a asp-controller="Enrollments" asp-action="MyCourses" class="flex items-center space-x-2 @(currentController == "Enrollments" ? "bg-indigo-100 text-indigo-500 rounded-full" : "text-gray-500") px-4 py-3 font-bold text-xs">
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 stroke-2">
+						<path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
+					</svg>
+					<span>Kurslarım</span>
+				</a>
+			}
 			@if (User.IsInRole(ApplicationRoles.Admin))
 			{
 				<a asp-controller="Categories" asp-action="Index" class="flex items-center space-x-2 @(currentController == "Categories" ? "bg-indigo-100 text-indigo-500 rounded-full" : "text-gray-500") px-4 py-3 font-bold text-xs">

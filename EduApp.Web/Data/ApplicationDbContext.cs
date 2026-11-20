@@ -52,7 +52,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .HasForeignKey(course => course.InstructorId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // Fluent API
         modelBuilder.Entity<Course>(entity =>
         {
             entity.Property(course => course.Title)
@@ -99,6 +98,21 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
             entity.Ignore(user => user.FullName);  
         });
+
+        modelBuilder.Entity<Enrollment>(entity =>
+        {
+            entity.HasOne(enrollment => enrollment.Student)
+                .WithMany(user => user.Enrollments)
+                .HasForeignKey(enrollment => enrollment.StudentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(enrollment => enrollment.Course)
+                .WithMany(course => course.Enrollments)
+                .HasForeignKey(enrollment => enrollment.CourseId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(enrollment => new { enrollment.StudentId, enrollment.CourseId }).IsUnique();
+        });
     }
 
     public DbSet<Course> Courses => Set<Course>();
@@ -106,4 +120,5 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<CourseSection> CourseSections => Set<CourseSection>();
     public DbSet<Lesson> Lessons => Set<Lesson>();
     public DbSet<CourseRequirement> CourseRequirements => Set<CourseRequirement>();
+    public DbSet<Enrollment> Enrollments => Set<Enrollment>();
 }

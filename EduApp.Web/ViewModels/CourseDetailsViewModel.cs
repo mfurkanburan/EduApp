@@ -37,4 +37,10 @@ public class CourseDetailsViewModel
     public List<SectionViewModel> Sections { get; set; } = new List<SectionViewModel>();
 
     public SelectedLessonViewModel? SelectedLesson { get; set; }
+
+    public bool IsEnrolled { get; set; }
+
+    public bool CanAccessCourseContent { get; set; }
+
+    public bool CanEnroll { get; set; }
 }

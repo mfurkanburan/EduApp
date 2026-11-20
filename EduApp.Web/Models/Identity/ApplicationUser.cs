@@ -10,4 +10,5 @@ public class ApplicationUser : IdentityUser
     public DateTime CreatedAt { get; set; }
     public string FullName => $"{FirstName} {LastName}".Trim();
     public List<Course> InstructedCourses { get; set; } = new List<Course>();
+    public List<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
 }

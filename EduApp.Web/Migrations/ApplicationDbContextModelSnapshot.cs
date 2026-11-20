@@ -126,6 +126,32 @@ namespace EduApp.Web.Migrations
                     b.ToTable("CourseSections");
                 });
 
+            modelBuilder.Entity("EduApp.Web.Models.Enrollment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("ErolledAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("StudentId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseId");
+
+                    b.HasIndex("StudentId", "CourseId")
+                        .IsUnique();
+
+                    b.ToTable("Enrollments");
+                });
+
             modelBuilder.Entity("EduApp.Web.Models.Identity.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
@@ -406,6 +432,25 @@ namespace EduApp.Web.Migrations
                     b.Navigation("Course");
                 });
 
+            modelBuilder.Entity("EduApp.Web.Models.Enrollment", b =>
+                {
+                    b.HasOne("EduApp.Web.Models.Course", "Course")
+                        .WithMany("Enrollments")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EduApp.Web.Models.Identity.ApplicationUser", "Student")
+                        .WithMany("Enrollments")
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+
+                    b.Navigation("Student");
+                });
+
             modelBuilder.Entity("EduApp.Web.Models.Lesson", b =>
                 {
                     b.HasOne("EduApp.Web.Models.CourseSection", "CourseSection")
@@ -475,6 +520,8 @@ namespace EduApp.Web.Migrations
 
             modelBuilder.Entity("EduApp.Web.Models.Course", b =>
                 {
+                    b.Navigation("Enrollments");
+
                     b.Navigation("Requirements");
 
                     b.Navigation("Sections");
@@ -487,6 +534,8 @@ namespace EduApp.Web.Migrations
 
             modelBuilder.Entity("EduApp.Web.Models.Identity.ApplicationUser", b =>
                 {
+                    b.Navigation("Enrollments");
+
                     b.Navigation("InstructedCourses");
                 });
 #pragma warning restore 612, 618

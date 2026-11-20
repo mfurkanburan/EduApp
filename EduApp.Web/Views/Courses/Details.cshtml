@@ -4,6 +4,19 @@
     ViewData["Title"] = Model.Title;
 }
 
+@if (TempData["EnrollmentSuccess"] is string enrollmentMessage)
+{
+    string messageType = TempData["EnrollmentSuccessType"] as string ?? "success";
+    string messageClass = messageType == "Success"
+        ? "border-l-emerald-500 text-emerald-500"
+        : "border-l-rose-500 text-rose-500";
+
+    <div class="p-4 text-sm rounded-2xl bg-white border-2 border-gray-200 border-l-4 @messageClass font-semibold">
+        @enrollmentMessage
+    </div>
+}
+
+
 <section class="relative overflow-hidden bg-white border-2 border-gray-200 p-6 rounded-2xl">
     <div class="pointer-events-none absolute inset-0 z-0 opacity-60">
         <svg class="absolute inset-0 h-full w-full stroke-indigo-300/30 text-indigo-300/25" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
@@ -72,9 +85,26 @@
         <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight leading-snug">
             @Model.Title
         </h1>
-        <p class="text-sm leading-relaxed text-gray-500 max-w-4xl">
-            @Model.Description
-        </p>
+        <div class="flex justify-between">
+            <p class="text-sm leading-relaxed text-gray-500 max-w-4xl">
+                @Model.Description
+            </p>
+            @if (Model.CanEnroll) {
+                <form asp-controller="Enrollments" asp-action="Enroll" method="post">
+                    <input type="hidden" name="courseId" value="@Model.Id" />
+
+                    <button type="submit" class="h-12 px-4 flex items-center justify-center bg-indigo-500 border-2 border-b-4 text-sm cursor-pointer active:border-b-2 border-indigo-600 font-bold text-white rounded-xl">Kursa Kaydol</button>
+                </form>
+            }
+            else if (Model.IsEnrolled)
+            {
+                <span class="h-12 px-4 flex items-center justify-center bg-indigo-500 border-2 border-b-4 text-sm cursor-not-allowed border-indigo-600 font-bold text-white rounded-xl select-none opacity-70">Kursa Kayıtlısınız</span>
+            }
+            else if (User.Identity?.IsAuthenticated != true)
+            {
+                <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@($"{Context.Request.Path}{Context.Request.QueryString}")" class="h-12 px-4 flex items-center justify-center bg-indigo-500 border-2 border-b-4 text-sm active:border-b-2 border-indigo-600 font-bold text-white rounded-xl">Kursa Kaydol</a>
+            }
+        </div>
     </div>
 </section>
 
@@ -163,6 +193,27 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
                     </svg>
                     <p class="text-gray-500 text-sm">Henüz ders bulunmamaktadır.</p>
+                </div>
+            }
+            else if (!Model.CanAccessCourseContent)
+            {
+                <div class="flex flex-col items-center justify-center space-y-4 text-gray-500 p-8">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-8">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                    </svg>
+                    @if (User.Identity?.IsAuthenticated != true)
+                    {
+                        <p class="text-gray-500 text-sm">Ders içeriğini görmek için giriş yapmalısınız.</p>
+                        <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@($"{Context.Request.Path}{Context.Request.QueryString}")" class="h-12 px-16 flex items-center justify-center bg-indigo-500 border-2 border-b-4 text-sm active:border-b-2 border-indigo-600 font-bold text-white rounded-xl">Giriş Yap</a>
+                    }
+                    else if (Model.CanEnroll)
+                    {
+                        <p>Ders içeriğini görmek için kursa kayıt olmalısınız.</p>
+                    }
+                    else
+                    {
+                        <p class="text-gray-500 text-sm">Ders içeriğine erişim izniniz yok.</p>
+                    }
                 </div>
             }
             else
