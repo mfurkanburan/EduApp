@@ -9,5 +9,5 @@ public class Enrollment
     public ApplicationUser? Student { get; set; }
     public int CourseId { get; set; }
     public Course? Course { get; set; }
-    public DateTime ErolledAt { get; set; }
+    public DateTime EnrolledAt { get; set; }
 }

@@ -66,7 +66,7 @@ public class EnrollmentsController : Controller
                 CategoryName = enrollment.Course.Category?.Name ?? "Kategori bulunamadı",
                 InstructorName = enrollment.Course.Instructor?.FullName ?? "Eğitmen bulunamadı",
                 CoverImagePath = enrollment.Course.CoverImagePath,
-                EnrolledAt = enrollment.ErolledAt
+                EnrolledAt = enrollment.EnrolledAt
             })
             .ToList();
             

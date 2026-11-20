@@ -39,7 +39,7 @@ public class EnrollmentService : IEnrollmentService
         {
             StudentId = studentId,
             CourseId = courseId,
-            ErolledAt = DateTime.UtcNow
+            EnrolledAt = DateTime.UtcNow
         };
 
         _context.Enrollments.Add(enrollment);
@@ -58,7 +58,7 @@ public class EnrollmentService : IEnrollmentService
             .ThenInclude(course => course!.Instructor)
             .AsNoTracking()
             .Where(enrollment => enrollment.StudentId == studentId)
-            .OrderByDescending(enrollment => enrollment.ErolledAt)
+            .OrderByDescending(enrollment => enrollment.EnrolledAt)
             .ToListAsync();
     }
 }

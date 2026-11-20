@@ -135,7 +135,7 @@ namespace EduApp.Web.Migrations
                     b.Property<int>("CourseId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("ErolledAt")
+                    b.Property<DateTime>("EnrolledAt")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("StudentId")
