@@ -4,38 +4,95 @@
     ViewData["Title"] = "Kurslarım";
 }
 
-<h2>Kurslarım</h2>
-
-@if (Model.Count == 0)
-{
-    <div>Henüz kayıtlı olduğunuz kurs bulunmamaktadır. Kurs kataloğunu inceleyerek ilk kursunuzu ekleyin.</div>
-    <a asp-controller="Courses" asp-action="Index">Kursları Görüntüle</a>
-}
-else
-{
-    <div class="grid grid-cols-4 gap-4">
-        @foreach (var course in Model)
-        {
-            <div class="border-2 border-gray-200 p-2 text-xs">
-                @if (!string.IsNullOrWhiteSpace(course.CoverImagePath))
-                {
-                    <img src="@course.CoverImagePath" alt="@course.Title" style="max-width: 200px; max-height: 200px;" />
-                }
-                else
-                {
-                    <div>Kapak Resmi Yok</div>
-                }
-
-                <ul>
-                    <li>Kategori: @course.CategoryName</li>
-                    <li>Başlık: @course.Title</li>
-                    <li>Eğitmen: @course.InstructorName</li>
-                    <li>Kayıt Tarihi: @course.EnrolledAt.ToLocalTime().ToString("dd.MM.yyyy")</li>
-                    <li>
-                        <a asp-controller="Courses" asp-action="Details" asp-route-id="@course.CourseId">Kursa Devam Et</a>
-                    </li>
-                </ul>
-            </div>
-        }
+<section class="space-y-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold">Kurslarım</h1>
+            <p class="text-sm font-light text-gray-500">Kayıtlı olduğunuz kursları burada görüntüleyebilirsiniz.</p>
+        </div>
+        <a asp-controller="Courses" asp-action="Index" class="h-11 px-4 flex items-center justify-center bg-white border-2 border-b-4 text-sm active:border-b-2 border-gray-200 font-bold text-gray-500 rounded-xl shrink-0">
+            Kurs Kataloğunu Görüntüle
+        </a>
     </div>
-}
+
+    @if (Model.Count == 0)
+    {
+        <div class="relative overflow-hidden bg-white border-2 border-gray-200 p-16 rounded-2xl">
+            <div class="pointer-events-none absolute inset-0 z-0 opacity-60">
+                <svg class="absolute inset-0 h-full w-full stroke-indigo-300/30 text-indigo-300/25" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+                    <defs>
+                        <pattern id="edit-grid-pattern" width="28" height="28" patternUnits="userSpaceOnUse">
+                            <path d="M 28 0 L 0 0 0 28" fill="none" stroke="currentColor" stroke-width="0.75"></path>
+                            <circle cx="14" cy="14" r="1.25" fill="currentColor"></circle>
+                        </pattern>
+                    </defs>
+                    <rect width="100%" height="100%" stroke-width="0" fill="url(#edit-grid-pattern)"></rect>
+                </svg>
+            </div>
+
+            <div class="relative z-10 space-y-6">
+                <div class="flex flex-col items-center text-center space-y-3">
+                    <div class="w-14 h-14 rounded-2xl bg-indigo-50 border-2 border-indigo-100 text-indigo-600 flex items-center justify-center">
+                        <svg b-xmfdvmxqml="" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-7">
+                            <path b-xmfdvmxqml="" stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-extrabold text-gray-900 max-w-sm">
+                            Henüz kayıtlı olduğunuz kurs bulunmamaktadır
+                        </h2>
+                        <p class="text-xs font-medium text-gray-500 mt-1 max-w-sm">
+                            Kurs kataloğunu inceleyerek ilk kursunuzu ekleyin ve öğrenmeye başlayın.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="grid grid-cols-2 gap-6">
+            @foreach (var course in Model)
+            {
+                <article class="group relative flex flex-row overflow-hidden rounded-2xl border-2 border-gray-200 bg-white hover:border-indigo-500">
+                    <div class="relative aspect-video h-56 w-48 shrink-0 overflow-hidden bg-gray-100">
+                        <img src="@(string.IsNullOrWhiteSpace(course.CoverImagePath)
+                                    ? "https://placehold.co/600x400/E1E7FF/4F46E5?text=Kurs+Görseli"
+                                    : course.CoverImagePath)"
+                            alt="@course.Title"
+                            class="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                        
+                        <div class="pointer-events-none absolute inset-0 bg-linear-to-r from-transparent via-white/30 to-white"></div>
+
+                        <div class="absolute top-2.5 left-2.5 bg-white/90 backdrop-blur-xs text-indigo-500 text-[11px] font-bold px-2 py-0.5 rounded-lg shadow-xs">
+                            @course.CategoryName
+                        </div>
+                    </div>
+
+                    <div class="flex flex-1 flex-col justify-between min-w-0 p-8">
+                        <div>
+                            <h3 class="text-lg font-bold text-indigo-500 truncate border-b-2 border-gray-200 pb-2">
+                                @course.Title
+                            </h3>
+                            <div class="flex flex-col border-2 border-gray-200 rounded-lg mt-2 text-xs text-gray-500 divide-y-2 divide-gray-200">
+                                <div class="px-2 py-1">
+                                    Eğitmen: @course.InstructorName
+                                </div>
+                                <div class="px-2 py-1">
+                                    Kayıt Tarihi: @course.EnrolledAt.ToLocalTime().ToString("dd.MM.yyyy")
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <a asp-controller="Courses" asp-action="Details" asp-route-id="@course.CourseId" class="flex items-center justify-center space-x-1 px-3.5 py-2 rounded-xl bg-indigo-50 text-indigo-500 text-xs font-bold hover:bg-indigo-500 hover:text-white">
+                                <span class="text-[10px] mr-2">▶</span>
+                                Kursa Devam Et
+                            </a>
+                        </div>
+                    </div>
+                </article>
+            }
+        </div>
+    }
+</section>
