@@ -1,0 +1,20 @@
+namespace EduApp.Web.ViewModels.Profile;
+
+public class ProfileViewModel
+{
+    public string FirstName { get; set; } = "";
+
+    public string LastName { get; set; } = "";
+
+    public string Email { get; set; } = "";
+
+    public string RoleName { get; set; } = "";
+
+    public string? ProfileImagePath { get; set; }
+
+    public DateTime CreatedAt { get; set; }
+
+    public int EnrolledCourseCount { get; set; }
+
+    public int InstructorCourseCount { get; set; }
+}
