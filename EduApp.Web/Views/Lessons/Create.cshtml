@@ -51,13 +51,13 @@
             <input type="hidden" asp-for="CourseId" />       
 
             <div class="space-y-1.5">
-                <label asp-for="Title" class="block text-xs font-bold text-gray-700 uppercase tracking-wide">Bölüm Başlığı</label>
+                <label asp-for="Title" class="block text-xs font-bold text-gray-700 uppercase tracking-wide">Ders Başlığı</label>
                 <input asp-for="Title" class="h-10 flex items-center w-full bg-gray-50 border-2 border-gray-200 rounded-xl text-sm font-medium focus:bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" />
                 <span asp-validation-for="Title" class="text-xs text-rose-500"></span>
             </div>
 
             <div class="space-y-1.5">
-                <label asp-for="Content" class="block text-xs font-bold text-gray-700 uppercase tracking-wide">Bölüm İçeriği</label>
+                <label asp-for="Content" class="block text-xs font-bold text-gray-700 uppercase tracking-wide">Ders İçeriği</label>
                 <textarea asp-for="Content" rows="10" class="h-40 flex items-center w-full bg-gray-50 border-2 border-gray-200 rounded-xl text-sm font-medium focus:bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"></textarea>
                 <span asp-validation-for="Content" class="text-xs text-rose-500"></span>
             </div>
