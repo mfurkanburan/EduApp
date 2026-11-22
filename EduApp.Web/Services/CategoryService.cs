@@ -19,7 +19,8 @@ public class CategoryService : ICategoryService
     {
         return await _context.Categories
             .AsNoTracking()
-            .OrderBy(c => c.Name)
+            .OrderByDescending(c => c.Courses.Count)
+            .ThenBy(c => c.Name)
             .ToListAsync();
     }
 
@@ -27,7 +28,8 @@ public class CategoryService : ICategoryService
     {
         return await _context.Categories
             .AsNoTracking()
-            .OrderBy(c => c.Name)
+            .OrderByDescending(c => c.Courses.Count)
+            .ThenBy(c => c.Name)
             .Select(c => new CategoryListItemViewModel
             {
                 Id = c.Id,
