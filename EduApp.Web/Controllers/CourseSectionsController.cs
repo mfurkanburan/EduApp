@@ -66,7 +66,7 @@ public class CourseSectionsController : Controller
 
         CourseSection newSection = new CourseSection
         {
-            Title = model.Title,
+            Title = model.Title.Trim(),
             Order = nextOrder,
             CourseId = courseId
         };
