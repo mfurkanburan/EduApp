@@ -1,4 +1,5 @@
 @model DeleteCategoryViewModel
+
 @{
     ViewData["Title"] = "Kategori Sil";
 }
@@ -40,25 +41,26 @@
             </div>
         </div>
 
-        <div class="bg-gray-50 border-2 border-gray-200 rounded-2xl p-6 space-y-3">
-            <div>
-                <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Kategori</span>
-                <p class="text-base font-bold text-gray-900">@Model.Name</p>
-            </div>
-            <div class="border-t-2 border-gray-200 pt-3">
-                <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Kurs Sayısı</span>
-                <p class="text-sm leading-6 text-gray-600">@Model.CourseCount</p>
-            </div>
-        </div>
+        <form asp-controller="Categories" asp-action="Delete" method="post">
+            <input type="hidden" asp-for="Id" />
 
-        <div class="grid grid-cols-2 gap-4">
-            <form asp-controller="Categories" asp-action="Delete" method="post">
-                <input type="hidden" asp-for="Id" />
+            <div asp-validation-summary="ModelOnly" class="bg-rose-50 border border-rose-200 text-rose-500 text-xs font-medium rounded-xl px-3.5 py-2.5 mb-6"></div>
 
+            <div class="bg-gray-50 border-2 border-gray-200 rounded-2xl p-6 space-y-3">
+                <div>
+                    <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Kategori</span>
+                    <p class="text-base font-bold text-gray-900">@Model.Name</p>
+                </div>
+                <div class="border-t-2 border-gray-200 pt-3">
+                    <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Kurs Sayısı</span>
+                    <p class="text-sm leading-6 text-gray-600">@Model.CourseCount</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 mt-6">
                 <button class="h-12 w-full flex items-center justify-center bg-rose-500 border-2 border-b-4 text-sm cursor-pointer active:border-b-2 border-rose-600 font-bold text-white rounded-xl" type="submit">Evet, Sil</button>
-            </form>
-
-            <a asp-controller="Categories" asp-action="Index" class="h-12 px-4 flex items-center justify-center bg-white border-2 border-b-4 text-sm active:border-b-2 border-gray-200 font-bold text-gray-500 rounded-xl">Hayır, Geri Dön</a>
-        </div>
+                <a asp-controller="Categories" asp-action="Index" class="h-12 px-4 flex items-center justify-center bg-white border-2 border-b-4 text-sm active:border-b-2 border-gray-200 font-bold text-gray-500 rounded-xl">Hayır, Geri Dön</a>
+            </div>
+        </form>
     </div>
 </section>
