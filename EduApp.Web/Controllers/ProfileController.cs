@@ -14,12 +14,14 @@ public class ProfileController : Controller
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IProfileService _profileService;
     private readonly IWebHostEnvironment _environment;
+    private readonly SignInManager<ApplicationUser> _signInManager;
 
-    public ProfileController(UserManager<ApplicationUser> userManager, IProfileService profileService, IWebHostEnvironment environment)
+    public ProfileController(UserManager<ApplicationUser> userManager, IProfileService profileService, IWebHostEnvironment environment, SignInManager<ApplicationUser> signInManager)
     {
         _userManager = userManager;
         _profileService = profileService;
         _environment = environment;
+        _signInManager = signInManager;
     }
 
     private const long MaximumProfileImageSize = 5 * 1024 * 1024;
@@ -219,6 +221,60 @@ public class ProfileController : Controller
         if (oldProfileImagePath != profileImagePath) DeleteProfileImage(oldProfileImagePath!);
 
         TempData["ProfileMessage"] = "Profiliniz başarıyla güncellendi.";
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpGet]
+    public IActionResult ChangePassword()
+    {
+        return View(new ChangePasswordViewModel());
+    }
+
+    private static string TranslateIdentityError(IdentityError error)
+    {
+        return error.Code switch
+        {
+            "PasswordMismatch" => "Mevcut şifreniz yanlış.",
+            "PasswordTooShort" => "Şifreniz çok kısa. En az 8 karakter uzunluğunda olmalıdır.",
+            "PasswordRequiresDigit" => "Şifreniz en az bir rakam içermelidir.",
+            "PasswordRequiresLower" => "Şifreniz en az bir küçük harf içermelidir.",
+            "PasswordRequiresUpper" => "Şifreniz en az bir büyük harf içermelidir.",
+            _ => error.Description
+        };
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+    {
+        if (!ModelState.IsValid) return View(model);
+
+        ApplicationUser? user = await _userManager.GetUserAsync(User);
+
+        if (user is null) return Challenge();
+
+        if (model.CurrentPassword == model.NewPassword)
+        {
+            ModelState.AddModelError(nameof(model.NewPassword), "Yeni şifre mevcut şifrenizle aynı olamaz.");
+            return View(model);
+        }
+
+        IdentityResult result = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+
+        if (!result.Succeeded)
+        {
+            foreach (IdentityError error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, TranslateIdentityError(error));
+            }
+
+            return View(model);
+        }
+
+        await _signInManager.RefreshSignInAsync(user);
+
+        TempData["ProfileMessage"] = "Şifreniz başarıyla değiştirildi.";
 
         return RedirectToAction(nameof(Index));
     }
