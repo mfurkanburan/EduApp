@@ -4,22 +4,55 @@
     ViewData["Title"] = "Yeni Bölüm Ekle";
 }
 
-<h1>Yeni Bölüm Ekle</h1>
-
-<p>
-    <strong>Kurs:</strong> @Model.CourseTitle
-</p>
-
-<form asp-action="Create" asp-controller="CourseSections" asp-route-courseId="@Model.CourseId" method="post">
-    <input type="hidden" asp-for="CourseId" />
-
-    <div class="form-group">
-        <label asp-for="Title" class="form-label">Bölüm Başlığı</label>
-        <input asp-for="Title" class="form-control" />
-        <span asp-validation-for="Title" class="text-danger"></span>
+<section class="relative overflow-hidden bg-white border-2 border-gray-200 p-6 rounded-2xl max-w-2xl mx-auto">
+    <div class="pointer-events-none absolute inset-x-0 top-0 h-44 z-0 opacity-60">
+        <svg class="h-full w-full stroke-indigo-300/30 text-indigo-300/25" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+            <defs>
+                <pattern id="edit-grid-pattern" width="28" height="28" patternUnits="userSpaceOnUse">
+                    <path d="M 28 0 L 0 0 0 28" fill="none" stroke="currentColor" stroke-width="0.75"></path>
+                    <circle cx="14" cy="14" r="1.25" fill="currentColor"></circle>
+                </pattern>
+            </defs>
+            <rect width="100%" height="100%" stroke-width="0" fill="url(#edit-grid-pattern)"></rect>
+        </svg>
+        <div class="absolute inset-x-0 bottom-0 h-16 bg-linear-to-t from-white to-transparent"></div>
     </div>
 
-    <button type="submit" class="btn btn-primary mt-3">Oluştur</button>
-</form>
+    <div class="relative z-10 space-y-6">
+        <div class="flex flex-col items-center text-center space-y-6">
+            <div class="w-14 h-14 rounded-2xl bg-indigo-50 border-2 border-indigo-100 text-indigo-600 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 stroke-2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 10.5v6m3-3H9m4.06-7.19-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z" />
+                </svg>
+            </div>
+            <div>
+                <h2 class="text-2xl font-extrabold text-gray-900">
+                    Yeni Bölüm Ekle
+                </h2>
+                <div class="text-xs font-medium text-gray-500 max-w-sm mt-2">
+                    <strong>Kurs:</strong> @Model.CourseTitle
+                </div>
+            </div>
+        </div>
 
-<a asp-action="Details" asp-controller="Courses" asp-route-id="@Model.CourseId" class="btn btn-secondary mt-3">Geri Dön</a>
+        <form asp-controller="CourseSections" asp-action="Create" method="post" class="space-y-6">     
+            <input asp-for="CourseId" type="hidden" />       
+
+            <div class="space-y-1.5">
+                <label asp-for="Title" class="block text-xs font-bold text-gray-700 uppercase tracking-wide">Bölüm Başlığı</label>
+                <input asp-for="Title" class="h-10 flex items-center w-full bg-gray-50 border-2 border-gray-200 rounded-xl text-sm font-medium focus:bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" />
+                <span asp-validation-for="Title" class="text-xs text-rose-500"></span>
+            </div>
+
+            <div class="flex items-center justify-end gap-4 border-t-2 border-gray-200 pt-4 mb-0">
+                <a asp-controller="Courses" asp-action="Details" asp-route-id="@Model.CourseId" class="h-11 px-4 flex items-center justify-center bg-white border-2 border-b-4 text-sm active:border-b-2 border-gray-200 font-bold text-gray-500 rounded-xl shrink-0">
+                    Vazgeç
+                </a>
+
+                <button type="submit" class="h-11 px-6 flex items-center justify-center bg-indigo-500 border-2 border-b-4 text-sm cursor-pointer active:border-b-2 border-indigo-600 font-bold text-white rounded-xl">
+                    Yeni Bölüm Ekle
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
