@@ -55,7 +55,12 @@ public class CourseSectionsController : Controller
 
         if (!CanManageCourse(course)) return Forbid();
 
-        if (!ModelState.IsValid) return View(model);
+        if (!ModelState.IsValid)
+        {
+            model.CourseTitle = course.Title;
+
+            return View(model);
+        }
 
         int nextOrder = await _courseSectionService.GetNextSectionOrderAsync(courseId);
 
