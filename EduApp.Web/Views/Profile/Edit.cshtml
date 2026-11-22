@@ -1,0 +1,126 @@
+@model EditProfileViewModel
+
+@{
+    ViewData["Title"] = "Profili Düzenle";
+}
+
+<section class="relative overflow-hidden bg-white border-2 border-gray-200 p-6 rounded-2xl">
+    <div class="pointer-events-none absolute inset-x-0 top-0 h-44 z-0 opacity-60">
+        <svg class="h-full w-full stroke-indigo-300/30 text-indigo-300/25" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+            <defs>
+                <pattern id="edit-grid-pattern" width="28" height="28" patternUnits="userSpaceOnUse">
+                    <path d="M 28 0 L 0 0 0 28" fill="none" stroke="currentColor" stroke-width="0.75"></path>
+                    <circle cx="14" cy="14" r="1.25" fill="currentColor"></circle>
+                </pattern>
+            </defs>
+            <rect width="100%" height="100%" stroke-width="0" fill="url(#edit-grid-pattern)"></rect>
+        </svg>
+        <div class="absolute inset-x-0 bottom-0 h-16 bg-linear-to-t from-white to-transparent"></div>
+    </div>
+
+    <div class="relative z-10 space-y-6">
+        <div class="flex items-center space-x-4 pb-4 border-b-2 border-gray-200">
+            <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-500 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"></path>
+                </svg>
+            </div>
+            <div>
+                <h2 class="text-base font-bold text-gray-900">Profili Düzenle</h2>
+                <p class="text-xs text-gray-500">Kişisel bilgilerinizi ve profil resminizi güncelleyin.</p>
+            </div>
+        </div>
+
+        <form asp-controller="Profile" asp-action="Edit" method="post" enctype="multipart/form-data" class="space-y-6">
+            <input asp-for="ExistingProfileImagePath" type="hidden" />
+
+            <div asp-validation-summary="ModelOnly" class="bg-rose-50 border border-rose-200 text-rose-500 text-xs font-medium rounded-xl px-3.5 py-2.5"></div>
+
+            <div class="space-y-1.5">
+                <label asp-for="FirstName" class="block text-xs font-bold text-gray-700 uppercase tracking-wide">Ad</label>
+                <input asp-for="FirstName" class="h-10 flex items-center w-full bg-gray-50 border-2 border-gray-200 rounded-xl text-sm font-medium focus:bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" />
+                <span asp-validation-for="FirstName" class="text-xs text-rose-500"></span>
+            </div>
+
+            <div class="space-y-1.5">
+                <label asp-for="LastName" class="block text-xs font-bold text-gray-700 uppercase tracking-wide">Soyad</label>
+                <input asp-for="LastName" class="h-10 flex items-center w-full bg-gray-50 border-2 border-gray-200 rounded-xl text-sm font-medium focus:bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" />
+                <span asp-validation-for="LastName" class="text-xs text-rose-500"></span>
+            </div>
+
+            <div class="space-y-1.5">
+                <label asp-for="Email" class="block text-xs font-bold text-gray-700 uppercase tracking-wide">E-posta</label>
+                <input asp-for="Email" disabled class="cursor-not-allowed h-10 flex items-center w-full bg-gray-100 border-2 border-gray-200 rounded-xl text-sm font-medium text-gray-500 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" />
+                <span class="text-xs text-gray-500">
+                    E-posta adresi değiştirilemez.
+                </span>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(Model.ExistingProfileImagePath))
+            {
+                <div class="rounded-2xl border-2 border-gray-200 bg-gray-50 p-4">
+                    <div class="flex flex-row items-center gap-4">
+                        <img src="@Model.ExistingProfileImagePath" alt="Mevcut Profil Resmi" class="size-24 shrink-0 rounded-full border-4 border-indigo-100 bg-wihte p-0.5 object-cover shadow-xs" />
+
+                        <div class="flex-1 space-y-4">
+                            <p class="text-xs font-bold uppercase tracking-wide text-gray-500">Mevcut Profil Resmi</p>
+
+                            <label class="flex items-center space-x-3 rounded-xl p-3 bg-rose-50 text-rose-500 text-xs font-bold hover:bg-rose-100 border border-rose-200 cursor-pointer">
+                                <input asp-for="RemoveExistingProfileImage" class="h-4 w-4 text-rose-500 focus:ring-rose-500 border-2 border-rose-200 rounded">
+                                <span>Mevcut profil resmini kaldır</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <div class="space-y-1.5">
+                <label asp-for="ProfileImage" class="block text-xs font-bold text-gray-700 uppercase tracking-wide">Yeni Profil Resmi</label>
+                <input asp-for="ProfileImage" type="file" accept=".jpg,.jpeg,.png,.webp" class="cursor-pointer block w-full bg-white border-2 border-gray-200 rounded-lg text-xs text-gray-500 placeholder:text-gray-400 focus:outline-hidden focus:border-indigo-500 focus:ring-0.5 focus:ring-indigo-500
+                        file:bg-indigo-50
+                        file:text-indigo-500
+                        file:font-bold
+                        file:uppercase
+                        file:cursor-pointer
+                        file:me-4
+                        file:py-3 file:px-4">
+                <span asp-validation-for="ProfileImage" class="text-xs text-rose-500 block"></span>
+
+                <p class="text-xs text-gray-500">
+                    Yeni profil resmi yüklediğinizde mevcut profil resmi kaldırılacaktır. Yüklenen resmin boyutu 5 MB'yi geçmemelidir ve yalnızca .jpg, .jpeg, .png veya .webp formatında olmalıdır.
+                </p>
+            </div>
+
+            <div class="flex items-center justify-end gap-4 border-t-2 border-gray-200 pt-4 mb-0">
+                <a asp-controller="Profile" asp-action="Index" class="h-11 px-4 flex items-center justify-center bg-white border-2 border-b-4 text-sm active:border-b-2 border-gray-200 font-bold text-gray-500 rounded-xl shrink-0">
+                    Vazgeç
+                </a>
+
+                <button type="submit" class="h-11 px-6 flex items-center justify-center bg-indigo-500 border-2 border-b-4 text-sm cursor-pointer active:border-b-2 border-indigo-600 font-bold text-white rounded-xl">
+                    Değişiklikleri Kaydet
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        const profileImageInput = document.getElementById("ProfileImage");
+        
+        profileImageInput.addEventListener('change', function () {
+            const file = this.files[0];
+            
+            if (!file) return;
+
+            const maximumSize = 5 * 1024 * 1024;
+
+            if (file.size > maximumSize) {
+                alert('Dosya boyutu 5 MB\'yi geçemez. Lütfen daha küçük bir dosya seçin.');
+                this.value = '';
+            }
+        });
+    </script>
+}
