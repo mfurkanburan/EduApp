@@ -113,6 +113,21 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
             entity.HasIndex(enrollment => new { enrollment.StudentId, enrollment.CourseId }).IsUnique();
         });
+
+        modelBuilder.Entity<LessonProgress>(entity =>
+        {
+            entity.HasOne(progress => progress.Student)
+                .WithMany(user => user.LessonProgresses)
+                .HasForeignKey(progress => progress.StudentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(progress => progress.Lesson)
+                .WithMany(lesson => lesson.Progress)
+                .HasForeignKey(progress => progress.LessonId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(progress => new { progress.StudentId, progress.LessonId }).IsUnique();
+        });
     }
 
     public DbSet<Course> Courses => Set<Course>();
@@ -121,4 +136,5 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Lesson> Lessons => Set<Lesson>();
     public DbSet<CourseRequirement> CourseRequirements => Set<CourseRequirement>();
     public DbSet<Enrollment> Enrollments => Set<Enrollment>();
+    public DbSet<LessonProgress> LessonProgresses => Set<LessonProgress>();
 }

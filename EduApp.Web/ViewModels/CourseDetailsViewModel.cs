@@ -43,4 +43,16 @@ public class CourseDetailsViewModel
     public bool CanAccessCourseContent { get; set; }
 
     public bool CanEnroll { get; set; }
+
+    public int TotalLessonCount { get; set; }
+
+    public int CompletedLessonCount { get; set; }
+
+    public int ProgressPercentage { get; set; }
+
+    public bool IsCourseCompleted { get; set; }
+
+    public bool CanCompleteSelectedLesson { get; set; }
+
+    public bool IsSelectedLessonCompleted { get; set; }
 }

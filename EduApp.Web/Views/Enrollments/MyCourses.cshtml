@@ -55,7 +55,7 @@
             @foreach (var course in Model)
             {
                 <article class="group relative flex flex-row overflow-hidden rounded-2xl border-2 border-gray-200 bg-white hover:border-indigo-500">
-                    <div class="relative aspect-video h-56 w-48 shrink-0 overflow-hidden bg-gray-100">
+                    <div class="relative aspect-video h-auto w-48 shrink-0 overflow-hidden bg-gray-100">
                         <img src="@(string.IsNullOrWhiteSpace(course.CoverImagePath)
                                     ? "https://placehold.co/600x400/E1E7FF/4F46E5?text=Kurs+Görseli"
                                     : course.CoverImagePath)"
@@ -71,15 +71,40 @@
 
                     <div class="flex flex-1 flex-col justify-between min-w-0 p-8">
                         <div>
-                            <h3 class="text-lg font-bold text-indigo-500 truncate border-b-2 border-gray-200 pb-2">
-                                @course.Title
-                            </h3>
-                            <div class="flex flex-col border-2 border-gray-200 rounded-lg mt-2 text-xs text-gray-500 divide-y-2 divide-gray-200">
+                            <div class="flex items-center justify-between border-b-2 border-gray-200 pb-2">
+                                <h3 class="text-lg font-bold text-indigo-500 truncate max-w-[calc(100%-8rem)]">
+                                    @course.Title
+                                </h3>
+                                @if (course.IsCompleted)
+                                {
+                                    <span class="text-xs font-bold text-emerald-500 bg-emerald-100 px-2 py-0.5 rounded-lg">
+                                        Tamamlandı
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="text-xs font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-lg">
+                                        Devam Ediyor
+                                    </span>
+                                }
+                            </div>
+                            <div class="flex flex-col border-2 border-gray-200 rounded-lg mt-4 text-xs text-gray-500 divide-y-2 divide-gray-200">
                                 <div class="px-2 py-1">
                                     Eğitmen: @course.InstructorName
                                 </div>
                                 <div class="px-2 py-1">
                                     Kayıt Tarihi: @course.EnrolledAt.ToLocalTime().ToString("dd.MM.yyyy")
+                                </div>
+                            </div>
+                            <div class="mt-6 flex flex-col space-y-1">
+                                <div class="flex items-center justify-between text-xs text-gray-500">
+                                    <span>
+                                        @course.CompletedLessonCount / @course.TotalLessonCount
+                                    </span>
+                                    <span class="font-bold">@course.ProgressPercentage.ToString("0")%</span>
+                                </div>
+                                <div class="h-3.5 overflow-hidden rounded-full border-2 border-gray-100 bg-gray-50 p-0.5">
+                                    <div class="h-full rounded-full bg-gray-500" style="width: @(course.ProgressPercentage)%;"></div>
                                 </div>
                             </div>
                         </div>

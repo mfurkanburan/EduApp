@@ -264,6 +264,32 @@ namespace EduApp.Web.Migrations
                     b.ToTable("Lessons");
                 });
 
+            modelBuilder.Entity("EduApp.Web.Models.LessonProgress", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CompletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("LessonId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("StudentId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LessonId");
+
+                    b.HasIndex("StudentId", "LessonId")
+                        .IsUnique();
+
+                    b.ToTable("LessonProgresses");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -462,6 +488,25 @@ namespace EduApp.Web.Migrations
                     b.Navigation("CourseSection");
                 });
 
+            modelBuilder.Entity("EduApp.Web.Models.LessonProgress", b =>
+                {
+                    b.HasOne("EduApp.Web.Models.Lesson", "Lesson")
+                        .WithMany("Progress")
+                        .HasForeignKey("LessonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EduApp.Web.Models.Identity.ApplicationUser", "Student")
+                        .WithMany("LessonProgresses")
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Lesson");
+
+                    b.Navigation("Student");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -537,6 +582,13 @@ namespace EduApp.Web.Migrations
                     b.Navigation("Enrollments");
 
                     b.Navigation("InstructedCourses");
+
+                    b.Navigation("LessonProgresses");
+                });
+
+            modelBuilder.Entity("EduApp.Web.Models.Lesson", b =>
+                {
+                    b.Navigation("Progress");
                 });
 #pragma warning restore 612, 618
         }

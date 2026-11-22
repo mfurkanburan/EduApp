@@ -3,6 +3,7 @@ using EduApp.Web.Enums;
 using EduApp.Web.Models;
 using EduApp.Web.Models.Identity;
 using EduApp.Web.Services;
+using EduApp.Web.Services.Results;
 using EduApp.Web.ViewModels.Enrollment;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -15,11 +16,13 @@ public class EnrollmentsController : Controller
 {
     private readonly IEnrollmentService _enrollmentService;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly ILessonProgressService _lessonProgressService;
 
-    public EnrollmentsController(IEnrollmentService enrollmentService, UserManager<ApplicationUser> userManager)
+    public EnrollmentsController(IEnrollmentService enrollmentService, UserManager<ApplicationUser> userManager, ILessonProgressService lessonProgressService)
     {
         _enrollmentService = enrollmentService;
         _userManager = userManager;
+        _lessonProgressService = lessonProgressService;
     }
 
     [HttpPost]
@@ -57,19 +60,29 @@ public class EnrollmentsController : Controller
         
         List<Enrollment> enrollments = await _enrollmentService.GetStudentEnrollmentsAsync(studentId);
 
-        List<MyCourseViewModel> model = enrollments
-            .Where(enrollment => enrollment.Course is not null)
-            .Select(enrollment => new MyCourseViewModel
+        List<MyCourseViewModel> model = new List<MyCourseViewModel>();
+
+        foreach (Enrollment enrollment in enrollments)
+        {
+            if (enrollment.Course is null) continue;
+
+            CourseProgressResult progressResult = await _lessonProgressService.GetCourseProgressAsync(studentId, enrollment.CourseId);
+
+            model.Add(new MyCourseViewModel
             {
                 CourseId = enrollment.CourseId,
-                Title = enrollment.Course!.Title,
+                Title = enrollment.Course.Title,
                 CategoryName = enrollment.Course.Category?.Name ?? "Kategori bulunamadı",
                 InstructorName = enrollment.Course.Instructor?.FullName ?? "Eğitmen bulunamadı",
                 CoverImagePath = enrollment.Course.CoverImagePath,
-                EnrolledAt = enrollment.EnrolledAt
-            })
-            .ToList();
-            
+                EnrolledAt = enrollment.EnrolledAt,
+                TotalLessonCount = progressResult.TotalLessonCount,
+                CompletedLessonCount = progressResult.CompletedLessonCount,
+                ProgressPercentage = progressResult.ProgressPercentage,
+                IsCompleted = progressResult.IsCompleted
+            });
+        }
+
         return View(model);
     }
 }

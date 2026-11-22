@@ -9,4 +9,6 @@ public class LessonListItemViewModel
     public int Order { get; set; }
 
     public bool IsSelected { get; set; }
+    
+    public bool IsCompleted { get; set; }
 }

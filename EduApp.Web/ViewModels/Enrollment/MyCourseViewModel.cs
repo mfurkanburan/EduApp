@@ -13,4 +13,12 @@ public class MyCourseViewModel
     public string? CoverImagePath { get; set; }
 
     public DateTime EnrolledAt { get; set; }
+
+    public int TotalLessonCount { get; set; }
+
+    public int CompletedLessonCount { get; set; }
+
+    public int ProgressPercentage { get; set; }
+
+    public bool IsCompleted { get; set; }
 }

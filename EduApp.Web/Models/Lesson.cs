@@ -9,4 +9,5 @@ public class Lesson
     public int Order { get; set; }
     public int CourseSectionId { get; set; }
     public CourseSection? CourseSection { get; set; }
+    public List<LessonProgress> Progress { get; set; } = new List<LessonProgress>();
 }

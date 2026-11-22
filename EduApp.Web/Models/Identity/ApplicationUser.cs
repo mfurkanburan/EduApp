@@ -11,4 +11,5 @@ public class ApplicationUser : IdentityUser
     public string FullName => $"{FirstName} {LastName}".Trim();
     public List<Course> InstructedCourses { get; set; } = new List<Course>();
     public List<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
+    public List<LessonProgress> LessonProgresses { get; set; } = new List<LessonProgress>();
 }

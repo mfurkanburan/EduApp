@@ -2,6 +2,7 @@ using EduApp.Web.Constants;
 using EduApp.Web.Models;
 using EduApp.Web.Models.Identity;
 using EduApp.Web.Services;
+using EduApp.Web.Services.Results;
 using EduApp.Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -16,19 +17,22 @@ public class CoursesController : Controller
     private readonly IWebHostEnvironment _environment;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IEnrollmentService _enrollmentService;
+    private readonly ILessonProgressService _lessonProgressService;
 
     public CoursesController(
         ICourseService courseService,
         ICategoryService categoryService,
         IWebHostEnvironment environment,
         UserManager<ApplicationUser> userManager,
-        IEnrollmentService enrollmentService)
+        IEnrollmentService enrollmentService,
+        ILessonProgressService lessonProgressService)
     {
         _courseService = courseService;
         _categoryService = categoryService;
         _environment = environment;
         _userManager = userManager;
         _enrollmentService = enrollmentService;
+        _lessonProgressService = lessonProgressService;
     }
 
     private const long MaximumCoverImageSize = 5 * 1024 * 1024;
@@ -160,9 +164,16 @@ public class CoursesController : Controller
 
         bool isEnrolled = false;
 
+        CourseProgressResult courseProgress = new CourseProgressResult();
+
         if (isStudent && !string.IsNullOrWhiteSpace(currentUserId))
         {
             isEnrolled = await _enrollmentService.IsEnrolledAsync(currentUserId, course.Id);
+
+            if (isEnrolled)
+            {
+                courseProgress = await _lessonProgressService.GetCourseProgressAsync(currentUserId, course.Id);
+            }
         }
 
         bool canManageCourse = isAdmin || isCourseOwner;
@@ -206,9 +217,14 @@ public class CoursesController : Controller
                         Id = l.Id,
                         Title = l.Title,
                         Order = l.Order,
-                        IsSelected = selectedLesson is not null && l.Id == selectedLesson.Id
+                        IsSelected = selectedLesson is not null && l.Id == selectedLesson.Id,
+                        IsCompleted = courseProgress.CompletedLessonIds.Contains(l.Id)
                     }).ToList()
             }).ToList();
+
+        bool selectedLessonCompleted = selectedLesson is not null && courseProgress.CompletedLessonIds.Contains(selectedLesson.Id);
+
+        bool canCompleteSelectedLesson = isStudent && isEnrolled && selectedLesson is not null && !selectedLessonCompleted;
 
         SelectedLessonViewModel? selectedLessonModel = selectedLesson is null ? null : new SelectedLessonViewModel
         {
@@ -243,7 +259,13 @@ public class CoursesController : Controller
             SelectedLesson = selectedLessonModel,
             IsEnrolled = isEnrolled,
             CanAccessCourseContent = canAccessCourseContent,
-            CanEnroll = canEnroll
+            CanEnroll = canEnroll,
+            TotalLessonCount = courseProgress.TotalLessonCount,
+            CompletedLessonCount = courseProgress.CompletedLessonCount,
+            ProgressPercentage = courseProgress.ProgressPercentage,
+            IsCourseCompleted = courseProgress.IsCompleted,
+            CanCompleteSelectedLesson = canCompleteSelectedLesson,
+            IsSelectedLessonCompleted = selectedLessonCompleted
         };
 
         return View(model);
