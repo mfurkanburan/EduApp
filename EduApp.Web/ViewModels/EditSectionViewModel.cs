@@ -14,6 +14,7 @@ public class EditSectionViewModel
     [StringLength(150, MinimumLength = 3, ErrorMessage = "Bölüm başlığı 3 ile 150 karakter arasında olmalıdır.")]
     public string Title { get; set; } = "";
 
+    [Required(ErrorMessage = "Bölüm sırası gereklidir.")]
     [Range(1, int.MaxValue, ErrorMessage = "Bölüm sırası 1 veya daha büyük olmalıdır.")]
     public int Order { get; set; }
 }
