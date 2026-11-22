@@ -30,8 +30,19 @@
                     Yeni Ders Ekle
                 </h2>
                 <div class="text-xs font-medium text-gray-500 max-w-sm mt-2">
-                    <strong>Kurs:</strong> @Model.CourseTitle - <strong>Bölüm:</strong> @Model.SectionTitle
+                    Yeni bir ders eklemek için aşağıdaki formu doldurun. Ders materyali yüklemek isteğe bağlıdır, ancak eklenmesi önerilir.
                 </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 text-center bg-gray-50 divide-x-2 divide-gray-200 border-2 border-gray-200 rounded-2xl p-4">
+            <div class="px-6">
+                <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Kurs</span>
+                <p class="text-base font-bold text-gray-900 truncate">@Model.CourseTitle</p>
+            </div>
+            <div class="px-6">
+                <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Bölüm</span>
+                <p class="text-base font-bold text-gray-900 truncate">@Model.SectionTitle</p>
             </div>
         </div>
 
