@@ -310,29 +310,32 @@
                                 </a>
                             </div>
                         }
-                        @if (!Model.IsSelectedLessonCompleted)
+                        @if (Model.IsEnrolled)
                         {
-                            <div class="flex items-center space-x-2">
-                                <span class="inline-flex items-center space-x-2 bg-gray-50 border border-gray-200 text-gray-500 text-xs font-bold px-3 py-2 rounded-full">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="size-3">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"></path>
-                                    </svg>
+                            @if (!Model.IsSelectedLessonCompleted)
+                            {
+                                <div class="flex items-center space-x-2">
+                                    <span class="inline-flex items-center space-x-2 bg-gray-50 border border-gray-200 text-gray-500 text-xs font-bold px-3 py-2 rounded-full">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="size-3">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"></path>
+                                        </svg>
 
-                                    <span>Devam Ediyor</span>
-                                </span>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="flex items-center space-x-2">
-                                <span class="inline-flex items-center space-x-2 bg-emerald-50 border border-emerald-200 text-emerald-500 text-xs font-bold px-3 py-2 rounded-full">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="size-3">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"></path>
-                                    </svg>
+                                        <span>Devam Ediyor</span>
+                                    </span>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="flex items-center space-x-2">
+                                    <span class="inline-flex items-center space-x-2 bg-emerald-50 border border-emerald-200 text-emerald-500 text-xs font-bold px-3 py-2 rounded-full">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="size-3">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"></path>
+                                        </svg>
 
-                                    <span>Tamamlandı</span>
-                                </span>
-                            </div>
+                                        <span>Tamamlandı</span>
+                                    </span>
+                                </div>
+                            }
                         }
                     </div>
                 </div>
