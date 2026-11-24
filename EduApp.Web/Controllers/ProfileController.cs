@@ -1,6 +1,7 @@
 using EduApp.Web.Constants;
 using EduApp.Web.Models.Identity;
 using EduApp.Web.Services;
+using EduApp.Web.Services.Results;
 using EduApp.Web.ViewModels.Profile;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -39,9 +40,13 @@ public class ProfileController : Controller
         int enrolledCourseCount = 0;
         int instructorCourseCount = 0;
 
+        ProfileStatisticsResult statistics = new ProfileStatisticsResult();
+
         if (roles.Contains(ApplicationRoles.Student))
         {
-            enrolledCourseCount = await _profileService.GetEnrolledCourseCountAsync(user.Id);
+            statistics = await _profileService.GetStudentStatisticsAsync(user.Id);
+
+            enrolledCourseCount = statistics.EnrolledCourseCount;
         }
 
         if (roles.Contains(ApplicationRoles.Instructor))
@@ -58,7 +63,11 @@ public class ProfileController : Controller
             CreatedAt = user.CreatedAt,
             RoleName = GetRoleDisplayName(roles),
             EnrolledCourseCount = enrolledCourseCount,
-            InstructorCourseCount = instructorCourseCount
+            InstructorCourseCount = instructorCourseCount,
+            CompletedCourseCount = statistics.CompletedCourseCount,
+            TotalLessonCount = statistics.TotalLessonCount,
+            CompletedLessonCount = statistics.CompletedLessonCount,
+            OverallProgressPercentage = statistics.OverallProgressPercentage
         };
 
         return View(model);

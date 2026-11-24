@@ -17,4 +17,12 @@ public class ProfileViewModel
     public int EnrolledCourseCount { get; set; }
 
     public int InstructorCourseCount { get; set; }
+    
+    public int CompletedCourseCount { get; set; }
+
+    public int TotalLessonCount { get; set; }
+
+    public int CompletedLessonCount { get; set; }
+
+    public int OverallProgressPercentage { get; set; }
 }
