@@ -12,4 +12,5 @@ public class ApplicationUser : IdentityUser
     public List<Course> InstructedCourses { get; set; } = new List<Course>();
     public List<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
     public List<LessonProgress> LessonProgresses { get; set; } = new List<LessonProgress>();
+    public List<UserBadge> UserBadges { get; set; } = new List<UserBadge>();
 }

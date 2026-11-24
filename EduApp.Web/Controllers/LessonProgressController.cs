@@ -15,12 +15,18 @@ public class LessonProgressController : Controller
     private readonly ILessonProgressService _lessonProgressService;
     private readonly ILessonService _lessonService;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IBadgeService _badgeService;
 
-    public LessonProgressController(ILessonProgressService lessonProgressService, ILessonService lessonService, UserManager<ApplicationUser> userManager)
+    public LessonProgressController(
+        ILessonProgressService lessonProgressService,
+        ILessonService lessonService,
+        UserManager<ApplicationUser> userManager,
+        IBadgeService badgeService)
     {
         _lessonProgressService = lessonProgressService;
         _lessonService = lessonService;
         _userManager = userManager;
+        _badgeService = badgeService;
     }
 
     [HttpPost]
@@ -51,6 +57,8 @@ public class LessonProgressController : Controller
 
                 break;
             case LessonProgressResult.Completed:
+                await _badgeService.CheckAndAssignBadgesAsync(studentId);
+
                 TempData["ProgressMessage"] = "Dersi başarıyla tamamladınız!";
                 TempData["ProgressMessageType"] = "Success";
 

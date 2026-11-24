@@ -17,6 +17,59 @@ namespace EduApp.Web.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.12");
 
+            modelBuilder.Entity("EduApp.Web.Models.Badge", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Icon")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Badges");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "İlk dersini tamamladın.",
+                            Icon = "📕",
+                            Name = "İlk Ders"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "10 ders tamamladın.",
+                            Icon = "🚀",
+                            Name = "10 Ders"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "İlk kursunu tamamladın.",
+                            Icon = "🎓",
+                            Name = "İlk Kurs"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Description = "5 kurs tamamladın.",
+                            Icon = "🪎",
+                            Name = "5 Kurs"
+                        });
+                });
+
             modelBuilder.Entity("EduApp.Web.Models.Category", b =>
                 {
                     b.Property<int>("Id")
@@ -290,6 +343,32 @@ namespace EduApp.Web.Migrations
                     b.ToTable("LessonProgresses");
                 });
 
+            modelBuilder.Entity("EduApp.Web.Models.UserBadge", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("BadgeId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("EarnedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BadgeId");
+
+                    b.HasIndex("UserId", "BadgeId")
+                        .IsUnique();
+
+                    b.ToTable("UserBadges");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -507,6 +586,25 @@ namespace EduApp.Web.Migrations
                     b.Navigation("Student");
                 });
 
+            modelBuilder.Entity("EduApp.Web.Models.UserBadge", b =>
+                {
+                    b.HasOne("EduApp.Web.Models.Badge", "Badge")
+                        .WithMany("UserBadges")
+                        .HasForeignKey("BadgeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EduApp.Web.Models.Identity.ApplicationUser", "User")
+                        .WithMany("UserBadges")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Badge");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -558,6 +656,11 @@ namespace EduApp.Web.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("EduApp.Web.Models.Badge", b =>
+                {
+                    b.Navigation("UserBadges");
+                });
+
             modelBuilder.Entity("EduApp.Web.Models.Category", b =>
                 {
                     b.Navigation("Courses");
@@ -584,6 +687,8 @@ namespace EduApp.Web.Migrations
                     b.Navigation("InstructedCourses");
 
                     b.Navigation("LessonProgresses");
+
+                    b.Navigation("UserBadges");
                 });
 
             modelBuilder.Entity("EduApp.Web.Models.Lesson", b =>

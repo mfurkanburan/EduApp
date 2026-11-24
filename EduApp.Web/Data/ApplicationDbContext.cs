@@ -128,6 +128,27 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
             entity.HasIndex(progress => new { progress.StudentId, progress.LessonId }).IsUnique();
         });
+
+        modelBuilder.Entity<UserBadge>(entity =>
+        {
+            entity.HasOne(userBadge => userBadge.User)
+                .WithMany(user => user.UserBadges)
+                .HasForeignKey(userBadge => userBadge.UserId);
+
+            entity.HasOne(userBadge => userBadge.Badge)
+                .WithMany(badge => badge.UserBadges)
+                .HasForeignKey(userBadge => userBadge.BadgeId);
+
+            entity.HasIndex(userBadge => new { userBadge.UserId, userBadge.BadgeId }).IsUnique();
+        });
+
+        // Badge Seed
+        modelBuilder.Entity<Badge>().HasData(
+            new Badge { Id = 1, Name = "İlk Ders", Description = "İlk dersini tamamladın.", Icon = "📕" },
+            new Badge { Id = 2, Name = "10 Ders", Description = "10 ders tamamladın.", Icon = "🚀" },
+            new Badge { Id = 3, Name = "İlk Kurs", Description = "İlk kursunu tamamladın.", Icon = "🎓" },
+            new Badge { Id = 4, Name = "5 Kurs", Description = "5 kurs tamamladın.", Icon = "🪎" }
+        );
     }
 
     public DbSet<Course> Courses => Set<Course>();
@@ -137,4 +158,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<CourseRequirement> CourseRequirements => Set<CourseRequirement>();
     public DbSet<Enrollment> Enrollments => Set<Enrollment>();
     public DbSet<LessonProgress> LessonProgresses => Set<LessonProgress>();
+    public DbSet<Badge> Badges => Set<Badge>();
+    public DbSet<UserBadge> UserBadges => Set<UserBadge>();
 }

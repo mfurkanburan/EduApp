@@ -1,4 +1,5 @@
 using EduApp.Web.Constants;
+using EduApp.Web.Models;
 using EduApp.Web.Models.Identity;
 using EduApp.Web.Services;
 using EduApp.Web.Services.Results;
@@ -16,13 +17,20 @@ public class ProfileController : Controller
     private readonly IProfileService _profileService;
     private readonly IWebHostEnvironment _environment;
     private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly IBadgeService _badgeService;
 
-    public ProfileController(UserManager<ApplicationUser> userManager, IProfileService profileService, IWebHostEnvironment environment, SignInManager<ApplicationUser> signInManager)
+    public ProfileController(
+        UserManager<ApplicationUser> userManager,
+        IProfileService profileService,
+        IWebHostEnvironment environment,
+        SignInManager<ApplicationUser> signInManager,
+        IBadgeService badgeService)
     {
         _userManager = userManager;
         _profileService = profileService;
         _environment = environment;
         _signInManager = signInManager;
+        _badgeService = badgeService;
     }
 
     private const long MaximumProfileImageSize = 5 * 1024 * 1024;
@@ -42,11 +50,15 @@ public class ProfileController : Controller
 
         ProfileStatisticsResult statistics = new ProfileStatisticsResult();
 
+        List<UserBadge> badges = new List<UserBadge>();
+
         if (roles.Contains(ApplicationRoles.Student))
         {
             statistics = await _profileService.GetStudentStatisticsAsync(user.Id);
 
             enrolledCourseCount = statistics.EnrolledCourseCount;
+
+            badges = await _badgeService.GetUserBadgesAsync(user.Id);
         }
 
         if (roles.Contains(ApplicationRoles.Instructor))
@@ -67,7 +79,16 @@ public class ProfileController : Controller
             CompletedCourseCount = statistics.CompletedCourseCount,
             TotalLessonCount = statistics.TotalLessonCount,
             CompletedLessonCount = statistics.CompletedLessonCount,
-            OverallProgressPercentage = statistics.OverallProgressPercentage
+            OverallProgressPercentage = statistics.OverallProgressPercentage,
+            Badges = badges.Where(userBadge => userBadge.Badge is not null)
+                .Select(userBadge => new UserBadgeViewModel
+                {
+                    Name = userBadge.Badge!.Name,
+                    Description = userBadge.Badge.Description,
+                    Icon = userBadge.Badge.Icon,
+                    EarnedAt = userBadge.EarnedAt
+                })
+                .ToList()
         };
 
         return View(model);

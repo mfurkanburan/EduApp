@@ -25,4 +25,6 @@ public class ProfileViewModel
     public int CompletedLessonCount { get; set; }
 
     public int OverallProgressPercentage { get; set; }
+
+    public List<UserBadgeViewModel> Badges { get; set; } = new List<UserBadgeViewModel>();
 }
