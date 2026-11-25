@@ -1,3 +1,4 @@
+using System.Globalization;
 using EduApp.Web.Data;
 using EduApp.Web.Models;
 using EduApp.Web.ViewModels;
@@ -80,20 +81,6 @@ public class CourseService
             .Include(c => c.Instructor)
             .AsNoTracking();
 
-        if (!string.IsNullOrWhiteSpace(search))
-        {
-            string term = search.Trim();
-            query = query.Where(c =>
-                c.Title.Contains(term) ||
-                (c.Category != null && c.Category.Name.Contains(term)) ||
-                (c.Instructor != null && (
-                    c.Instructor.FirstName.Contains(term) ||
-                    c.Instructor.LastName.Contains(term) ||
-                    (c.Instructor.FirstName + " " + c.Instructor.LastName).Contains(term)
-                ))
-            );
-        }
-
         if (categoryId.HasValue)
         {
             query = query.Where(c => c.CategoryId == categoryId.Value);
@@ -104,18 +91,42 @@ public class CourseService
             query = query.Where(c => c.Level == level.Value);
         }
 
+        query = query.OrderByDescending(c => c.CreatedAt);
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            string term = search.Trim();
+
+            List<Course> filteredCourses = (await query.ToListAsync())
+                .Where(c =>
+                    ContainsTurkish(c.Title, term) ||
+                    ContainsTurkish(c.Category?.Name, term) ||
+                    ContainsTurkish(c.Instructor?.FullName, term))
+                .ToList();
+
+            int totalPages = (int)Math.Ceiling(filteredCourses.Count / (double)pageSize);
+
+            return new PagedCoursesResult
+            {
+                TotalPages = totalPages,
+                Courses = filteredCourses
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToList()
+            };
+        }
+
         int totalCourses = await query.CountAsync();
-        int totalPages = (int)Math.Ceiling(totalCourses / (double)pageSize);
+        int pages = (int)Math.Ceiling(totalCourses / (double)pageSize);
 
         List<Course> courses = await query
-            .OrderByDescending(c => c.CreatedAt)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
 
         return new PagedCoursesResult
         {
-            TotalPages = totalPages,
+            TotalPages = pages,
             Courses = courses
         };
     }
@@ -127,5 +138,13 @@ public class CourseService
             .ThenInclude(s => s.Lessons)
             .AsNoTracking()
             .FirstOrDefaultAsync(c => c.Id == id);
+    }
+
+    private static readonly CompareInfo TurkishCompare = CultureInfo.GetCultureInfo("tr-TR").CompareInfo;
+
+    private static bool ContainsTurkish(string? source, string term)
+    {
+        return !string.IsNullOrWhiteSpace(source)
+            && TurkishCompare.IndexOf(source, term, CompareOptions.IgnoreCase) >= 0;
     }
 }
