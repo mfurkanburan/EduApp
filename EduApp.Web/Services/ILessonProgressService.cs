@@ -1,5 +1,5 @@
-using EduApp.Web.Enums;
 using EduApp.Web.Services.Results;
+using EduApp.Web.Models;
 
 namespace EduApp.Web.Services;
 

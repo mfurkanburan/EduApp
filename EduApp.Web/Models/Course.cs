@@ -1,4 +1,3 @@
-using EduApp.Web.Enums;
 using EduApp.Web.Models.Identity;
 
 namespace EduApp.Web.Models;

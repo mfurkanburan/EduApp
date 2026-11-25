@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using EduApp.Web.Enums;
 using EduApp.Web.Models;
 
 namespace EduApp.Web.ViewModels;

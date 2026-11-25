@@ -1,10 +1,9 @@
-using EduApp.Web.Constants;
-using EduApp.Web.Enums;
 using EduApp.Web.Models.Identity;
 using EduApp.Web.ViewModels.Account;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using EduApp.Web.Models;
 
 namespace EduApp.Web.Controllers;
 

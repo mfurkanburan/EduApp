@@ -1,6 +1,5 @@
-using EduApp.Web.Enums;
-
 namespace EduApp.Web.ViewModels;
+using EduApp.Web.Models;
 
 public class CourseListItemViewModel
 {

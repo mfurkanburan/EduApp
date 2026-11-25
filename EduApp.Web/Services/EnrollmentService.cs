@@ -1,5 +1,4 @@
 using EduApp.Web.Data;
-using EduApp.Web.Enums;
 using EduApp.Web.Models;
 using Microsoft.EntityFrameworkCore;
 

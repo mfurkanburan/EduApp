@@ -1,8 +1,8 @@
-using EduApp.Web.Constants;
+using EduApp.Web.Models;
 using EduApp.Web.Models.Identity;
 using Microsoft.AspNetCore.Identity;
 
-namespace EduApp.Web.Data.Seed;
+namespace EduApp.Web.Data;
 
 public static class IdentitySeed
 {

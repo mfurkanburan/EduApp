@@ -1,4 +1,3 @@
-using EduApp.Web.Constants;
 using EduApp.Web.Data;
 using EduApp.Web.Models;
 using EduApp.Web.Services.Results;

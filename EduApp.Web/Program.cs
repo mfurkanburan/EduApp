@@ -1,5 +1,4 @@
 using EduApp.Web.Data;
-using EduApp.Web.Data.Seed;
 using EduApp.Web.Models;
 using EduApp.Web.Models.Identity;
 using EduApp.Web.Services;
