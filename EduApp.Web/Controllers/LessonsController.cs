@@ -14,19 +14,20 @@ public class LessonsController : Controller
 {
     private readonly ICourseSectionService _sectionService;
     private readonly ILessonService _lessonService;
-    private readonly IWebHostEnvironment _environment;
+    private readonly FileService _fileService;
     private readonly UserManager<ApplicationUser> _userManager;
 
-    public LessonsController(ICourseSectionService sectionService, ILessonService lessonService, IWebHostEnvironment environment, UserManager<ApplicationUser> userManager)
+    public LessonsController(
+        ICourseSectionService sectionService,
+        ILessonService lessonService,
+        FileService fileService,
+        UserManager<ApplicationUser> userManager)
     {
         _sectionService = sectionService;
         _lessonService = lessonService;
-        _environment = environment;
+        _fileService = fileService;
         _userManager = userManager;
     }
-
-    private const long MaximumMaterialFileSize = 10 * 1024 * 1024;
-    private static readonly string[] AllowedMaterialExtensions = { ".pdf", ".doc", ".docx", ".ppt", ".pptx", ".zip" };
 
     [HttpGet("Lessons/Create/{sectionId:int}")]
     public async Task<IActionResult> Create(int sectionId)
@@ -69,7 +70,12 @@ public class LessonsController : Controller
 
         if (section.CourseId != model.CourseId) return BadRequest();
 
-        ValidateMaterialFile(model.MaterialFile);
+        string? materialFileError = _fileService.ValidateMaterial(model.MaterialFile);
+
+        if (materialFileError is not null)
+        {
+            ModelState.AddModelError(nameof(CreateLessonViewModel.MaterialFile), materialFileError);
+        }
 
         if (!ModelState.IsValid)
         {
@@ -78,7 +84,9 @@ public class LessonsController : Controller
             return View(model);
         }
 
-        string? materialFilePath = await SaveMaterialFileAsync(model.MaterialFile);
+        string? materialFilePath = model.MaterialFile is not null
+            ? await _fileService.SaveFileAsync(model.MaterialFile, "materials")
+            : null;
 
         Lesson lesson = new()
         {
@@ -92,60 +100,6 @@ public class LessonsController : Controller
         await _lessonService.CreateLessonAsync(lesson);
 
         return RedirectToAction("Details", "Courses", new { id = model.CourseId, lessonId = lesson.Id });
-    }
-
-    private void ValidateMaterialFile(IFormFile? file)
-    {
-        if (file is null) return;
-
-        if (file.Length == 0)
-        {
-            ModelState.AddModelError(
-                nameof(CreateLessonViewModel.MaterialFile),
-                "Seçilen dosya boş olamaz.");
-
-            return;
-        }
-
-        if (file.Length > MaximumMaterialFileSize)
-        {
-            ModelState.AddModelError(nameof(CreateLessonViewModel.MaterialFile), "Dosya boyutu 10 MB'yi geçemez.");
-        }
-
-        string extension = Path.GetExtension(file.FileName).ToLowerInvariant();
-
-        if (string.IsNullOrWhiteSpace(extension) || !AllowedMaterialExtensions.Contains(extension))
-        {
-            ModelState.AddModelError(
-                nameof(CreateLessonViewModel.MaterialFile),
-                "Geçersiz dosya türü. Yalnızca PDF, DOC, DOCX, PPT, PPTX ve ZIP dosyaları yüklenebilir.");
-        }
-    }
-
-    private async Task<string?> SaveMaterialFileAsync(IFormFile? file)
-    {
-        if (file is null || file.Length == 0) return null;
-
-        string extension = Path.GetExtension(file.FileName).ToLowerInvariant();
-
-        string uploadsDirectory = Path.Combine(_environment.WebRootPath, "uploads", "materials");
-
-        Directory.CreateDirectory(uploadsDirectory);
-
-        string generatedFileName = $"{Guid.NewGuid():N}{extension}";
-
-        string physicalFilePath = Path.Combine(uploadsDirectory, generatedFileName);
-
-        await using FileStream fileStream = new(
-            physicalFilePath,
-            FileMode.CreateNew,
-            FileAccess.Write,
-            FileShare.None
-        );
-
-        await file.CopyToAsync(fileStream);
-
-        return $"/uploads/materials/{generatedFileName}";
     }
 
     private static void PrepareCreateViewModel(CreateLessonViewModel model, CourseSection section)
@@ -202,7 +156,12 @@ public class LessonsController : Controller
 
         if (course.Id != model.CourseId) return BadRequest();
 
-        ValidateMaterialFile(model.MaterialFile);
+        string? materialFileError = _fileService.ValidateMaterial(model.MaterialFile);
+
+        if (materialFileError is not null)
+        {
+            ModelState.AddModelError(nameof(EditLessonViewModel.MaterialFile), materialFileError);
+        }
 
         if (!ModelState.IsValid)
         {
@@ -217,7 +176,7 @@ public class LessonsController : Controller
 
         if (model.MaterialFile is not null)
         {
-            newMaterialFilePath = await SaveMaterialFileAsync(model.MaterialFile);
+            newMaterialFilePath = await _fileService.SaveFileAsync(model.MaterialFile, "materials");
 
             materialFilePath = newMaterialFilePath;
         }
@@ -238,11 +197,11 @@ public class LessonsController : Controller
 
         if (model.MaterialFile is not null && existingLesson.MaterialPath != newMaterialFilePath)
         {
-            DeleteMaterialFile(existingLesson.MaterialPath);
+            _fileService.DeleteFile(existingLesson.MaterialPath, "materials");
         }
         else if (model.RemoveExistingMaterial)
         {
-            DeleteMaterialFile(existingLesson.MaterialPath);
+            _fileService.DeleteFile(existingLesson.MaterialPath, "materials");
         }
 
         return RedirectToAction("Details", "Courses", new { id = model.CourseId, lessonId = existingLesson.Id });
@@ -255,26 +214,6 @@ public class LessonsController : Controller
         model.CourseTitle = existingLesson.CourseSection?.Course?.Title ?? "";
         model.SectionTitle = existingLesson.CourseSection?.Title ?? "";
         model.ExistingMaterialPath = existingLesson.MaterialPath;
-    }
-
-    private void DeleteMaterialFile(string? materialPath)
-    {
-        if (string.IsNullOrWhiteSpace(materialPath)) return;
-
-        string materialsDirectory = Path.Combine(_environment.WebRootPath, "uploads", "materials");
-
-        string fileName = Path.GetFileName(materialPath);
-
-        if (string.IsNullOrWhiteSpace(fileName)) return;
-
-        string physicalFilePath = Path.Combine(materialsDirectory, fileName);
-
-        if (!physicalFilePath.StartsWith(materialsDirectory, StringComparison.OrdinalIgnoreCase)) return;
-
-        if (System.IO.File.Exists(physicalFilePath))
-        {
-            System.IO.File.Delete(physicalFilePath);
-        }
     }
 
     [HttpGet]
@@ -328,7 +267,7 @@ public class LessonsController : Controller
 
         if (!deleted) return NotFound();
 
-        DeleteMaterialFile(materialPath);
+        _fileService.DeleteFile(materialPath, "materials");
 
         return RedirectToAction("Details", "Courses", new { id = course.Id });
     }

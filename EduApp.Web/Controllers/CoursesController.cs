@@ -14,7 +14,7 @@ public class CoursesController : Controller
 {
     private readonly ICourseService _courseService;
     private readonly ICategoryService _categoryService;
-    private readonly IWebHostEnvironment _environment;
+    private readonly FileService _fileService;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IEnrollmentService _enrollmentService;
     private readonly ILessonProgressService _lessonProgressService;
@@ -22,21 +22,18 @@ public class CoursesController : Controller
     public CoursesController(
         ICourseService courseService,
         ICategoryService categoryService,
-        IWebHostEnvironment environment,
+        FileService fileService,
         UserManager<ApplicationUser> userManager,
         IEnrollmentService enrollmentService,
         ILessonProgressService lessonProgressService)
     {
         _courseService = courseService;
         _categoryService = categoryService;
-        _environment = environment;
+        _fileService = fileService;
         _userManager = userManager;
         _enrollmentService = enrollmentService;
         _lessonProgressService = lessonProgressService;
     }
-
-    private const long MaximumCoverImageSize = 5 * 1024 * 1024;
-    private static readonly string[] AllowedCoverImageExtensions = { ".jpg", ".jpeg", ".png", ".webp" };
 
     [AllowAnonymous]
     [HttpGet]
@@ -94,7 +91,12 @@ public class CoursesController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(CreateCourseViewModel model)
     {
-        ValidateCoverImage(model.CoverImage);
+        string? coverImageError = _fileService.ValidateImage(model.CoverImage, true, "Kurs kapak resmi");
+
+        if (coverImageError is not null)
+        {
+            ModelState.AddModelError(nameof(CreateCourseViewModel.CoverImage), coverImageError);
+        }
 
         List<CourseRequirement> requirements = CreateRequirements(model.RequirementsText);
 
@@ -118,7 +120,7 @@ public class CoursesController : Controller
             return View(model);
         }
 
-        string coverImagePath = await SaveCoverImageAsync(model.CoverImage!);
+        string coverImagePath = await _fileService.SaveFileAsync(model.CoverImage!, "course-covers");
 
         string? instructorId = _userManager.GetUserId(User);
 
@@ -312,7 +314,12 @@ public class CoursesController : Controller
 
         if (!CanManageCourse(existingCourse)) return Forbid();
 
-        ValidateOptionalCoverImage(model.CoverImage);
+        string? coverImageError = _fileService.ValidateImage(model.CoverImage, false, "Kurs kapak resmi");
+
+        if (coverImageError is not null)
+        {
+            ModelState.AddModelError(nameof(EditCourseViewModel.CoverImage), coverImageError);
+        }
 
         List<CourseRequirement> requirements = CreateRequirements(model.RequirementsText);
 
@@ -354,7 +361,7 @@ public class CoursesController : Controller
 
         if (model.CoverImage is not null)
         {
-            coverImagePath = await SaveCoverImageAsync(model.CoverImage);
+            await _fileService.SaveFileAsync(model.CoverImage, "course-covers");
         }
         else if (model.RemoveExistingCoverImage)
         {
@@ -378,7 +385,7 @@ public class CoursesController : Controller
         {
             if (model.CoverImage is not null)
             {
-                DeleteCoverImage(coverImagePath);
+                _fileService.DeleteFile(coverImagePath, "course-covers");
             }
 
             return NotFound();
@@ -386,7 +393,7 @@ public class CoursesController : Controller
 
         if (oldCoverImagePath != coverImagePath)
         {
-            DeleteCoverImage(oldCoverImagePath);
+            _fileService.DeleteFile(oldCoverImagePath, "course-covers");
         }
 
         return RedirectToAction(nameof(Details), new { id = model.Id });
@@ -435,81 +442,14 @@ public class CoursesController : Controller
 
         if (!deleted) return NotFound();
 
-        DeleteCoverImage(coverImagePath);
+        _fileService.DeleteFile(coverImagePath, "course-covers");
 
         foreach (string materialPath in materialPaths)
         {
-            DeleteMaterialFileFromCourse(materialPath);
+            _fileService.DeleteFile(materialPath, "materials");
         }
 
         return RedirectToAction(nameof(Index));
-    }
-
-    private void DeleteMaterialFileFromCourse(string? materialPath)
-    {
-        if (string.IsNullOrWhiteSpace(materialPath)) return;
-
-        string materialsDirectory = Path.Combine(_environment.WebRootPath, "uploads", "materials");
-
-        string fileName = Path.GetFileName(materialPath);
-
-        if (string.IsNullOrWhiteSpace(fileName)) return;
-
-        string physicalPath = Path.Combine(materialsDirectory, fileName);
-
-        if (!physicalPath.StartsWith(materialsDirectory, StringComparison.OrdinalIgnoreCase)) return;
-
-        if (System.IO.File.Exists(physicalPath))
-        {
-            System.IO.File.Delete(physicalPath);
-        }
-    }
-
-    private void ValidateCoverImage(IFormFile? coverImage)
-    {
-        if (coverImage is null)
-        {
-            ModelState.AddModelError(nameof(CreateCourseViewModel.CoverImage), "Kurs kapak görseli zorunludur.");
-            return;
-        }
-
-        if (coverImage.Length == 0)
-        {
-            ModelState.AddModelError(nameof(CreateCourseViewModel.CoverImage), "Kurs kapak görseli boş olamaz.");
-            return;
-        }
-
-        if (coverImage.Length > MaximumCoverImageSize)
-        {
-            ModelState.AddModelError(nameof(CreateCourseViewModel.CoverImage), "Kurs kapak görseli 5 MB'den büyük olamaz.");
-            return;
-        }
-
-        string extension = Path.GetExtension(coverImage.FileName).ToLowerInvariant();
-
-        if (string.IsNullOrWhiteSpace(extension) || !AllowedCoverImageExtensions.Contains(extension))
-        {
-            ModelState.AddModelError(nameof(CreateCourseViewModel.CoverImage), "Kurs kapak görseli yalnızca .jpg, .jpeg, .png veya .webp formatında olmalıdır.");
-        }
-    }
-
-    private async Task<string> SaveCoverImageAsync(IFormFile coverImage)
-    {
-        string extension = Path.GetExtension(coverImage.FileName).ToLowerInvariant();
-
-        string coversDirectory = Path.Combine(_environment.WebRootPath, "uploads", "course-covers");
-
-        Directory.CreateDirectory(coversDirectory);
-
-        string generatedFileName = $"{Guid.NewGuid():N}{extension}";
-
-        string physicalFilePath = Path.Combine(coversDirectory, generatedFileName);
-
-        await using FileStream stream = new(physicalFilePath, FileMode.CreateNew, FileAccess.Write, FileShare.None);
-    
-        await coverImage.CopyToAsync(stream);
-
-        return $"/uploads/course-covers/{generatedFileName}";
     }
 
     private static List<CourseRequirement> CreateRequirements(string requirementsText)
@@ -534,50 +474,6 @@ public class CoursesController : Controller
         }
 
         return requirements;
-    }
-
-    private void ValidateOptionalCoverImage(IFormFile? coverImage)
-    {
-        if (coverImage is null) return;
-
-        if (coverImage.Length == 0)
-        {
-            ModelState.AddModelError(nameof(EditCourseViewModel.CoverImage), "Kurs kapak görseli boş olamaz.");
-            return;
-        }
-
-        if (coverImage.Length > MaximumCoverImageSize)
-        {
-            ModelState.AddModelError(nameof(EditCourseViewModel.CoverImage), "Kurs kapak görseli 5 MB'den büyük olamaz.");
-            return;
-        }
-
-        string extension = Path.GetExtension(coverImage.FileName).ToLowerInvariant();
-
-        if (string.IsNullOrWhiteSpace(extension) || !AllowedCoverImageExtensions.Contains(extension))
-        {
-            ModelState.AddModelError(nameof(EditCourseViewModel.CoverImage), "Kurs kapak görseli yalnızca .jpg, .jpeg, .png veya .webp formatında olmalıdır.");
-        }
-    }
-
-    private void DeleteCoverImage(string? coverImagePath)
-    {
-        if (string.IsNullOrWhiteSpace(coverImagePath)) return;
-
-        string coversDirectory = Path.Combine(_environment.WebRootPath, "uploads", "course-covers");
-
-        string fileName = Path.GetFileName(coverImagePath);
-
-        if (string.IsNullOrWhiteSpace(fileName)) return;
-
-        string physicalFilePath = Path.Combine(coversDirectory, fileName);
-
-        if (!physicalFilePath.StartsWith(coversDirectory, StringComparison.OrdinalIgnoreCase)) return;
-
-        if (System.IO.File.Exists(physicalFilePath))
-        {
-            System.IO.File.Delete(physicalFilePath);
-        }
     }
 
     private bool CanManageCourse(Course course)

@@ -15,26 +15,23 @@ public class ProfileController : Controller
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IProfileService _profileService;
-    private readonly IWebHostEnvironment _environment;
+    private readonly FileService _fileService;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IBadgeService _badgeService;
 
     public ProfileController(
         UserManager<ApplicationUser> userManager,
         IProfileService profileService,
-        IWebHostEnvironment environment,
+        FileService fileService,
         SignInManager<ApplicationUser> signInManager,
         IBadgeService badgeService)
     {
         _userManager = userManager;
         _profileService = profileService;
-        _environment = environment;
+        _fileService = fileService;
         _signInManager = signInManager;
         _badgeService = badgeService;
     }
-
-    private const long MaximumProfileImageSize = 5 * 1024 * 1024;
-    private static readonly string[] AllowedProfileImageExtensions = { ".jpg", ".jpeg", ".png", ".webp" };
 
     [HttpGet]
     public async Task<IActionResult> Index()
@@ -132,66 +129,6 @@ public class ProfileController : Controller
         return View(model);
     }
 
-    private void ValidateProfileImage(IFormFile? profileImage)
-    {
-        if (profileImage is null) return;
-
-        if (profileImage.Length == 0)
-        {
-            ModelState.AddModelError(nameof(EditProfileViewModel.ProfileImage), "Profil resmi boş olamaz.");
-            return;
-        }
-
-        if (profileImage.Length > MaximumProfileImageSize)
-        {
-            ModelState.AddModelError(nameof(EditProfileViewModel.ProfileImage), "Profil resmi 5 MB'den büyük olamaz.");
-            return;
-        }
-
-        string extension = Path.GetExtension(profileImage.FileName).ToLowerInvariant();
-
-        if (string.IsNullOrWhiteSpace(extension) || !AllowedProfileImageExtensions.Contains(extension))
-        {
-            ModelState.AddModelError(nameof(EditProfileViewModel.ProfileImage), "Profil resmi yalnızca .jpg, .jpeg, .png veya .webp formatında olmalıdır.");
-        }
-    }
-
-    private async Task<string> SaveProfileImageAsync(IFormFile profileImage)
-    {
-        string extension = Path.GetExtension(profileImage.FileName).ToLowerInvariant();
-
-        string profilesDirectory = Path.Combine(_environment.WebRootPath, "uploads", "profiles");
-
-        Directory.CreateDirectory(profilesDirectory);
-
-        string generatedFileName = $"{Guid.NewGuid()}{extension}";
-
-        string physicalFilePath = Path.Combine(profilesDirectory, generatedFileName);
-
-        await using FileStream stream = new(physicalFilePath, FileMode.CreateNew, FileAccess.Write, FileShare.None);
-
-        await profileImage.CopyToAsync(stream);
-
-        return $"/uploads/profiles/{generatedFileName}";
-    }
-
-    private void DeleteProfileImage(string profileImagePath)
-    {
-        if (string.IsNullOrEmpty(profileImagePath)) return;
-
-        string profilesDirectory = Path.Combine(_environment.WebRootPath, "uploads", "profiles");
-
-        string fileName = Path.GetFileName(profileImagePath);
-
-        if (string.IsNullOrEmpty(fileName)) return;
-
-        string physicalFilePath = Path.GetFullPath(Path.Combine(profilesDirectory, fileName));
-
-        if (!physicalFilePath.StartsWith(profilesDirectory, StringComparison.OrdinalIgnoreCase)) return;
-
-        if (System.IO.File.Exists(physicalFilePath)) System.IO.File.Delete(physicalFilePath);
-    }
-
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(EditProfileViewModel model)
@@ -200,7 +137,12 @@ public class ProfileController : Controller
 
         if (user is null) return Challenge();
 
-        ValidateProfileImage(model.ProfileImage);
+        string? profileImageError = _fileService.ValidateImage(model.ProfileImage, false, "Profil resmi");
+
+        if (profileImageError is not null)
+        {
+            ModelState.AddModelError(nameof(EditProfileViewModel.ProfileImage), profileImageError);
+        }
 
         if (!ModelState.IsValid)
         {
@@ -218,7 +160,7 @@ public class ProfileController : Controller
 
         if (model.ProfileImage is not null)
         {
-            newlySavedProfileImagePath = await SaveProfileImageAsync(model.ProfileImage);
+            newlySavedProfileImagePath = await _fileService.SaveFileAsync(model.ProfileImage, "profiles");
 
             profileImagePath = newlySavedProfileImagePath;
         }
@@ -235,7 +177,7 @@ public class ProfileController : Controller
 
         if (!result.Succeeded)
         {
-            if (newlySavedProfileImagePath is not null) DeleteProfileImage(newlySavedProfileImagePath);
+            if (newlySavedProfileImagePath is not null) _fileService.DeleteFile(newlySavedProfileImagePath, "profiles");
 
             foreach (IdentityError error in result.Errors)
             {
@@ -248,7 +190,7 @@ public class ProfileController : Controller
             return View(model);
         }
 
-        if (oldProfileImagePath != profileImagePath) DeleteProfileImage(oldProfileImagePath!);
+        if (oldProfileImagePath != profileImagePath) _fileService.DeleteFile(oldProfileImagePath, "profiles");
 
         TempData["ProfileMessage"] = "Profiliniz başarıyla güncellendi.";
 
