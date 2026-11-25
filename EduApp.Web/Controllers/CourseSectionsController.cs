@@ -11,11 +11,16 @@ public class CourseSectionsController : Controller
 {
     private readonly CourseService _courseService;
     private readonly CurriculumService _curriculumService;
+    private readonly FileService _fileService;
 
-    public CourseSectionsController(CourseService courseService, CurriculumService curriculumService)
+    public CourseSectionsController(
+        CourseService courseService,
+        CurriculumService curriculumService,
+        FileService fileService)
     {
         _courseService = courseService;
         _curriculumService = curriculumService;
+        _fileService = fileService;
     }
 
     [HttpGet]
@@ -159,16 +164,23 @@ public class CourseSectionsController : Controller
         CourseSection? section = await _curriculumService.GetCourseSectionByIdAsync(model.Id);
 
         if (section is null) return NotFound();
-
         if (section.Course is null) return NotFound();
-
         if (!User.CanManageCourse(section.Course)) return Forbid();
-
         if (section.CourseId != model.CourseId) return BadRequest();
+
+        List<string> materialPaths = section.Lessons
+            .Where(l => !string.IsNullOrWhiteSpace(l.MaterialPath))
+            .Select(l => l.MaterialPath!)
+            .ToList();
 
         bool deleted = await _curriculumService.DeleteCourseSectionAsync(model.Id);
 
         if (!deleted) return NotFound();
+
+        foreach (string materialPath in materialPaths)
+        {
+            _fileService.DeleteFile(materialPath, "materials");
+        }
 
         return RedirectToAction("Details", "Courses", new { id = model.CourseId });
     }
