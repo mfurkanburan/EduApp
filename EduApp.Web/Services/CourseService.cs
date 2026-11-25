@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EduApp.Web.Services;
 
-public class CourseService : ICourseService
+public class CourseService
 {
     private readonly ApplicationDbContext _context;
 

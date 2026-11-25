@@ -1,7 +1,6 @@
 using EduApp.Web.Models;
 using EduApp.Web.Models.Identity;
 using EduApp.Web.Services;
-using EduApp.Web.Services.Results;
 using EduApp.Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -11,27 +10,24 @@ namespace EduApp.Web.Controllers;
 
 public class CoursesController : Controller
 {
-    private readonly ICourseService _courseService;
-    private readonly ICategoryService _categoryService;
+    private readonly CourseService _courseService;
+    private readonly CategoryService _categoryService;
     private readonly FileService _fileService;
     private readonly UserManager<ApplicationUser> _userManager;
-    private readonly IEnrollmentService _enrollmentService;
-    private readonly ILessonProgressService _lessonProgressService;
+    private readonly EnrollmentService _enrollmentService;
 
     public CoursesController(
-        ICourseService courseService,
-        ICategoryService categoryService,
+        CourseService courseService,
+        CategoryService categoryService,
         FileService fileService,
         UserManager<ApplicationUser> userManager,
-        IEnrollmentService enrollmentService,
-        ILessonProgressService lessonProgressService)
+        EnrollmentService enrollmentService)
     {
         _courseService = courseService;
         _categoryService = categoryService;
         _fileService = fileService;
         _userManager = userManager;
         _enrollmentService = enrollmentService;
-        _lessonProgressService = lessonProgressService;
     }
 
     [AllowAnonymous]
@@ -173,7 +169,7 @@ public class CoursesController : Controller
 
             if (isEnrolled)
             {
-                courseProgress = await _lessonProgressService.GetCourseProgressAsync(currentUserId, course.Id);
+                courseProgress = await _enrollmentService.GetCourseProgressAsync(currentUserId, course.Id);
             }
         }
 

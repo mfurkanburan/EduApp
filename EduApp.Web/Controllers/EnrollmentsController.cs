@@ -1,7 +1,6 @@
 using EduApp.Web.Models;
 using EduApp.Web.Models.Identity;
 using EduApp.Web.Services;
-using EduApp.Web.Services.Results;
 using EduApp.Web.ViewModels.Enrollment;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -12,15 +11,13 @@ namespace EduApp.Web.Controllers;
 [Authorize(Roles = ApplicationRoles.Student)]
 public class EnrollmentsController : Controller
 {
-    private readonly IEnrollmentService _enrollmentService;
+    private readonly EnrollmentService _enrollmentService;
     private readonly UserManager<ApplicationUser> _userManager;
-    private readonly ILessonProgressService _lessonProgressService;
 
-    public EnrollmentsController(IEnrollmentService enrollmentService, UserManager<ApplicationUser> userManager, ILessonProgressService lessonProgressService)
+    public EnrollmentsController(EnrollmentService enrollmentService, UserManager<ApplicationUser> userManager)
     {
         _enrollmentService = enrollmentService;
         _userManager = userManager;
-        _lessonProgressService = lessonProgressService;
     }
 
     [HttpPost]
@@ -64,7 +61,7 @@ public class EnrollmentsController : Controller
         {
             if (enrollment.Course is null) continue;
 
-            CourseProgressResult progressResult = await _lessonProgressService.GetCourseProgressAsync(studentId, enrollment.CourseId);
+            CourseProgressResult progressResult = await _enrollmentService.GetCourseProgressAsync(studentId, enrollment.CourseId);
 
             model.Add(new MyCourseViewModel
             {

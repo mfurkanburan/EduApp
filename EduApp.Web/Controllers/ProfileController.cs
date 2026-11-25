@@ -1,7 +1,6 @@
 using EduApp.Web.Models;
 using EduApp.Web.Models.Identity;
 using EduApp.Web.Services;
-using EduApp.Web.Services.Results;
 using EduApp.Web.ViewModels.Profile;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -13,23 +12,20 @@ namespace EduApp.Web.Controllers;
 public class ProfileController : Controller
 {
     private readonly UserManager<ApplicationUser> _userManager;
-    private readonly IProfileService _profileService;
+    private readonly ProfileService _profileService;
     private readonly FileService _fileService;
     private readonly SignInManager<ApplicationUser> _signInManager;
-    private readonly IBadgeService _badgeService;
 
     public ProfileController(
         UserManager<ApplicationUser> userManager,
-        IProfileService profileService,
+        ProfileService profileService,
         FileService fileService,
-        SignInManager<ApplicationUser> signInManager,
-        IBadgeService badgeService)
+        SignInManager<ApplicationUser> signInManager)
     {
         _userManager = userManager;
         _profileService = profileService;
         _fileService = fileService;
         _signInManager = signInManager;
-        _badgeService = badgeService;
     }
 
     [HttpGet]
@@ -54,7 +50,7 @@ public class ProfileController : Controller
 
             enrolledCourseCount = statistics.EnrolledCourseCount;
 
-            badges = await _badgeService.GetUserBadgesAsync(user.Id);
+            badges = await _profileService.GetUserBadgesAsync(user.Id);
         }
 
         if (roles.Contains(ApplicationRoles.Instructor))

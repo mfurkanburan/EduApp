@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EduApp.Web.Services;
 
-public class CategoryService : ICategoryService
+public class CategoryService
 {
     private readonly ApplicationDbContext _context;
 

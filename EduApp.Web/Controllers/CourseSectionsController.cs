@@ -11,14 +11,14 @@ namespace EduApp.Web.Controllers;
 [Authorize(Roles = ApplicationRoles.InstructorOrAdmin)]
 public class CourseSectionsController : Controller
 {
-    private readonly ICourseService _courseService;
-    private readonly ICourseSectionService _courseSectionService;
+    private readonly CourseService _courseService;
+    private readonly CurriculumService _curriculumService;
     private readonly UserManager<ApplicationUser> _userManager;
 
-    public CourseSectionsController(ICourseService courseService, ICourseSectionService courseSectionService, UserManager<ApplicationUser> userManager)
+    public CourseSectionsController(CourseService courseService, CurriculumService curriculumService, UserManager<ApplicationUser> userManager)
     {
         _courseService = courseService;
-        _courseSectionService = courseSectionService;
+        _curriculumService = curriculumService;
         _userManager = userManager;
     }
 
@@ -61,7 +61,7 @@ public class CourseSectionsController : Controller
             return View(model);
         }
 
-        int nextOrder = await _courseSectionService.GetNextSectionOrderAsync(courseId);
+        int nextOrder = await _curriculumService.GetNextSectionOrderAsync(courseId);
 
         CourseSection newSection = new CourseSection
         {
@@ -70,7 +70,7 @@ public class CourseSectionsController : Controller
             CourseId = courseId
         };
 
-        await _courseSectionService.CreateCourseSectionAsync(newSection);
+        await _curriculumService.CreateCourseSectionAsync(newSection);
 
         return RedirectToAction("Details", "Courses", new { id = courseId });
     }
@@ -78,7 +78,7 @@ public class CourseSectionsController : Controller
     [HttpGet]
     public async Task<IActionResult> Edit(int id)
     {
-        CourseSection? section = await _courseSectionService.GetCourseSectionByIdAsync(id);
+        CourseSection? section = await _curriculumService.GetCourseSectionByIdAsync(id);
 
         if (section is null) return NotFound();
 
@@ -102,7 +102,7 @@ public class CourseSectionsController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(EditSectionViewModel model)
     {
-        CourseSection? section = await _courseSectionService.GetCourseSectionByIdAsync(model.Id);
+        CourseSection? section = await _curriculumService.GetCourseSectionByIdAsync(model.Id);
 
         if (section is null) return NotFound();
 
@@ -127,8 +127,8 @@ public class CourseSectionsController : Controller
             Order = model.Order
         };
 
-        await _courseSectionService.UpdateCourseSectionAsync(updatedSection);
-        await _courseSectionService.ReorderCourseSectionsAsync(model.CourseId);
+        await _curriculumService.UpdateCourseSectionAsync(updatedSection);
+        await _curriculumService.ReorderCourseSectionsAsync(model.CourseId);
         
         return RedirectToAction("Details", "Courses", new { id = model.CourseId });
     }
@@ -136,7 +136,7 @@ public class CourseSectionsController : Controller
     [HttpGet]
     public async Task<IActionResult> Delete(int id)
     {
-        CourseSection? section = await _courseSectionService.GetCourseSectionByIdAsync(id);
+        CourseSection? section = await _curriculumService.GetCourseSectionByIdAsync(id);
 
         if (section is null) return NotFound();
 
@@ -160,7 +160,7 @@ public class CourseSectionsController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(DeleteSectionViewModel model)
     {
-        CourseSection? section = await _courseSectionService.GetCourseSectionByIdAsync(model.Id);
+        CourseSection? section = await _curriculumService.GetCourseSectionByIdAsync(model.Id);
 
         if (section is null) return NotFound();
 
@@ -170,7 +170,7 @@ public class CourseSectionsController : Controller
 
         if (section.CourseId != model.CourseId) return BadRequest();
 
-        bool deleted = await _courseSectionService.DeleteCourseSectionAsync(model.Id);
+        bool deleted = await _curriculumService.DeleteCourseSectionAsync(model.Id);
 
         if (!deleted) return NotFound();
 

@@ -10,21 +10,21 @@ namespace EduApp.Web.Controllers;
 [Authorize(Roles = ApplicationRoles.Student)]
 public class LessonProgressController : Controller
 {
-    private readonly ILessonProgressService _lessonProgressService;
-    private readonly ILessonService _lessonService;
+    private readonly EnrollmentService _enrollmentService;
+    private readonly CurriculumService _curriculumService;
     private readonly UserManager<ApplicationUser> _userManager;
-    private readonly IBadgeService _badgeService;
+    private readonly ProfileService _profileService;
 
     public LessonProgressController(
-        ILessonProgressService lessonProgressService,
-        ILessonService lessonService,
+        EnrollmentService enrollmentService,
+        CurriculumService curriculumService,
         UserManager<ApplicationUser> userManager,
-        IBadgeService badgeService)
+        ProfileService profileService)
     {
-        _lessonProgressService = lessonProgressService;
-        _lessonService = lessonService;
+        _enrollmentService = enrollmentService;
+        _curriculumService = curriculumService;
         _userManager = userManager;
-        _badgeService = badgeService;
+        _profileService = profileService;
     }
 
     [HttpPost]
@@ -35,13 +35,13 @@ public class LessonProgressController : Controller
 
         if (string.IsNullOrWhiteSpace(studentId)) return Challenge();
 
-        Lesson? lesson = await _lessonService.GetLessonByIdAsync(lessonId);
+        Lesson? lesson = await _curriculumService.GetLessonByIdAsync(lessonId);
 
         if (lesson is null || lesson.CourseSection?.Course is null) return NotFound();
 
         int courseId = lesson.CourseSection.Course.Id;
 
-        LessonProgressResult result = await _lessonProgressService.CompleteLessonAsync(studentId, lessonId);
+        LessonProgressResult result = await _enrollmentService.CompleteLessonAsync(studentId, lessonId);
 
         switch (result)
         {
@@ -55,7 +55,7 @@ public class LessonProgressController : Controller
 
                 break;
             case LessonProgressResult.Completed:
-                await _badgeService.CheckAndAssignBadgesAsync(studentId);
+                await _profileService.CheckAndAssignBadgesAsync(studentId);
 
                 TempData["ProgressMessage"] = "Dersi başarıyla tamamladınız!";
                 TempData["ProgressMessageType"] = "Success";

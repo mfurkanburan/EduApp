@@ -11,19 +11,16 @@ namespace EduApp.Web.Controllers;
 [Authorize(Roles = ApplicationRoles.InstructorOrAdmin)]
 public class LessonsController : Controller
 {
-    private readonly ICourseSectionService _sectionService;
-    private readonly ILessonService _lessonService;
+    private readonly CurriculumService _curriculumService;
     private readonly FileService _fileService;
     private readonly UserManager<ApplicationUser> _userManager;
 
     public LessonsController(
-        ICourseSectionService sectionService,
-        ILessonService lessonService,
+        CurriculumService curriculumService,
         FileService fileService,
         UserManager<ApplicationUser> userManager)
     {
-        _sectionService = sectionService;
-        _lessonService = lessonService;
+        _curriculumService = curriculumService;
         _fileService = fileService;
         _userManager = userManager;
     }
@@ -31,7 +28,7 @@ public class LessonsController : Controller
     [HttpGet("Lessons/Create/{sectionId:int}")]
     public async Task<IActionResult> Create(int sectionId)
     {
-        CourseSection? section = await _sectionService.GetCourseSectionByIdAsync(sectionId);
+        CourseSection? section = await _curriculumService.GetCourseSectionByIdAsync(sectionId);
 
         if (section is null) return NotFound();
 
@@ -58,7 +55,7 @@ public class LessonsController : Controller
     {
         if (sectionId != model.CourseSectionId) return BadRequest();
 
-        CourseSection? section = await _sectionService
+        CourseSection? section = await _curriculumService
                 .GetCourseSectionByIdAsync(sectionId);
 
         if (section is null) return NotFound();
@@ -92,11 +89,11 @@ public class LessonsController : Controller
             Title = model.Title.Trim(),
             Content = model.Content.Trim(),
             MaterialPath = materialFilePath,
-            Order = await _lessonService.GetNextOrderAsync(sectionId),
+            Order = await _curriculumService.GetNextOrderAsync(sectionId),
             CourseSectionId = sectionId
         };
 
-        await _lessonService.CreateLessonAsync(lesson);
+        await _curriculumService.CreateLessonAsync(lesson);
 
         return RedirectToAction("Details", "Courses", new { id = model.CourseId, lessonId = lesson.Id });
     }
@@ -112,7 +109,7 @@ public class LessonsController : Controller
     [HttpGet]
     public async Task<IActionResult> Edit(int id)
     {
-        Lesson? lesson = await _lessonService.GetLessonByIdAsync(id);
+        Lesson? lesson = await _curriculumService.GetLessonByIdAsync(id);
 
         if (lesson is null) return NotFound();
 
@@ -141,7 +138,7 @@ public class LessonsController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(EditLessonViewModel model)
     {
-        Lesson? existingLesson = await _lessonService.GetLessonByIdAsync(model.Id);
+        Lesson? existingLesson = await _curriculumService.GetLessonByIdAsync(model.Id);
 
         if (existingLesson is null) return NotFound();
 
@@ -192,7 +189,7 @@ public class LessonsController : Controller
             MaterialPath = materialFilePath
         };
 
-        await _lessonService.UpdateLessonAsync(updatedLesson);
+        await _curriculumService.UpdateLessonAsync(updatedLesson);
 
         if (model.MaterialFile is not null && existingLesson.MaterialPath != newMaterialFilePath)
         {
@@ -218,7 +215,7 @@ public class LessonsController : Controller
     [HttpGet]
     public async Task<IActionResult> Delete(int id)
     {
-        Lesson? lesson = await _lessonService.GetLessonByIdAsync(id);
+        Lesson? lesson = await _curriculumService.GetLessonByIdAsync(id);
 
         if (lesson is null) return NotFound();
 
@@ -246,7 +243,7 @@ public class LessonsController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(DeleteLessonViewModel model)
     {
-        Lesson? lesson = await _lessonService.GetLessonByIdAsync(model.Id);
+        Lesson? lesson = await _curriculumService.GetLessonByIdAsync(model.Id);
 
         if (lesson is null) return NotFound();
 
@@ -262,7 +259,7 @@ public class LessonsController : Controller
 
         string? materialPath = lesson.MaterialPath;
 
-        bool deleted = await _lessonService.DeleteLessonAsync(lesson.Id);
+        bool deleted = await _curriculumService.DeleteLessonAsync(lesson.Id);
 
         if (!deleted) return NotFound();
 

@@ -47,14 +47,12 @@ builder.Services.ConfigureApplicationCookie(
 );
 
 // DI - Services
-builder.Services.AddScoped<ICourseService, CourseService>();
-builder.Services.AddScoped<ICategoryService, CategoryService>();
-builder.Services.AddScoped<ICourseSectionService, CourseSectionService>();
-builder.Services.AddScoped<ILessonService, LessonService>();
-builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
-builder.Services.AddScoped<IProfileService, ProfileService>();
-builder.Services.AddScoped<ILessonProgressService, LessonProgressService>();
-builder.Services.AddScoped<IBadgeService, BadgeService>();
+builder.Services.AddScoped<FileService>();
+builder.Services.AddScoped<CategoryService>();
+builder.Services.AddScoped<CourseService>();
+builder.Services.AddScoped<CurriculumService>();
+builder.Services.AddScoped<EnrollmentService>();
+builder.Services.AddScoped<ProfileService>();
 builder.Services.AddScoped<FileService>();
 
 var app = builder.Build();

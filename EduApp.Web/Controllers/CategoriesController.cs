@@ -9,9 +9,9 @@ namespace EduApp.Web.Controllers;
 [Authorize(Roles = ApplicationRoles.Admin)]
 public class CategoriesController : Controller
 {
-    private readonly ICategoryService _categoryService;
+    private readonly CategoryService _categoryService;
 
-    public CategoriesController(ICategoryService categoryService)
+    public CategoriesController(CategoryService categoryService)
     {
         _categoryService = categoryService;
     }
