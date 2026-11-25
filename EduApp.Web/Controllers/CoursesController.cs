@@ -471,4 +471,15 @@ public class CoursesController : Controller
 
         return requirements;
     }
+
+    [Authorize(Roles = ApplicationRoles.Instructor)]
+    [HttpGet]
+    public async Task<IActionResult> MyCourses()
+    {
+        string? instructorId = _userManager.GetUserId(User);
+        if (string.IsNullOrWhiteSpace(instructorId)) return Challenge();
+
+        List<InstructorCourseViewModel> courses = await _courseService.GetInstructorCoursesAsync(instructorId);
+        return View(courses);
+    }
 }

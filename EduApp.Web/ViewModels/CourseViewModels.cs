@@ -255,3 +255,18 @@ public class DeleteLessonViewModel
     public string Title { get; set; } = "";
     public string? MaterialPath { get; set; }
 }
+
+// Instructor (Eğitmen)
+
+public class InstructorCourseViewModel
+{
+    public int Id { get; set; }
+    public string Title { get; set; } = "";
+    public string CategoryName { get; set; } = "";
+    public CourseLevel Level { get; set; }
+    public string? CoverImagePath { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public int SectionCount { get; set; }
+    public int LessonCount { get; set; }
+    public int StudentCount { get; set; }
+}

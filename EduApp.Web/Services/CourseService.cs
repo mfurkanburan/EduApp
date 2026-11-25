@@ -131,6 +131,14 @@ public class CourseService
         };
     }
 
+    private static readonly CompareInfo TurkishCompare = CultureInfo.GetCultureInfo("tr-TR").CompareInfo;
+
+    private static bool ContainsTurkish(string? source, string term)
+    {
+        return !string.IsNullOrWhiteSpace(source)
+            && TurkishCompare.IndexOf(source, term, CompareOptions.IgnoreCase) >= 0;
+    }
+
     public async Task<Course?> GetCourseForDeleteAsync(int id)
     {
         return await _context.Courses
@@ -140,11 +148,24 @@ public class CourseService
             .FirstOrDefaultAsync(c => c.Id == id);
     }
 
-    private static readonly CompareInfo TurkishCompare = CultureInfo.GetCultureInfo("tr-TR").CompareInfo;
-
-    private static bool ContainsTurkish(string? source, string term)
+    public async Task<List<InstructorCourseViewModel>> GetInstructorCoursesAsync(string instructorId)
     {
-        return !string.IsNullOrWhiteSpace(source)
-            && TurkishCompare.IndexOf(source, term, CompareOptions.IgnoreCase) >= 0;
+        return await _context.Courses
+            .AsNoTracking()
+            .Where(c => c.InstructorId == instructorId)
+            .OrderByDescending(c => c.CreatedAt)
+            .Select(c => new InstructorCourseViewModel
+            {
+                Id = c.Id,
+                Title = c.Title,
+                CategoryName = c.Category != null ? c.Category.Name : "Kategori bulunamadı",
+                Level = c.Level,
+                CoverImagePath = c.CoverImagePath,
+                CreatedAt = c.CreatedAt,
+                SectionCount = c.Sections.Count,
+                LessonCount = c.Sections.SelectMany(s => s.Lessons).Count(),
+                StudentCount = c.Enrollments.Count
+            })
+            .ToListAsync();
     }
 }
