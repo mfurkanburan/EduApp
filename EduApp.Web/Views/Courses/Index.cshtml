@@ -135,7 +135,16 @@
                         </div>
                         <div class="pt-4 mt-4 border-t border-gray-100 flex items-center justify-between">
                             <div class="flex items-center space-x-2">
-                                <img src="https://avatars.githubusercontent.com/u/101507088" class="w-6 h-6 rounded-full">
+                                @if (!string.IsNullOrWhiteSpace(course.InstructorProfileImagePath))
+                                {
+                                    <img src="@course.InstructorProfileImagePath" alt="@course.InstructorName" class="w-6 h-6 rounded-full object-cover" />
+                                }
+                                else
+                                {
+                                    <div class="w-6 h-6 rounded-full bg-indigo-100 text-indigo-600 text-[10px] font-bold flex items-center justify-center select-none">
+                                        @(string.IsNullOrWhiteSpace(course.InstructorName) ? "E" : course.InstructorName[0].ToString().ToUpper())
+                                    </div>
+                                }
                                 <span class="text-xs font-medium">@course.InstructorName</span>
                             </div>
                             <a asp-controller="Courses" asp-action="Details" asp-route-id="@course.Id" class="flex items-center space-x-1 px-3.5 py-2 rounded-xl bg-indigo-50 text-indigo-500 text-xs font-bold hover:bg-indigo-500 hover:text-white">

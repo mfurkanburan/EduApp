@@ -1,14 +1,24 @@
 using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
 using EduApp.Web.Models;
+using EduApp.Web.Services;
+using EduApp.Web.ViewModels;
+using Microsoft.AspNetCore.Mvc;
 
 namespace EduApp.Web.Controllers;
 
 public class HomeController : Controller
 {
-    public IActionResult Index()
+    private readonly CourseService _courseService;
+
+    public HomeController(CourseService courseService)
     {
-        return View();
+        _courseService = courseService;
+    }
+
+    public async Task<IActionResult> Index()
+    {
+        HomeViewModel model = await _courseService.GetHomePageDataAsync();
+        return View(model);
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

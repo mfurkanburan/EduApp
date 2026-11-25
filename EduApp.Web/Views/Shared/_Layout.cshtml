@@ -1,6 +1,13 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Identity
+@using EduApp.Web.Models.Identity
+@inject UserManager<ApplicationUser> UserManager
+@{
     var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
 	var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+	
+	ApplicationUser? currentUser = User.Identity?.IsAuthenticated == true
+    	? await UserManager.GetUserAsync(User)
+    	: null;
 }
 <!DOCTYPE html>
 <html lang="tr" class="bg-gray-100 text-gray-900">
@@ -95,9 +102,18 @@
 		{
 			<div class="bg-white border-2 border-gray-200 p-1 rounded-full justify-self-end">
 				<div class="flex items-center space-x-2.5">
-					<img src="https://avatars.githubusercontent.com/u/101507088" class="size-10 rounded-full p-0.5 border-2 border-indigo-500">
+					@if (!string.IsNullOrWhiteSpace(currentUser?.ProfileImagePath))
+					{
+						<img src="@currentUser.ProfileImagePath" alt="@currentUser.FullName" class="size-10 rounded-full p-0.5 border-2 border-indigo-500 object-cover" />
+					}
+					else
+					{
+						<div class="size-10 rounded-full border-2 border-indigo-500 bg-indigo-50 text-indigo-500 text-xs font-extrabold flex items-center justify-center">
+							@(currentUser is not null ? $"{currentUser.FirstName.FirstOrDefault()}{currentUser.LastName.FirstOrDefault()}".ToUpper() : "U")
+						</div>
+					}
 					<div class="flex flex-col">
-						<span class="text-sm font-bold">@User.Identity.Name</span>
+						<span class="text-sm font-bold">@(currentUser?.FullName ?? User.Identity?.Name)</span>
 						<span class="text-xs font-bold text-indigo-500 uppercase">
 							@if (User.IsInRole(ApplicationRoles.Student))
 							{

@@ -199,4 +199,49 @@ public class CourseService
             Courses = courses
         };
     }
+
+    public async Task<HomeViewModel> GetHomePageDataAsync()
+    {
+        List<CourseListItemViewModel> latestCourses = await _context.Courses
+            .AsNoTracking()
+            .OrderByDescending(c => c.CreatedAt)
+            .Take(6)
+            .Select(c => new CourseListItemViewModel
+            {
+                Id = c.Id,
+                Name = c.Title,
+                Description = c.Description,
+                CategoryName = c.Category != null ? c.Category.Name : "Kategori bulunamadı",
+                Level = c.Level,
+                CoverImagePath = c.CoverImagePath,
+                CreatedAt = c.CreatedAt,
+                InstructorName = c.Instructor != null
+                    ? c.Instructor.FirstName + " " + c.Instructor.LastName
+                    : "Eğitmen atanmamış",
+                InstructorProfileImagePath = c.Instructor != null ? c.Instructor.ProfileImagePath : null
+            })
+            .ToListAsync();
+
+        List<CategoryListItemViewModel> categories = await _context.Categories
+            .AsNoTracking()
+            .OrderByDescending(c => c.Courses.Count)
+            .ThenBy(c => c.Name)
+            .Take(8)
+            .Select(c => new CategoryListItemViewModel
+            {
+                Id = c.Id,
+                Name = c.Name,
+                CourseCount = c.Courses.Count
+            })
+            .ToListAsync();
+
+        return new HomeViewModel
+        {
+            TotalCourseCount = await _context.Courses.AsNoTracking().CountAsync(),
+            TotalCategoryCount = await _context.Categories.AsNoTracking().CountAsync(),
+            TotalLessonCount = await _context.Lessons.AsNoTracking().CountAsync(),
+            Categories = categories,
+            LatestCourses = latestCourses
+        };
+    }
 }

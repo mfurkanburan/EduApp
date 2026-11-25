@@ -32,6 +32,7 @@ public class CourseListItemViewModel
     public string? CoverImagePath { get; set; }
     public DateTime CreatedAt { get; set; }
     public string InstructorName { get; set; } = "";
+    public string? InstructorProfileImagePath { get; set; }
 }
 
 // Course Details (Kurs Detayları)
@@ -269,4 +270,15 @@ public class InstructorCourseViewModel
     public int SectionCount { get; set; }
     public int LessonCount { get; set; }
     public int StudentCount { get; set; }
+}
+
+// Home (Ana Sayfa)
+
+public class HomeViewModel
+{
+    public int TotalCourseCount { get; set; }
+    public int TotalCategoryCount { get; set; }
+    public int TotalLessonCount { get; set; }
+    public List<CategoryListItemViewModel> Categories { get; set; } = new List<CategoryListItemViewModel>();
+    public List<CourseListItemViewModel> LatestCourses { get; set; } = new List<CourseListItemViewModel>();
 }

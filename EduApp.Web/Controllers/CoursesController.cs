@@ -63,7 +63,8 @@ public class CoursesController : Controller
                 Level = c.Level,
                 CoverImagePath = c.CoverImagePath,
                 CreatedAt = c.CreatedAt,
-                InstructorName = c.Instructor?.FullName ?? "Eğitmen atanmamış"
+                InstructorName = c.Instructor?.FullName ?? "Eğitmen atanmamış",
+                InstructorProfileImagePath = c.Instructor?.ProfileImagePath
             }).ToList()
         };
 
