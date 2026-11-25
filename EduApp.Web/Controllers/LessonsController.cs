@@ -1,9 +1,7 @@
 using EduApp.Web.Models;
-using EduApp.Web.Models.Identity;
 using EduApp.Web.Services;
 using EduApp.Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EduApp.Web.Controllers;
@@ -13,16 +11,13 @@ public class LessonsController : Controller
 {
     private readonly CurriculumService _curriculumService;
     private readonly FileService _fileService;
-    private readonly UserManager<ApplicationUser> _userManager;
 
     public LessonsController(
         CurriculumService curriculumService,
-        FileService fileService,
-        UserManager<ApplicationUser> userManager)
+        FileService fileService)
     {
         _curriculumService = curriculumService;
         _fileService = fileService;
-        _userManager = userManager;
     }
 
     [HttpGet("Lessons/Create/{sectionId:int}")]
@@ -34,7 +29,7 @@ public class LessonsController : Controller
 
         if (section.Course is null) return NotFound();
 
-        if (!CanManageCourse(section.Course)) return Forbid();
+        if (!User.CanManageCourse(section.Course)) return Forbid();
 
         CreateLessonViewModel model = new()
         {
@@ -62,7 +57,7 @@ public class LessonsController : Controller
 
         if (section.Course is null) return NotFound();
 
-        if (!CanManageCourse(section.Course)) return Forbid();
+        if (!User.CanManageCourse(section.Course)) return Forbid();
 
         if (section.CourseId != model.CourseId) return BadRequest();
 
@@ -117,7 +112,7 @@ public class LessonsController : Controller
 
         if (course is null) return NotFound();
 
-        if (!CanManageCourse(course)) return Forbid();
+        if (!User.CanManageCourse(course)) return Forbid();
 
         EditLessonViewModel model = new()
         {
@@ -146,7 +141,7 @@ public class LessonsController : Controller
 
         if (course is null) return NotFound();
 
-        if (!CanManageCourse(course)) return Forbid();
+        if (!User.CanManageCourse(course)) return Forbid();
 
         if (existingLesson.CourseSectionId != model.CourseSectionId) return BadRequest();
 
@@ -223,7 +218,7 @@ public class LessonsController : Controller
 
         if (course is null) return NotFound();
 
-        if (!CanManageCourse(course)) return Forbid();
+        if (!User.CanManageCourse(course)) return Forbid();
 
         DeleteLessonViewModel model = new()
         {
@@ -251,7 +246,7 @@ public class LessonsController : Controller
 
         if (course is null) return NotFound();
 
-        if (!CanManageCourse(course)) return Forbid();
+        if (!User.CanManageCourse(course)) return Forbid();
 
         if (lesson.CourseSectionId != model.CourseSectionId) return BadRequest();
 
@@ -266,16 +261,5 @@ public class LessonsController : Controller
         _fileService.DeleteFile(materialPath, "materials");
 
         return RedirectToAction("Details", "Courses", new { id = course.Id });
-    }
-
-    private bool CanManageCourse(Course course)
-    {
-        if (User.IsInRole(ApplicationRoles.Admin)) return true;
-
-        if (!User.IsInRole(ApplicationRoles.Instructor)) return false;
-
-        string? currentUserId = _userManager.GetUserId(User);
-
-        return !string.IsNullOrWhiteSpace(currentUserId) && course.InstructorId == currentUserId;
     }
 }

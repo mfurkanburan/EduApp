@@ -1,14 +1,28 @@
 using System.ComponentModel.DataAnnotations;
 using EduApp.Web.Models;
 
-namespace EduApp.Web.ViewModels.Account;
+namespace EduApp.Web.ViewModels;
+
+public class LoginViewModel
+{
+    [Required(ErrorMessage = "E-posta alanı boş bırakılamaz.")]
+    [EmailAddress(ErrorMessage = "Geçerli bir e-posta adresi giriniz.")]
+    public string Email { get; set; } = "";
+
+    [Required(ErrorMessage = "Şifre alanı boş bırakılamaz.")]
+    [DataType(DataType.Password)]
+    public string Password { get; set; } = "";
+
+    public bool RememberMe { get; set; }
+    public string? ReturnUrl { get; set; }
+}
 
 public class RegisterViewModel
 {
     [Required(ErrorMessage = "Ad alanı boş bırakılamaz.")]
     [StringLength(100, MinimumLength = 2, ErrorMessage = "Ad alanı 2 ile 100 karakter arasında olmalıdır.")]
     public string FirstName { get; set; } = "";
-    
+
     [Required(ErrorMessage = "Soyad alanı boş bırakılamaz.")]
     [StringLength(100, MinimumLength = 2, ErrorMessage = "Soyad alanı 2 ile 100 karakter arasında olmalıdır.")]
     public string LastName { get; set; } = "";

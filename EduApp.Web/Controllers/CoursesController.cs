@@ -240,7 +240,7 @@ public class CoursesController : Controller
             Description = course.Description,
             InstructorId = course.InstructorId,
             InstructorName = course.Instructor?.FullName ?? "Eğitmen atanmamış",
-            CanManageCourse = CanManageCourse(course),
+            CanManageCourse = User.CanManageCourse(course),
             CreatedAt = course.CreatedAt,
             CategoryName = course.Category?.Name ?? "Kategori bulunamadı",
             Level = course.Level,
@@ -276,7 +276,7 @@ public class CoursesController : Controller
 
         if (course is null) return NotFound();
 
-        if (!CanManageCourse(course)) return Forbid();
+        if (!User.CanManageCourse(course)) return Forbid();
 
         EditCourseViewModel model = new EditCourseViewModel
         {
@@ -307,7 +307,7 @@ public class CoursesController : Controller
 
         if (existingCourse is null) return NotFound();
 
-        if (!CanManageCourse(existingCourse)) return Forbid();
+        if (!User.CanManageCourse(existingCourse)) return Forbid();
 
         string? coverImageError = _fileService.ValidateImage(model.CoverImage, false, "Kurs kapak resmi");
 
@@ -402,7 +402,7 @@ public class CoursesController : Controller
 
         if (course is null) return NotFound();
 
-        if (!CanManageCourse(course)) return Forbid();
+        if (!User.CanManageCourse(course)) return Forbid();
 
         CourseDetailsViewModel model = new CourseDetailsViewModel
         {
@@ -423,7 +423,7 @@ public class CoursesController : Controller
 
         if (course is null) return NotFound();
 
-        if (!CanManageCourse(course)) return Forbid();
+        if (!User.CanManageCourse(course)) return Forbid();
 
         string? coverImagePath = course.CoverImagePath;
 
@@ -469,16 +469,5 @@ public class CoursesController : Controller
         }
 
         return requirements;
-    }
-
-    private bool CanManageCourse(Course course)
-    {
-        if (User.IsInRole(ApplicationRoles.Admin)) return true;
-
-        if (!User.IsInRole(ApplicationRoles.Instructor)) return false;
-
-        string? currentUserId = _userManager.GetUserId(User);
-
-        return !string.IsNullOrWhiteSpace(currentUserId) && course.InstructorId == currentUserId;
     }
 }

@@ -1,7 +1,7 @@
 using EduApp.Web.Models;
 using EduApp.Web.Models.Identity;
 using EduApp.Web.Services;
-using EduApp.Web.ViewModels.Profile;
+using EduApp.Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -198,19 +198,6 @@ public class ProfileController : Controller
         return View(new ChangePasswordViewModel());
     }
 
-    private static string TranslateIdentityError(IdentityError error)
-    {
-        return error.Code switch
-        {
-            "PasswordMismatch" => "Mevcut şifreniz yanlış.",
-            "PasswordTooShort" => "Şifreniz çok kısa. En az 8 karakter uzunluğunda olmalıdır.",
-            "PasswordRequiresDigit" => "Şifreniz en az bir rakam içermelidir.",
-            "PasswordRequiresLower" => "Şifreniz en az bir küçük harf içermelidir.",
-            "PasswordRequiresUpper" => "Şifreniz en az bir büyük harf içermelidir.",
-            _ => error.Description
-        };
-    }
-
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
@@ -233,7 +220,7 @@ public class ProfileController : Controller
         {
             foreach (IdentityError error in result.Errors)
             {
-                ModelState.AddModelError(string.Empty, TranslateIdentityError(error));
+                ModelState.AddModelError(string.Empty, error.ToTurkishMessage());
             }
 
             return View(model);

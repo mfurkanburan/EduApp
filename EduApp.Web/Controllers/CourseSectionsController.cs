@@ -1,9 +1,7 @@
 using EduApp.Web.Models;
-using EduApp.Web.Models.Identity;
 using EduApp.Web.Services;
 using EduApp.Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EduApp.Web.Controllers;
@@ -13,13 +11,11 @@ public class CourseSectionsController : Controller
 {
     private readonly CourseService _courseService;
     private readonly CurriculumService _curriculumService;
-    private readonly UserManager<ApplicationUser> _userManager;
 
-    public CourseSectionsController(CourseService courseService, CurriculumService curriculumService, UserManager<ApplicationUser> userManager)
+    public CourseSectionsController(CourseService courseService, CurriculumService curriculumService)
     {
         _courseService = courseService;
         _curriculumService = curriculumService;
-        _userManager = userManager;
     }
 
     [HttpGet]
@@ -30,7 +26,7 @@ public class CourseSectionsController : Controller
 
         if (course is null) return NotFound();
 
-        if (!CanManageCourse(course)) return Forbid();
+        if (!User.CanManageCourse(course)) return Forbid();
 
         CreateSectionViewModel model = new CreateSectionViewModel
         {
@@ -52,7 +48,7 @@ public class CourseSectionsController : Controller
 
         if (course is null) return NotFound();
 
-        if (!CanManageCourse(course)) return Forbid();
+        if (!User.CanManageCourse(course)) return Forbid();
 
         if (!ModelState.IsValid)
         {
@@ -84,7 +80,7 @@ public class CourseSectionsController : Controller
 
         if (section.Course is null) return NotFound();
 
-        if (!CanManageCourse(section.Course)) return Forbid();
+        if (!User.CanManageCourse(section.Course)) return Forbid();
 
         EditSectionViewModel model = new EditSectionViewModel
         {
@@ -108,7 +104,7 @@ public class CourseSectionsController : Controller
 
         if (section.Course is null) return NotFound();
         
-        if (!CanManageCourse(section.Course)) return Forbid();
+        if (!User.CanManageCourse(section.Course)) return Forbid();
 
         if (section.CourseId != model.CourseId) return BadRequest();
 
@@ -142,7 +138,7 @@ public class CourseSectionsController : Controller
 
         if (section.Course is null) return NotFound();
 
-        if (!CanManageCourse(section.Course)) return Forbid();
+        if (!User.CanManageCourse(section.Course)) return Forbid();
 
         DeleteSectionViewModel model = new DeleteSectionViewModel
         {
@@ -166,7 +162,7 @@ public class CourseSectionsController : Controller
 
         if (section.Course is null) return NotFound();
 
-        if (!CanManageCourse(section.Course)) return Forbid();
+        if (!User.CanManageCourse(section.Course)) return Forbid();
 
         if (section.CourseId != model.CourseId) return BadRequest();
 
@@ -175,16 +171,5 @@ public class CourseSectionsController : Controller
         if (!deleted) return NotFound();
 
         return RedirectToAction("Details", "Courses", new { id = model.CourseId });
-    }
-
-    private bool CanManageCourse(Course course)
-    {
-        if (User.IsInRole(ApplicationRoles.Admin)) return true;
-
-        if (!User.IsInRole(ApplicationRoles.Instructor)) return false;
-
-        string? currentUserId = _userManager.GetUserId(User);
-
-        return !string.IsNullOrWhiteSpace(currentUserId) && course.InstructorId == currentUserId;
     }
 }

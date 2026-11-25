@@ -1,5 +1,5 @@
 using EduApp.Web.Models.Identity;
-using EduApp.Web.ViewModels.Account;
+using EduApp.Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -100,23 +100,8 @@ public class AccountController : Controller
     {
         foreach (IdentityError error in result.Errors)
         {
-            ModelState.AddModelError(string.Empty, TranslateIdentityError(error));
+            ModelState.AddModelError(string.Empty, error.ToTurkishMessage());
         }
-    }
-
-    private static string TranslateIdentityError(IdentityError error)
-    {
-        return error.Code switch
-        {
-            "PasswordTooShort" => "Parola en az 8 karakter olmalıdır.",
-            "PasswordRequiresDigit" => "Parola en az bir rakam içermelidir.",
-            "PasswordRequiresLower" => "Parola en az bir küçük harf içermelidir.",
-            "PasswordRequiresUpper" => "Parola en az bir büyük harf içermelidir.",
-            "DuplicateEmail" => "Bu e-posta adresi zaten kayıtlı.",
-            "DuplicateUserName" => "Bu e-posta adresi zaten kayıtlı.",
-            "InvalidEmail" => "Geçerli bir e-posta adresi giriniz.",
-            _ => error.Description
-        };
     }
 
     [AllowAnonymous]

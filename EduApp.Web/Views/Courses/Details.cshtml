@@ -374,7 +374,7 @@
                 </div>
                 @if (Model.CanCompleteSelectedLesson && Model.SelectedLesson is not null)
                 {
-                    <form asp-controller="LessonProgress" asp-action="CompleteLesson" method="post">
+                    <form asp-controller="Enrollments" asp-action="CompleteLesson" method="post">
                         <input type="hidden" name="lessonId" value="@Model.SelectedLesson.Id" />
 
                         <div class="relative overflow-hidden border-t-2 border-gray-200 bg-gray-50 px-6 py-4">
