@@ -32,27 +32,28 @@ public class CoursesController : Controller
 
     [AllowAnonymous]
     [HttpGet]
-    public async Task<IActionResult> Index(string? search, int page = 1)
+    public async Task<IActionResult> Index(string? search, int? categoryId, CourseLevel? level, int page = 1)
     {
         const int pageSize = 9;
 
         if (page < 1) page = 1;
 
-        PagedCoursesResult result = await _courseService.GetAllCoursesAsync(search, page, pageSize);
+        PagedCoursesResult result = await _courseService.GetAllCoursesAsync(search, categoryId, level, page, pageSize);
 
         if (result.TotalPages > 0 && page > result.TotalPages)
         {
             page = result.TotalPages;
-
-            result = await _courseService.GetAllCoursesAsync(search, page, pageSize);
+            result = await _courseService.GetAllCoursesAsync(search, categoryId, level, page, pageSize);
         }
 
         CourseListViewModel model = new CourseListViewModel
         {
             Search = search,
+            CategoryId = categoryId,
+            Level = level,
             CurrentPage = page,
             TotalPages = result.TotalPages,
-            
+            Categories = await _categoryService.GetAllCategoriesAsync(),
             Courses = result.Courses.Select(c => new CourseListItemViewModel
             {
                 Id = c.Id,

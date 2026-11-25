@@ -2,37 +2,86 @@
 
 @{
     ViewData["Title"] = "Kurslar";
+    bool hasActiveFilter = !string.IsNullOrWhiteSpace(Model.Search) || Model.CategoryId.HasValue || Model.Level.HasValue;
 }
 
 <section>
     <form method="get" asp-action="Index">
-        <div class="flex items-center space-x-4">
-            <input type="text" name="search" class="h-12 w-full flex items-center px-4 bg-white rounded-2xl border-2 border-gray-200 text-sm text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="Kurs adına göre arama yapın..." value="@Model.Search" />
+        @if (Model.Level.HasValue)
+        {
+            <input type="hidden" name="level" value="@Model.Level.Value" />
+        }
+
+        <div class="flex flex-row items-center gap-3">
+            <input type="text"
+                   name="search"
+                   class="h-12 w-full flex items-center px-4 bg-white rounded-2xl border-2 border-gray-200 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                   placeholder="Kurs adı, kategori veya eğitmen adına göre arayın..."
+                   value="@Model.Search" />
+
+            <select name="categoryId"
+                    onchange="this.form.submit()"
+                    class="h-12 lg:w-64 px-4 bg-white rounded-2xl border-2 border-gray-200 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent shrink-0">
+                <option value="">Tüm Kategoriler</option>
+                @foreach (var category in Model.Categories)
+                {
+                    <option value="@category.Id" selected="@(Model.CategoryId == category.Id)">@category.Name</option>
+                }
+            </select>
+
+            <button type="submit"
+                    class="h-12 px-5 flex items-center justify-center bg-white border-2 border-b-4 text-sm active:border-b-2 border-gray-200 font-bold text-gray-600 hover:text-indigo-500 rounded-xl shrink-0 cursor-pointer">
+                Ara
+            </button>
 
             @if (User.IsInRole(ApplicationRoles.Instructor))
             {
                 <a asp-controller="Courses" asp-action="Create" class="h-12 px-4 flex items-center justify-center bg-indigo-500 border-2 border-b-4 text-sm active:border-b-2 border-indigo-600 font-bold text-white rounded-xl shrink-0">Yeni Kurs Ekle</a>
             }
-            </div>
+        </div>
     </form>
 
-    @if (!string.IsNullOrEmpty(Model.Search))
+    @if (hasActiveFilter)
     {
-        <a asp-controller="Courses" asp-action="Index" class="flex items-center justify-center text-xs p-2 bg-indigo-100 text-indigo-500 hover:bg-indigo-200 rounded-xl font-medium uppercase mt-4">Aramayı Temizle</a>
+        <a asp-controller="Courses" asp-action="Index" class="flex items-center justify-center text-xs p-2 bg-indigo-100 text-indigo-500 hover:bg-indigo-200 rounded-xl font-medium uppercase mt-4">Filtreleri Temizle</a>
     }
 </section>
 
 <section class="space-y-6">
-    <div class="flex items-center justify-between">
+    <div class="flex flex-row items-center justify-between gap-3">
         <div>
             <h1 class="text-2xl font-bold">Kurs Kataloğu</h1>
             <p class="text-sm font-light text-gray-500">Kendinize uygun kursları keşfedin.</p>
         </div>
-        <div class="flex items-center space-x-0.5">
-            <a href="#" class="px-3 py-1.5 rounded-full border-2 border-indigo-500 text-indigo-500 text-xs font-semibold">Tümü</a>
-            <a href="#" class="px-3 py-1.5 rounded-full bg-white/10 text-gray-500 text-xs font-semibold">Başlangıç</a>
-            <a href="#" class="px-3 py-1.5 rounded-full bg-white/10 text-gray-500 text-xs font-semibold">Orta</a>
-            <a href="#" class="px-3 py-1.5 rounded-full bg-white/10 text-gray-500 text-xs font-semibold">İleri</a>
+
+        <div class="flex items-center space-x-1">
+            <a asp-controller="Courses" asp-action="Index"
+               asp-route-search="@Model.Search"
+               asp-route-categoryId="@Model.CategoryId"
+               class="px-3 py-1.5 rounded-full text-xs font-semibold @(Model.Level is null ? "border-2 border-indigo-500 text-indigo-500 bg-indigo-50" : "bg-white border-2 border-gray-200 text-gray-500 hover:text-indigo-500")">
+                Tümü
+            </a>
+            <a asp-controller="Courses" asp-action="Index"
+               asp-route-search="@Model.Search"
+               asp-route-categoryId="@Model.CategoryId"
+               asp-route-level="@CourseLevel.Beginner"
+               class="px-3 py-1.5 rounded-full text-xs font-semibold @(Model.Level == CourseLevel.Beginner ? "border-2 border-indigo-500 text-indigo-500 bg-indigo-50" : "bg-white border-2 border-gray-200 text-gray-500 hover:text-indigo-500")">
+                Başlangıç
+            </a>
+            <a asp-controller="Courses" asp-action="Index"
+               asp-route-search="@Model.Search"
+               asp-route-categoryId="@Model.CategoryId"
+               asp-route-level="@CourseLevel.Intermediate"
+               class="px-3 py-1.5 rounded-full text-xs font-semibold @(Model.Level == CourseLevel.Intermediate ? "border-2 border-indigo-500 text-indigo-500 bg-indigo-50" : "bg-white border-2 border-gray-200 text-gray-500 hover:text-indigo-500")">
+                Orta
+            </a>
+            <a asp-controller="Courses" asp-action="Index"
+               asp-route-search="@Model.Search"
+               asp-route-categoryId="@Model.CategoryId"
+               asp-route-level="@CourseLevel.Advanced"
+               class="px-3 py-1.5 rounded-full text-xs font-semibold @(Model.Level == CourseLevel.Advanced ? "border-2 border-indigo-500 text-indigo-500 bg-indigo-50" : "bg-white border-2 border-gray-200 text-gray-500 hover:text-indigo-500")">
+                İleri
+            </a>
         </div>
     </div>
 
@@ -43,7 +92,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-8">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
                 </svg>
-                <p class="text-gray-500 text-sm">Kurs bulunamadı.</p>
+                <p class="text-gray-500 text-sm">Aramanızla eşleşen kurs bulunamadı.</p>
             </div>
         }
         else
@@ -55,9 +104,10 @@
                         <img src="@(string.IsNullOrWhiteSpace(course.CoverImagePath)
                                     ? "https://placehold.co/600x400/E1E7FF/4F46E5?text=Kurs+Görseli"
                                     : course.CoverImagePath)"
-                            alt="@course.Name"
-                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                        <div class="absolute top-2.5 left-2.5 flex space-x-1.5">
+                             alt="@course.Name"
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                        <div class="absolute top-2.5 left-2.5 flex flex-wrap gap-1.5">
+                            <span class="bg-indigo-600/90 backdrop-blur-xs text-white text-[11px] font-bold px-2.5 py-0.5 rounded-lg shadow-xs">@course.CategoryName</span>
                             @switch (course.Level)
                             {
                                 case CourseLevel.Beginner:
@@ -107,7 +157,14 @@
     <section class="flex items-center justify-center space-x-1">
         @for (int i = 1; i <= Model.TotalPages; i++)
         {
-            <a asp-controller="Courses" asp-action="Index" asp-route-page="@i" asp-route-search="@Model.Search" class="bg-white border-2 border-b-4 border-gray-200 text-sm text-gray-500 font-bold h-10 w-10 flex items-center justify-center rounded-xl @(i == Model.CurrentPage ? "border-indigo-500 text-indigo-500" : "")">@i</a>
+            <a asp-controller="Courses" asp-action="Index"
+               asp-route-page="@i"
+               asp-route-search="@Model.Search"
+               asp-route-categoryId="@Model.CategoryId"
+               asp-route-level="@Model.Level"
+               class="bg-white border-2 border-b-4 border-gray-200 text-sm text-gray-500 font-bold h-10 w-10 flex items-center justify-center rounded-xl @(i == Model.CurrentPage ? "border-indigo-500 text-indigo-500" : "")">
+                @i
+            </a>
         }
     </section>
 }

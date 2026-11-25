@@ -14,8 +14,11 @@ public class PagedCoursesResult
 public class CourseListViewModel
 {
     public string? Search { get; set; }
+    public int? CategoryId { get; set; }
+    public CourseLevel? Level { get; set; }
     public int CurrentPage { get; set; }
     public int TotalPages { get; set; }
+    public List<Category> Categories { get; set; } = new List<Category>();
     public List<CourseListItemViewModel> Courses { get; set; } = new List<CourseListItemViewModel>();
 }
 

@@ -68,13 +68,40 @@ public class CourseService
         return true;
     }
 
-    public async Task<PagedCoursesResult> GetAllCoursesAsync(string? search, int page, int pageSize)
+    public async Task<PagedCoursesResult> GetAllCoursesAsync(
+        string? search,
+        int? categoryId,
+        CourseLevel? level,
+        int page,
+        int pageSize)
     {
-        IQueryable<Course> query = _context.Courses.Include(c => c.Category).Include(c => c.Instructor).AsNoTracking();
+        IQueryable<Course> query = _context.Courses
+            .Include(c => c.Category)
+            .Include(c => c.Instructor)
+            .AsNoTracking();
 
         if (!string.IsNullOrWhiteSpace(search))
         {
-            query = query.Where(c => c.Title.Contains(search));
+            string term = search.Trim();
+            query = query.Where(c =>
+                c.Title.Contains(term) ||
+                (c.Category != null && c.Category.Name.Contains(term)) ||
+                (c.Instructor != null && (
+                    c.Instructor.FirstName.Contains(term) ||
+                    c.Instructor.LastName.Contains(term) ||
+                    (c.Instructor.FirstName + " " + c.Instructor.LastName).Contains(term)
+                ))
+            );
+        }
+
+        if (categoryId.HasValue)
+        {
+            query = query.Where(c => c.CategoryId == categoryId.Value);
+        }
+
+        if (level.HasValue)
+        {
+            query = query.Where(c => c.Level == level.Value);
         }
 
         int totalCourses = await query.CountAsync();
