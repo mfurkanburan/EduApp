@@ -168,4 +168,35 @@ public class CourseService
             })
             .ToListAsync();
     }
+
+    public async Task<AdminDashboardViewModel> GetAdminDashboardAsync()
+    {
+        List<AdminCourseItemViewModel> courses = await _context.Courses
+            .AsNoTracking()
+            .OrderByDescending(c => c.CreatedAt)
+            .Select(c => new AdminCourseItemViewModel
+            {
+                Id = c.Id,
+                Title = c.Title,
+                CategoryName = c.Category != null ? c.Category.Name : "Kategori bulunamadı",
+                InstructorName = c.Instructor != null
+                    ? c.Instructor.FirstName + " " + c.Instructor.LastName
+                    : "Eğitmen atanmamış",
+                Level = c.Level,
+                SectionCount = c.Sections.Count,
+                LessonCount = c.Sections.SelectMany(s => s.Lessons).Count(),
+                StudentCount = c.Enrollments.Count,
+                CreatedAt = c.CreatedAt
+            })
+            .ToListAsync();
+
+        return new AdminDashboardViewModel
+        {
+            TotalCourseCount = courses.Count,
+            TotalCategoryCount = await _context.Categories.AsNoTracking().CountAsync(),
+            TotalUserCount = await _context.Users.AsNoTracking().CountAsync(),
+            TotalEnrollmentCount = await _context.Enrollments.AsNoTracking().CountAsync(),
+            Courses = courses
+        };
+    }
 }

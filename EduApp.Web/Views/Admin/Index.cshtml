@@ -1,0 +1,104 @@
+@model AdminDashboardViewModel
+
+@{
+    ViewData["Title"] = "Yönetici Paneli";
+}
+
+<section class="space-y-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold">Yönetici Paneli</h1>
+            <p class="text-sm font-light text-gray-500">Platform genel istatistiklerini ve açılan tüm kursları buradan kontrol edebilirsiniz.</p>
+        </div>
+        <a asp-controller="Categories" asp-action="Index" class="h-11 px-4 flex items-center justify-center bg-indigo-500 border-2 border-b-4 text-sm active:border-b-2 border-indigo-600 font-bold text-white rounded-xl shrink-0">
+            Kategorileri Yönet
+        </a>
+    </div>
+
+    <div class="grid grid-cols-4 gap-4">
+        <div class="rounded-2xl border-2 border-gray-200 bg-white p-6">
+            <p class="text-xs font-bold uppercase tracking-wide text-gray-500">Toplam Kurs</p>
+            <p class="mt-1 text-3xl font-extrabold text-indigo-500">@Model.TotalCourseCount</p>
+        </div>
+        <div class="rounded-2xl border-2 border-gray-200 bg-white p-6">
+            <p class="text-xs font-bold uppercase tracking-wide text-gray-500">Toplam Kategori</p>
+            <p class="mt-1 text-3xl font-extrabold text-orange-500">@Model.TotalCategoryCount</p>
+        </div>
+        <div class="rounded-2xl border-2 border-gray-200 bg-white p-6">
+            <p class="text-xs font-bold uppercase tracking-wide text-gray-500">Toplam Kullanıcı</p>
+            <p class="mt-1 text-3xl font-extrabold text-emerald-500">@Model.TotalUserCount</p>
+        </div>
+        <div class="rounded-2xl border-2 border-gray-200 bg-white p-6">
+            <p class="text-xs font-bold uppercase tracking-wide text-gray-500">Toplam Kayıt</p>
+            <p class="mt-1 text-3xl font-extrabold text-rose-500">@Model.TotalEnrollmentCount</p>
+        </div>
+    </div>
+
+    <div class="bg-white border-2 border-gray-200 rounded-2xl overflow-hidden">
+        <div class="flex items-center justify-between border-b-2 border-gray-200 px-6 py-4">
+            <div>
+                <h2 class="text-base font-bold text-gray-900">Açılan Tüm Kurslar</h2>
+                <p class="text-xs text-gray-500">Sistemdeki tüm kursların içeriklerini inceleyebilir, düzenleyebilir veya silebilirsiniz.</p>
+            </div>
+            <span class="rounded-full bg-indigo-50 border border-indigo-200 px-3 py-1 text-xs font-bold text-indigo-500">
+                @Model.Courses.Count kurs
+            </span>
+        </div>
+
+        @if (Model.Courses.Count == 0)
+        {
+            <div class="p-12 text-center text-sm text-gray-500">
+                Sistemde henüz açılmış bir kurs bulunmamaktadır.
+            </div>
+        }
+        else
+        {
+            <table class="w-full text-left text-sm">
+                <thead class="bg-gray-50 border-b-2 border-gray-200 text-xs uppercase text-gray-500">
+                    <tr>
+                        <th class="px-6 py-3 font-bold">Kurs</th>
+                        <th class="px-4 py-3 font-bold">Kategori</th>
+                        <th class="px-4 py-3 font-bold">Eğitmen</th>
+                        <th class="px-4 py-3 font-bold text-center">Bölüm / Ders</th>
+                        <th class="px-4 py-3 font-bold text-center">Öğrenci</th>
+                        <th class="px-4 py-3 font-bold">Tarih</th>
+                        <th class="px-6 py-3 font-bold text-right">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    @foreach (var course in Model.Courses)
+                    {
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4">
+                                <div class="font-bold text-gray-900">@course.Title</div>
+                                <span class="text-[11px] font-semibold text-gray-500">@course.Level.ToDisplayName()</span>
+                            </td>
+                            <td class="px-4 py-4">
+                                <span class="rounded-lg bg-indigo-50 px-2.5 py-1 text-xs font-bold text-indigo-500">
+                                    @course.CategoryName
+                                </span>
+                            </td>
+                            <td class="px-4 py-4 text-gray-600 font-medium">@course.InstructorName</td>
+                            <td class="px-4 py-4 text-center text-gray-600">@course.SectionCount / @course.LessonCount</td>
+                            <td class="px-4 py-4 text-center font-bold text-emerald-600">@course.StudentCount</td>
+                            <td class="px-4 py-4 text-xs text-gray-500">@course.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy")</td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center justify-end gap-2">
+                                    <a asp-controller="Courses" asp-action="Details" asp-route-id="@course.Id" class="px-3 py-1.5 rounded-xl bg-indigo-50 text-indigo-600 text-xs font-bold hover:bg-indigo-500 hover:text-white">
+                                        İncele
+                                    </a>
+                                    <a asp-controller="Courses" asp-action="Edit" asp-route-id="@course.Id" class="px-3 py-1.5 rounded-xl bg-orange-50 text-orange-600 text-xs font-bold hover:bg-orange-500 hover:text-white">
+                                        Düzenle
+                                    </a>
+                                    <a asp-controller="Courses" asp-action="Delete" asp-route-id="@course.Id" class="px-3 py-1.5 rounded-xl bg-rose-50 text-rose-600 text-xs font-bold hover:bg-rose-500 hover:text-white">
+                                        Sil
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</section>
