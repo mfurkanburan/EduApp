@@ -28,7 +28,7 @@ public class EnrollmentsController : Controller
         _userManager = userManager;
     }
 
-    [HttpPost]
+    [HttpPost("kurslar/kaydol")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Enroll(int courseId)
     {
@@ -51,7 +51,7 @@ public class EnrollmentsController : Controller
         return RedirectToAction("Details", "Courses", new { id = courseId });
     }
 
-    [HttpGet]
+    [HttpGet("kurslarim")]
     public async Task<IActionResult> MyCourses()
     {
         string? studentId = _userManager.GetUserId(User);
@@ -84,7 +84,7 @@ public class EnrollmentsController : Controller
         return View(model);
     }
 
-    [HttpPost]
+    [HttpPost("dersler/tamamla")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CompleteLesson(int lessonId)
     {

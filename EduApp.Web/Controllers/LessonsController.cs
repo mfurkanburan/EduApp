@@ -22,7 +22,7 @@ public class LessonsController : Controller
         _fileService = fileService;
     }
 
-    [HttpGet("Lessons/Create/{sectionId:int}")]
+    [HttpGet("bolumler/{sectionId:int}/dersler/yeni")]
     public async Task<IActionResult> Create(int sectionId)
     {
         CourseSection? section = await _curriculumService.GetCourseSectionByIdAsync(sectionId);
@@ -44,7 +44,7 @@ public class LessonsController : Controller
         return View(model);
     }
 
-    [HttpPost("Lessons/Create/{sectionId:int}")]
+    [HttpPost("bolumler/{sectionId:int}/dersler/yeni")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(
         int sectionId,
@@ -105,7 +105,7 @@ public class LessonsController : Controller
         model.SectionTitle = section.Title;
     }
 
-    [HttpGet]
+    [HttpGet("dersler/{id:int}/duzenle")]
     public async Task<IActionResult> Edit(int id)
     {
         Lesson? lesson = await _curriculumService.GetLessonByIdAsync(id);
@@ -133,7 +133,7 @@ public class LessonsController : Controller
         return View(model);
     }
 
-    [HttpPost]
+    [HttpPost("dersler/duzenle")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(EditLessonViewModel model)
     {
@@ -213,7 +213,7 @@ public class LessonsController : Controller
         model.ExistingMaterialPath = existingLesson.MaterialPath;
     }
 
-    [HttpGet]
+    [HttpGet("dersler/{id:int}/sil")]
     public async Task<IActionResult> Delete(int id)
     {
         Lesson? lesson = await _curriculumService.GetLessonByIdAsync(id);
@@ -240,7 +240,7 @@ public class LessonsController : Controller
         return View(model);
     }
 
-    [HttpPost]
+    [HttpPost("dersler/sil")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(DeleteLessonViewModel model)
     {

@@ -31,7 +31,7 @@ public class CoursesController : Controller
     }
 
     [AllowAnonymous]
-    [HttpGet]
+    [HttpGet("kurslar")]
     public async Task<IActionResult> Index(string? search, int? categoryId, CourseLevel? level, int page = 1)
     {
         const int pageSize = 9;
@@ -72,7 +72,7 @@ public class CoursesController : Controller
     }
 
     [Authorize(Roles = ApplicationRoles.Instructor)]
-    [HttpGet]
+    [HttpGet("kurslar/yeni")]
     public async Task<IActionResult> Create()
     {
         CreateCourseViewModel model = new CreateCourseViewModel
@@ -84,7 +84,7 @@ public class CoursesController : Controller
     }
 
     [Authorize(Roles = ApplicationRoles.Instructor)]
-    [HttpPost]
+    [HttpPost("kurslar/yeni")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(CreateCourseViewModel model)
     {
@@ -141,7 +141,7 @@ public class CoursesController : Controller
     }
 
     [AllowAnonymous]
-    [HttpGet]
+    [HttpGet("kurslar/{id:int}")]
     public async Task<IActionResult> Details(int id, int? lessonId)
     {
         Course? course = await _courseService.GetCourseByIdAsync(id);
@@ -271,7 +271,7 @@ public class CoursesController : Controller
     }
 
     [Authorize(Roles = ApplicationRoles.InstructorOrAdmin)]
-    [HttpGet]
+    [HttpGet("kurslar/{id:int}/duzenle")]
     public async Task<IActionResult> Edit(int id)
     {
         Course? course = await _courseService.GetCourseByIdAsync(id);
@@ -301,7 +301,7 @@ public class CoursesController : Controller
     }
 
     [Authorize(Roles = ApplicationRoles.InstructorOrAdmin)]
-    [HttpPost]
+    [HttpPost("kurslar/duzenle")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(EditCourseViewModel model)
     {
@@ -397,7 +397,7 @@ public class CoursesController : Controller
     }
 
     [Authorize(Roles = ApplicationRoles.InstructorOrAdmin)]
-    [HttpGet]
+    [HttpGet("kurslar/{id:int}/sil")]
     public async Task<IActionResult> Delete(int id)
     {
         Course? course = await _courseService.GetCourseByIdAsync(id);
@@ -417,7 +417,7 @@ public class CoursesController : Controller
     }
 
     [Authorize(Roles = ApplicationRoles.InstructorOrAdmin)]
-    [HttpPost]
+    [HttpPost("kurslar/sil")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(CourseDetailsViewModel model)
     {
@@ -474,7 +474,7 @@ public class CoursesController : Controller
     }
 
     [Authorize(Roles = ApplicationRoles.Instructor)]
-    [HttpGet]
+    [HttpGet("egitmen/kurslarim")]
     public async Task<IActionResult> MyCourses()
     {
         string? instructorId = _userManager.GetUserId(User);

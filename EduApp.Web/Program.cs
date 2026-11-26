@@ -10,6 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddRouting(options => options.LowercaseUrls = true);
+
 // DB - EduAppDb
 string connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? "Data Source=eduApp.db";
@@ -36,9 +38,9 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(
 builder.Services.ConfigureApplicationCookie(
     options =>
     {
-        options.LoginPath = "/Account/Login";
-        options.LogoutPath = "/Account/Logout";
-        options.AccessDeniedPath = "/Account/AccessDenied";
+        options.LoginPath = "/giris";
+        options.LogoutPath = "/cikis";
+        options.AccessDeniedPath = "/erisim-engellendi";
         options.Cookie.HttpOnly = true;
         options.Cookie.SameSite = SameSiteMode.Lax;
         options.ExpireTimeSpan = TimeSpan.FromHours(8);
@@ -65,7 +67,7 @@ using (IServiceScope scope = app.Services.CreateScope())
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
+    app.UseExceptionHandler("/hata");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }

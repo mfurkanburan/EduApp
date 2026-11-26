@@ -16,7 +16,7 @@ public class AdminController : Controller
         _courseService = courseService;
     }
 
-    [HttpGet]
+    [HttpGet("yonetim")]
     public async Task<IActionResult> Index()
     {
         AdminDashboardViewModel model = await _courseService.GetAdminDashboardAsync();

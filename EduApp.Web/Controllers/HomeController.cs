@@ -15,12 +15,14 @@ public class HomeController : Controller
         _courseService = courseService;
     }
 
+    [HttpGet("/")]
     public async Task<IActionResult> Index()
     {
         HomeViewModel model = await _courseService.GetHomePageDataAsync();
         return View(model);
     }
 
+    [HttpGet("/hata")]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {

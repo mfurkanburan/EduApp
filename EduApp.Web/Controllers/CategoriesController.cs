@@ -16,20 +16,20 @@ public class CategoriesController : Controller
         _categoryService = categoryService;
     }
 
-    [HttpGet]
+    [HttpGet("yonetim/kategoriler")]
     public async Task<IActionResult> Index()
     {
         List<CategoryListItemViewModel> categories = await _categoryService.GetListCategoriesAsync();
         return View(categories);
     }
 
-    [HttpGet]
+    [HttpGet("yonetim/kategoriler/yeni")]
     public IActionResult Create()
     {
         return View(new CreateCategoryViewModel());
     }
 
-    [HttpPost]
+    [HttpPost("yonetim/kategoriler/yeni")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(CreateCategoryViewModel model)
     {
@@ -61,7 +61,7 @@ public class CategoriesController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    [HttpGet]
+    [HttpGet("yonetim/kategoriler/{id:int}/duzenle")]
     public async Task<IActionResult> Edit(int id)
     {
         Category? category = await _categoryService.GetCategoryByIdAsync(id);
@@ -77,7 +77,7 @@ public class CategoriesController : Controller
         return View(model);
     }
 
-    [HttpPost]
+    [HttpPost("yonetim/kategoriler/duzenle")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(EditCategoryViewModel model)
     {
@@ -116,7 +116,7 @@ public class CategoriesController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    [HttpGet]
+    [HttpGet("yonetim/kategoriler/{id:int}/sil")]
     public async Task<IActionResult> Delete(int id)
     {
         Category? category = await _categoryService.GetCategoryByIdAsync(id);
@@ -137,7 +137,7 @@ public class CategoriesController : Controller
         return View(model);
     }
 
-    [HttpPost]
+    [HttpPost("yonetim/kategoriler/sil")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(DeleteCategoryViewModel model)
     {

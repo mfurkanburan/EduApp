@@ -19,7 +19,7 @@ public class AccountController : Controller
     }
     
     [AllowAnonymous]
-    [HttpGet]
+    [HttpGet("kayit")]
     public IActionResult Register()
     {
         if (User.Identity?.IsAuthenticated == true)
@@ -31,7 +31,7 @@ public class AccountController : Controller
     }
 
     [AllowAnonymous]
-    [HttpPost]
+    [HttpPost("kayit")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Register(RegisterViewModel model)
     {
@@ -105,7 +105,7 @@ public class AccountController : Controller
     }
 
     [AllowAnonymous]
-    [HttpGet]
+    [HttpGet("giris")]
     public IActionResult Login(string? returnUrl = null)
     {
         if (User.Identity?.IsAuthenticated == true)
@@ -122,7 +122,7 @@ public class AccountController : Controller
     }
 
     [AllowAnonymous]
-    [HttpPost]
+    [HttpPost("giris")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginViewModel model)
     {
@@ -169,7 +169,7 @@ public class AccountController : Controller
     }
 
     [Authorize]
-    [HttpPost]
+    [HttpPost("cikis")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Logout()
     {
@@ -179,7 +179,7 @@ public class AccountController : Controller
     }
 
     [AllowAnonymous]
-    [HttpGet]
+    [HttpGet("erisim-engellendi")]
     public IActionResult AccessDenied()
     {
         Response.StatusCode = StatusCodes.Status403Forbidden;

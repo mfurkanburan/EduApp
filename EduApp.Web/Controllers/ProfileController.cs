@@ -28,7 +28,7 @@ public class ProfileController : Controller
         _signInManager = signInManager;
     }
 
-    [HttpGet]
+    [HttpGet("profil")]
     public async Task<IActionResult> Index()
     {
         ApplicationUser? user = await _userManager.GetUserAsync(User);
@@ -106,7 +106,7 @@ public class ProfileController : Controller
         return "Rol Bilinmiyor";
     }
 
-    [HttpGet]
+    [HttpGet("profil/düzenle")]
     public async Task<IActionResult> Edit()
     {
         ApplicationUser? user = await _userManager.GetUserAsync(User);
@@ -124,7 +124,7 @@ public class ProfileController : Controller
         return View(model);
     }
 
-    [HttpPost]
+    [HttpPost("profil/düzenle")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(EditProfileViewModel model)
     {
@@ -192,13 +192,13 @@ public class ProfileController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    [HttpGet]
+    [HttpGet("profil/parola")]
     public IActionResult ChangePassword()
     {
         return View(new ChangePasswordViewModel());
     }
 
-    [HttpPost]
+    [HttpPost("profil/parola")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
     {

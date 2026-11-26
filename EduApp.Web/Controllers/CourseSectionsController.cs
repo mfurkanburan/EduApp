@@ -23,8 +23,7 @@ public class CourseSectionsController : Controller
         _fileService = fileService;
     }
 
-    [HttpGet]
-    [Route("Courses/{courseId:int}/Sections/Create")]
+    [HttpGet("kurslar/{courseId:int}/bolumler/yeni")]
     public async Task<IActionResult> Create(int courseId)
     {
         Course? course = await _courseService.GetCourseByIdAsync(courseId);
@@ -42,9 +41,8 @@ public class CourseSectionsController : Controller
         return View(model);
     }
 
-    [HttpPost]
+    [HttpPost("kurslar/{courseId:int}/bolumler/yeni")]
     [ValidateAntiForgeryToken]
-    [Route("Courses/{courseId:int}/Sections/Create")]
     public async Task<IActionResult> Create(int courseId, CreateSectionViewModel model)
     {
         if (courseId != model.CourseId) return BadRequest();
@@ -76,7 +74,7 @@ public class CourseSectionsController : Controller
         return RedirectToAction("Details", "Courses", new { id = courseId });
     }
 
-    [HttpGet]
+    [HttpGet("bolumler/{id:int}/duzenle")]
     public async Task<IActionResult> Edit(int id)
     {
         CourseSection? section = await _curriculumService.GetCourseSectionByIdAsync(id);
@@ -99,7 +97,7 @@ public class CourseSectionsController : Controller
         return View(model);
     }
 
-    [HttpPost]
+    [HttpPost("bolumler/duzenle")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(EditSectionViewModel model)
     {
@@ -134,7 +132,7 @@ public class CourseSectionsController : Controller
         return RedirectToAction("Details", "Courses", new { id = model.CourseId });
     }
 
-    [HttpGet]
+    [HttpGet("bolumler/{id:int}/sil")]
     public async Task<IActionResult> Delete(int id)
     {
         CourseSection? section = await _curriculumService.GetCourseSectionByIdAsync(id);
@@ -157,7 +155,7 @@ public class CourseSectionsController : Controller
         return View(model);
     }
 
-    [HttpPost]
+    [HttpPost("bolumler/sil")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(DeleteSectionViewModel model)
     {
