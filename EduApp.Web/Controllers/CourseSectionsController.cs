@@ -97,7 +97,7 @@ public class CourseSectionsController : Controller
         return View(model);
     }
 
-    [HttpPost("bolumler/duzenle")]
+    [HttpPost("bolumler/{id:int}/duzenle")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(EditSectionViewModel model)
     {
@@ -155,7 +155,7 @@ public class CourseSectionsController : Controller
         return View(model);
     }
 
-    [HttpPost("bolumler/sil")]
+    [HttpPost("bolumler/{id:int}/sil")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(DeleteSectionViewModel model)
     {

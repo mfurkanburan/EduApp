@@ -301,7 +301,7 @@ public class CoursesController : Controller
     }
 
     [Authorize(Roles = ApplicationRoles.InstructorOrAdmin)]
-    [HttpPost("kurslar/duzenle")]
+    [HttpPost("kurslar/{id:int}/duzenle")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(EditCourseViewModel model)
     {
@@ -417,7 +417,7 @@ public class CoursesController : Controller
     }
 
     [Authorize(Roles = ApplicationRoles.InstructorOrAdmin)]
-    [HttpPost("kurslar/sil")]
+    [HttpPost("kurslar/{id:int}/sil")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(CourseDetailsViewModel model)
     {

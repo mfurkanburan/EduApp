@@ -46,7 +46,7 @@
         </div>
 
         <div class="grid grid-cols-2 gap-4">
-            <form asp-action="Delete" method="post">
+            <form asp-action="Delete" asp-route-id="@Model.Id" method="post">
                 <input type="hidden" asp-for="Id" />
                 <button class="h-12 w-full flex items-center justify-center bg-rose-500 border-2 border-b-4 text-sm cursor-pointer active:border-b-2 border-rose-600 font-bold text-white rounded-xl" type="submit">Evet, Sil</button>
             </form>

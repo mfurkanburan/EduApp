@@ -32,7 +32,7 @@
             </div>
         </div>
 
-        <form asp-controller="Categories" asp-action="Edit" method="post" class="space-y-6">     
+        <form asp-controller="Categories" asp-action="Edit" asp-route-id="@Model.Id" method="post" class="space-y-6">     
             <input type="hidden" asp-for="Id" />
 
             <div class="space-y-1.5">

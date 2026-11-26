@@ -133,7 +133,7 @@ public class LessonsController : Controller
         return View(model);
     }
 
-    [HttpPost("dersler/duzenle")]
+    [HttpPost("dersler/{id:int}/duzenle")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(EditLessonViewModel model)
     {
@@ -240,7 +240,7 @@ public class LessonsController : Controller
         return View(model);
     }
 
-    [HttpPost("dersler/sil")]
+    [HttpPost("dersler/{id:int}/sil")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(DeleteLessonViewModel model)
     {

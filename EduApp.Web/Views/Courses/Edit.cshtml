@@ -28,7 +28,7 @@
 </section>
 
 <section>
-    <form asp-action="Edit" method="post" enctype="multipart/form-data" class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+    <form asp-action="Edit" method="post" asp-route-id="@Model.Id" enctype="multipart/form-data" class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         <input type="hidden" asp-for="Id" />
         <input type="hidden" asp-for="ExistingCoverImagePath" />
 

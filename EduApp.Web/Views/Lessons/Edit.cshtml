@@ -47,7 +47,7 @@
             </div>
         </div>
 
-        <form id="lesson-form" asp-controller="Lessons" asp-action="Edit" enctype="multipart/form-data" method="post" class="space-y-6">     
+        <form id="lesson-form" asp-controller="Lessons" asp-action="Edit" asp-route-id="@Model.Id" enctype="multipart/form-data" method="post" class="space-y-6">     
             <input type="hidden" asp-for="Id" />
             <input type="hidden" asp-for="CourseSectionId" />
             <input type="hidden" asp-for="CourseId" />

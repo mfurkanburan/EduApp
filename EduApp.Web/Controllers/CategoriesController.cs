@@ -77,7 +77,7 @@ public class CategoriesController : Controller
         return View(model);
     }
 
-    [HttpPost("yonetim/kategoriler/duzenle")]
+    [HttpPost("yonetim/kategoriler/{id:int}/duzenle")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(EditCategoryViewModel model)
     {
@@ -137,7 +137,7 @@ public class CategoriesController : Controller
         return View(model);
     }
 
-    [HttpPost("yonetim/kategoriler/sil")]
+    [HttpPost("yonetim/kategoriler/{id:int}/sil")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(DeleteCategoryViewModel model)
     {

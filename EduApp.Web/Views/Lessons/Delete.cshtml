@@ -50,7 +50,7 @@
         </div>
 
         <div class="grid grid-cols-2 gap-4">
-            <form asp-controller="Lessons" asp-action="Delete" method="post">
+            <form asp-controller="Lessons" asp-action="Delete" asp-route-id="@Model.Id" method="post">
                 <input type="hidden" asp-for="Id" />
                 <input type="hidden" asp-for="CourseId" />
                 <input type="hidden" asp-for="CourseSectionId" />
