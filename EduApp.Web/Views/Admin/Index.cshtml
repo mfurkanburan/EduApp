@@ -4,101 +4,153 @@
     ViewData["Title"] = "Yönetici Paneli";
 }
 
-<section class="space-y-6">
-    <div class="flex items-center justify-between">
-        <div>
-            <h1 class="text-2xl font-bold">Yönetici Paneli</h1>
-            <p class="text-sm font-light text-gray-500">Platform genel istatistiklerini ve açılan tüm kursları buradan kontrol edebilirsiniz.</p>
+<section class="relative overflow-hidden bg-white border-2 border-gray-200 p-8 rounded-2xl">
+    <div class="pointer-events-none absolute inset-0 z-0 opacity-60">
+        <svg class="absolute inset-0 h-full w-full stroke-indigo-300/30 text-indigo-300/25" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+            <defs>
+                <pattern id="admin-banner-grid" width="28" height="28" patternUnits="userSpaceOnUse">
+                    <path d="M 28 0 L 0 0 0 28" fill="none" stroke="currentColor" stroke-width="0.75"></path>
+                    <circle cx="14" cy="14" r="1.25" fill="currentColor"></circle>
+                </pattern>
+            </defs>
+            <rect width="100%" height="100%" stroke-width="0" fill="url(#admin-banner-grid)"></rect>
+        </svg>
+    </div>
+
+    <div class="relative z-10 flex items-center justify-between gap-6">
+        <div class="flex items-center space-x-5">
+            <div class="size-14 rounded-2xl bg-indigo-50 border-2 border-indigo-100 text-indigo-500 flex items-center justify-center shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-7">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z" />
+                </svg>
+            </div>
+            <div>
+                <h1 class="text-2xl font-extrabold tracking-tight text-gray-900">Yönetici Paneli</h1>
+                <p class="text-sm font-light text-gray-500 mt-0.5">Platform genel istatistiklerini ve açılan tüm kursları buradan kontrol edebilirsiniz.</p>
+            </div>
         </div>
-        <a asp-controller="Categories" asp-action="Index" class="h-11 px-4 flex items-center justify-center bg-indigo-500 border-2 border-b-4 text-sm active:border-b-2 border-indigo-600 font-bold text-white rounded-xl shrink-0">
+
+        <a asp-controller="Categories" asp-action="Index" class="h-11 px-5 flex items-center justify-center bg-indigo-500 border-2 border-b-4 active:border-b-2 border-indigo-600 text-xs font-bold text-white rounded-xl shrink-0">
             Kategorileri Yönet
         </a>
     </div>
+</section>
 
-    <div class="grid grid-cols-4 gap-4">
-        <div class="rounded-2xl border-2 border-gray-200 bg-white p-6">
+<section class="grid grid-cols-4 gap-4">
+    <div class="rounded-2xl border-2 border-gray-200 bg-white p-6">
+        <div class="flex items-center justify-between">
             <p class="text-xs font-bold uppercase tracking-wide text-gray-500">Toplam Kurs</p>
-            <p class="mt-1 text-3xl font-extrabold text-indigo-500">@Model.TotalCourseCount</p>
+            <div class="flex size-9 items-center justify-center rounded-xl bg-indigo-50 text-indigo-500">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342" />
+                </svg>
+            </div>
         </div>
-        <div class="rounded-2xl border-2 border-gray-200 bg-white p-6">
+        <p class="mt-2 text-3xl font-extrabold text-indigo-500">@Model.TotalCourseCount</p>
+    </div>
+
+    <div class="rounded-2xl border-2 border-gray-200 bg-white p-6">
+        <div class="flex items-center justify-between">
             <p class="text-xs font-bold uppercase tracking-wide text-gray-500">Toplam Kategori</p>
-            <p class="mt-1 text-3xl font-extrabold text-orange-500">@Model.TotalCategoryCount</p>
+            <div class="flex size-9 items-center justify-center rounded-xl bg-orange-50 text-orange-500">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6Z" />
+                </svg>
+            </div>
         </div>
-        <div class="rounded-2xl border-2 border-gray-200 bg-white p-6">
+        <p class="mt-2 text-3xl font-extrabold text-orange-500">@Model.TotalCategoryCount</p>
+    </div>
+
+    <div class="rounded-2xl border-2 border-gray-200 bg-white p-6">
+        <div class="flex items-center justify-between">
             <p class="text-xs font-bold uppercase tracking-wide text-gray-500">Toplam Kullanıcı</p>
-            <p class="mt-1 text-3xl font-extrabold text-emerald-500">@Model.TotalUserCount</p>
+            <div class="flex size-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-500">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+                </svg>
+            </div>
         </div>
-        <div class="rounded-2xl border-2 border-gray-200 bg-white p-6">
+        <p class="mt-2 text-3xl font-extrabold text-emerald-500">@Model.TotalUserCount</p>
+    </div>
+
+    <div class="rounded-2xl border-2 border-gray-200 bg-white p-6">
+        <div class="flex items-center justify-between">
             <p class="text-xs font-bold uppercase tracking-wide text-gray-500">Toplam Kayıt</p>
-            <p class="mt-1 text-3xl font-extrabold text-rose-500">@Model.TotalEnrollmentCount</p>
+            <div class="flex size-9 items-center justify-center rounded-xl bg-rose-50 text-rose-500">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+                </svg>
+            </div>
         </div>
+        <p class="mt-2 text-3xl font-extrabold text-rose-500">@Model.TotalEnrollmentCount</p>
+    </div>
+</section>
+
+<section class="bg-white border-2 border-gray-200 rounded-2xl overflow-hidden">
+    <div class="flex items-center justify-between border-b-2 border-gray-200 px-6 py-5">
+        <div>
+            <h2 class="text-base font-bold text-gray-900">Açılan Tüm Kurslar</h2>
+            <p class="text-xs text-gray-500">Sistemdeki tüm kursların içeriklerini inceleyebilir, düzenleyebilir veya silebilirsiniz.</p>
+        </div>
+        <span class="rounded-full bg-indigo-50 border border-indigo-200 px-3 py-1 text-xs font-bold text-indigo-500">
+            @Model.Courses.Count kurs
+        </span>
     </div>
 
-    <div class="bg-white border-2 border-gray-200 rounded-2xl overflow-hidden">
-        <div class="flex items-center justify-between border-b-2 border-gray-200 px-6 py-4">
-            <div>
-                <h2 class="text-base font-bold text-gray-900">Açılan Tüm Kurslar</h2>
-                <p class="text-xs text-gray-500">Sistemdeki tüm kursların içeriklerini inceleyebilir, düzenleyebilir veya silebilirsiniz.</p>
-            </div>
-            <span class="rounded-full bg-indigo-50 border border-indigo-200 px-3 py-1 text-xs font-bold text-indigo-500">
-                @Model.Courses.Count kurs
-            </span>
+    @if (Model.Courses.Count == 0)
+    {
+        <div class="p-12 text-center text-sm text-gray-500">
+            Sistemde henüz açılmış bir kurs bulunmamaktadır.
         </div>
-
-        @if (Model.Courses.Count == 0)
-        {
-            <div class="p-12 text-center text-sm text-gray-500">
-                Sistemde henüz açılmış bir kurs bulunmamaktadır.
-            </div>
-        }
-        else
-        {
-            <table class="w-full text-left text-sm">
-                <thead class="bg-gray-50 border-b-2 border-gray-200 text-xs uppercase text-gray-500">
-                    <tr>
-                        <th class="px-6 py-3 font-bold">Kurs</th>
-                        <th class="px-4 py-3 font-bold">Kategori</th>
-                        <th class="px-4 py-3 font-bold">Eğitmen</th>
-                        <th class="px-4 py-3 font-bold text-center">Bölüm / Ders</th>
-                        <th class="px-4 py-3 font-bold text-center">Öğrenci</th>
-                        <th class="px-4 py-3 font-bold">Tarih</th>
-                        <th class="px-6 py-3 font-bold text-right">İşlemler</th>
+    }
+    else
+    {
+        <table class="w-full text-left text-sm">
+            <thead class="bg-gray-50 border-b-2 border-gray-200 text-xs uppercase text-gray-500">
+                <tr>
+                    <th class="px-6 py-3 font-bold">Kurs</th>
+                    <th class="px-4 py-3 font-bold">Kategori</th>
+                    <th class="px-4 py-3 font-bold">Eğitmen</th>
+                    <th class="px-4 py-3 font-bold text-center">Bölüm / Ders</th>
+                    <th class="px-4 py-3 font-bold text-center">Öğrenci</th>
+                    <th class="px-4 py-3 font-bold">Tarih</th>
+                    <th class="px-6 py-3 font-bold text-right">İşlemler</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+                @foreach (var course in Model.Courses)
+                {
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4">
+                            <div class="font-bold text-gray-900">@course.Title</div>
+                            <span class="text-[11px] font-semibold text-gray-500">@course.Level.ToDisplayName()</span>
+                        </td>
+                        <td class="px-4 py-4">
+                            <span class="rounded-lg bg-indigo-50 px-2.5 py-1 text-xs font-bold text-indigo-500">
+                                @course.CategoryName
+                            </span>
+                        </td>
+                        <td class="px-4 py-4 text-gray-600 font-medium">@course.InstructorName</td>
+                        <td class="px-4 py-4 text-center text-gray-600">@course.SectionCount / @course.LessonCount</td>
+                        <td class="px-4 py-4 text-center font-bold text-emerald-600">@course.StudentCount</td>
+                        <td class="px-4 py-4 text-xs text-gray-500">@course.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy")</td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center justify-end gap-2">
+                                <a asp-controller="Courses" asp-action="Details" asp-route-id="@course.Id" class="px-3 py-1.5 rounded-xl bg-indigo-50 text-indigo-600 text-xs font-bold hover:bg-indigo-500 hover:text-white">
+                                    İncele
+                                </a>
+                                <a asp-controller="Courses" asp-action="Edit" asp-route-id="@course.Id" class="px-3 py-1.5 rounded-xl bg-orange-50 text-orange-600 text-xs font-bold hover:bg-orange-500 hover:text-white">
+                                    Düzenle
+                                </a>
+                                <a asp-controller="Courses" asp-action="Delete" asp-route-id="@course.Id" class="px-3 py-1.5 rounded-xl bg-rose-50 text-rose-600 text-xs font-bold hover:bg-rose-500 hover:text-white">
+                                    Sil
+                                </a>
+                            </div>
+                        </td>
                     </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-200">
-                    @foreach (var course in Model.Courses)
-                    {
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4">
-                                <div class="font-bold text-gray-900">@course.Title</div>
-                                <span class="text-[11px] font-semibold text-gray-500">@course.Level.ToDisplayName()</span>
-                            </td>
-                            <td class="px-4 py-4">
-                                <span class="rounded-lg bg-indigo-50 px-2.5 py-1 text-xs font-bold text-indigo-500">
-                                    @course.CategoryName
-                                </span>
-                            </td>
-                            <td class="px-4 py-4 text-gray-600 font-medium">@course.InstructorName</td>
-                            <td class="px-4 py-4 text-center text-gray-600">@course.SectionCount / @course.LessonCount</td>
-                            <td class="px-4 py-4 text-center font-bold text-emerald-600">@course.StudentCount</td>
-                            <td class="px-4 py-4 text-xs text-gray-500">@course.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy")</td>
-                            <td class="px-6 py-4">
-                                <div class="flex items-center justify-end gap-2">
-                                    <a asp-controller="Courses" asp-action="Details" asp-route-id="@course.Id" class="px-3 py-1.5 rounded-xl bg-indigo-50 text-indigo-600 text-xs font-bold hover:bg-indigo-500 hover:text-white">
-                                        İncele
-                                    </a>
-                                    <a asp-controller="Courses" asp-action="Edit" asp-route-id="@course.Id" class="px-3 py-1.5 rounded-xl bg-orange-50 text-orange-600 text-xs font-bold hover:bg-orange-500 hover:text-white">
-                                        Düzenle
-                                    </a>
-                                    <a asp-controller="Courses" asp-action="Delete" asp-route-id="@course.Id" class="px-3 py-1.5 rounded-xl bg-rose-50 text-rose-600 text-xs font-bold hover:bg-rose-500 hover:text-white">
-                                        Sil
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        }
-    </div>
+                }
+            </tbody>
+        </table>
+    }
 </section>
