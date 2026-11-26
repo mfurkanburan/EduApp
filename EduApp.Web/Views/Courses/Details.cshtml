@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = Model.Title;
+    int totalCourseLessons = Model.Sections.Sum(s => s.Lessons.Count);
 }
 
 @if (TempData["EnrollmentMessage"] is string enrollmentMessage)
@@ -28,188 +29,203 @@
     </div>
 }
 
-<section class="relative overflow-hidden bg-white border-2 border-gray-200 p-6 rounded-2xl">
+<section class="relative overflow-hidden bg-white border-2 border-gray-200 p-8 rounded-2xl">
     <div class="pointer-events-none absolute inset-0 z-0 opacity-60">
         <svg class="absolute inset-0 h-full w-full stroke-indigo-300/30 text-indigo-300/25" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
             <defs>
-                <pattern id="edit-grid-pattern" width="28" height="28" patternUnits="userSpaceOnUse">
+                <pattern id="course-detail-banner-grid" width="28" height="28" patternUnits="userSpaceOnUse">
                     <path d="M 28 0 L 0 0 0 28" fill="none" stroke="currentColor" stroke-width="0.75"></path>
                     <circle cx="14" cy="14" r="1.25" fill="currentColor"></circle>
                 </pattern>
             </defs>
-            <rect width="100%" height="100%" stroke-width="0" fill="url(#edit-grid-pattern)"></rect>
+            <rect width="100%" height="100%" stroke-width="0" fill="url(#course-detail-banner-grid)"></rect>
         </svg>
     </div>
 
-    <div class="relative z-10 space-y-3">
-        <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-4">
-                <div class="inline-flex items-center space-x-2 bg-indigo-50 border border-indigo-200 text-indigo-500 text-xs font-bold px-3 py-1 rounded-full shadow-xs">
+    <div class="relative z-10 space-y-6">
+        <div class="flex items-center justify-between pb-5 border-b-2 border-gray-100">
+            <div class="flex items-center space-x-2.5">
+                <a asp-controller="Courses" asp-action="Index" class="inline-flex items-center space-x-1.5 bg-gray-50 border border-gray-200 text-gray-500 text-xs font-bold px-3 py-1.5 rounded-full hover:bg-gray-100 hover:text-gray-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-3.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15m0 0l6.75 6.75M4.5 12l6.75-6.75"></path>
+                    </svg>
+                    <span>Kurslar</span>
+                </a>
+
+                <span class="inline-flex items-center space-x-1.5 bg-indigo-50 border border-indigo-200 text-indigo-500 text-xs font-bold px-3 py-1.5 rounded-full">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-3.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z"></path>
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6Z"></path>
                     </svg>
+                    <span>@Model.CategoryName</span>
+                </span>
 
-                    <span><strong>Kategori:</strong> @Model.CategoryName</span>
-                </div>
                 @switch (Model.Level)
                 {
                     case CourseLevel.Beginner:
-                        <div class="bg-gray-100 text-gray-600/90 border border-gray-300 text-[11px] font-bold px-3 py-1 rounded-full shadow-xs"><strong>Seviye:</strong> @CourseLevel.Beginner.ToDisplayName()</div>
+                        <span class="bg-gray-100 text-gray-600 border border-gray-300 text-xs font-bold px-3 py-1.5 rounded-full">@CourseLevel.Beginner.ToDisplayName()</span>
                         break;
                     case CourseLevel.Intermediate:
-                        <div class="bg-amber-100 text-amber-600/90 border border-amber-300 text-[11px] font-bold px-3 py-1 rounded-full shadow-xs"><strong>Seviye:</strong> @CourseLevel.Intermediate.ToDisplayName()</div>
+                        <span class="bg-amber-100 text-amber-600 border border-amber-300 text-xs font-bold px-3 py-1.5 rounded-full">@CourseLevel.Intermediate.ToDisplayName()</span>
                         break;
                     case CourseLevel.Advanced:
-                        <div class="bg-rose-100 text-rose-600/90 border border-rose-300 text-[11px] font-bold px-3 py-1 rounded-full shadow-xs"><strong>Seviye:</strong> @CourseLevel.Advanced.ToDisplayName()</div>
+                        <span class="bg-rose-100 text-rose-600 border border-rose-300 text-xs font-bold px-3 py-1.5 rounded-full">@CourseLevel.Advanced.ToDisplayName()</span>
                         break;
                 }
             </div>
 
-            <div class="flex items-center space-x-2">
-                @if (Model.CanManageCourse)
-                {
-                    <a asp-controller="Courses" asp-action="Edit" asp-route-id="@Model.Id" class="inline-flex items-center space-x-2 bg-orange-50 border border-orange-200 text-orange-500 text-xs font-bold px-3 py-1 rounded-full hover:bg-orange-100 hover:text-orange-600">
+            @if (Model.CanManageCourse)
+            {
+                <div class="flex items-center space-x-2">
+                    <a asp-controller="Courses" asp-action="Edit" asp-route-id="@Model.Id" class="inline-flex items-center space-x-1.5 bg-orange-50 border border-orange-200 text-orange-500 text-xs font-bold px-3.5 py-1.5 rounded-full hover:bg-orange-100 hover:text-orange-600">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-3.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487zm0 0L19.5 7.125"></path>
                         </svg>
-
                         <span>Kursu Düzenle</span>
                     </a>
-                    <a asp-controller="Courses" asp-action="Delete" asp-route-id="@Model.Id" class="inline-flex items-center space-x-2 bg-rose-50 border border-rose-200 text-rose-500 text-xs font-bold px-3 py-1 rounded-full hover:bg-rose-100 hover:text-rose-600">
+                    <a asp-controller="Courses" asp-action="Delete" asp-route-id="@Model.Id" class="inline-flex items-center space-x-1.5 bg-rose-50 border border-rose-200 text-rose-500 text-xs font-bold px-3.5 py-1.5 rounded-full hover:bg-rose-100 hover:text-rose-600">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-3.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 1-7.5 0"></path>
                         </svg>
-
                         <span>Kursu Sil</span>
                     </a>
-                }
-                <a asp-controller="Courses" asp-action="Index" class="inline-flex items-center space-x-2 bg-gray-50 border border-gray-200 text-gray-500 text-xs font-bold px-3 py-1 rounded-full hover:bg-gray-100 hover:text-gray-600">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-3.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15m0 0l6.75 6.75M4.5 12l6.75-6.75"></path>
-                    </svg>
-
-                    <span>Geri Dön</span>
-                </a>
-            </div>
+                </div>
+            }
         </div>
-        <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight leading-snug max-w-2xl">
-            @Model.Title
-        </h1>
-        <div class="flex justify-between">
-            <p class="text-sm leading-relaxed text-gray-500 max-w-4xl">
-                @Model.Description
-            </p>
-            @if (Model.CanEnroll) {
-                <form asp-controller="Enrollments" asp-action="Enroll" method="post">
-                    <input type="hidden" name="courseId" value="@Model.Id" />
 
-                    <button type="submit" class="h-12 px-4 flex items-center justify-center bg-indigo-500 border-2 border-b-4 text-sm cursor-pointer active:border-b-2 border-indigo-600 font-bold text-white rounded-xl">Kursa Kaydol</button>
-                </form>
-            }
-            else if (Model.IsEnrolled)
-            {
-                <span class="h-12 px-4 flex items-center justify-center bg-indigo-500 border-2 border-b-4 text-sm cursor-not-allowed border-indigo-600 font-bold text-white rounded-xl select-none opacity-70">Kursa Kayıtlısınız</span>
-            }
-            else if (User.Identity?.IsAuthenticated != true)
-            {
-                <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@($"{Context.Request.Path}{Context.Request.QueryString}")" class="h-12 px-4 flex items-center justify-center bg-indigo-500 border-2 border-b-4 text-sm active:border-b-2 border-indigo-600 font-bold text-white rounded-xl">Kursa Kaydol</a>
-            }
+        <div class="flex items-start justify-between gap-8">
+            <div class="flex-1 min-w-0 space-y-4">
+                <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight leading-snug">
+                    @Model.Title
+                </h1>
+
+                <p class="text-sm leading-relaxed text-gray-500">
+                    @Model.Description
+                </p>
+
+                <div class="flex items-center space-x-4 text-xs text-gray-500 font-medium pt-1">
+                    <span class="inline-flex items-center space-x-1.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 text-indigo-400">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                        </svg>
+                        <span class="font-semibold text-gray-700">@Model.InstructorName</span>
+                    </span>
+                    <span class="text-gray-300">•</span>
+                    <span class="inline-flex items-center space-x-1.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 text-gray-400">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+                        </svg>
+                        <span>@Model.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy")</span>
+                    </span>
+                    <span class="text-gray-300">•</span>
+                    <span class="inline-flex items-center space-x-1.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 text-gray-400">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+                        </svg>
+                        <span>@Model.Sections.Count bölüm • @totalCourseLessons ders</span>
+                    </span>
+                </div>
+
+                <div class="pt-2 flex items-center space-x-3">
+                    @if (Model.CanEnroll)
+                    {
+                        <form asp-controller="Enrollments" asp-action="Enroll" method="post">
+                            <input type="hidden" name="courseId" value="@Model.Id" />
+                            <button type="submit" class="h-11 px-6 flex items-center justify-center bg-indigo-500 border-2 border-b-4 active:border-b-2 border-indigo-600 text-xs font-bold text-white rounded-xl cursor-pointer">
+                                Kursa Kaydol
+                            </button>
+                        </form>
+                    }
+                    else if (Model.IsEnrolled)
+                    {
+                        <span class="h-11 px-5 inline-flex items-center space-x-2 bg-emerald-50 border-2 border-emerald-200 text-emerald-600 text-xs font-bold rounded-xl select-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="size-4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                            </svg>
+                            <span>Kursa Kayıtlısınız</span>
+                        </span>
+                    }
+                    else if (User.Identity?.IsAuthenticated != true)
+                    {
+                        <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@($"{Context.Request.Path}{Context.Request.QueryString}")" class="h-11 px-6 inline-flex items-center justify-center bg-indigo-500 border-2 border-b-4 active:border-b-2 border-indigo-600 text-xs font-bold text-white rounded-xl">
+                            Kayıt Olmak İçin Giriş Yap
+                        </a>
+                    }
+                </div>
+            </div>
+
+            <div class="w-80 shrink-0">
+                <div class="aspect-video overflow-hidden rounded-2xl border-2 border-gray-200 bg-gray-100 shadow-xs">
+                    <img src="@(string.IsNullOrWhiteSpace(Model.CoverImagePath)
+                                ? "https://placehold.co/600x400/E1E7FF/4F46E5?text=Kurs+Görseli"
+                                : Model.CoverImagePath)"
+                         alt="@Model.Title"
+                         class="h-full w-full object-cover" />
+                </div>
+            </div>
         </div>
     </div>
 </section>
 
-<section class="grid @(Model.IsEnrolled == true ? "grid-cols-2" : "grid-cols-1") gap-4 items-start">
-    <div class="relative overflow-hidden bg-white border-2 border-gray-200 p-6 rounded-2xl">
-        <div class="pointer-events-none absolute inset-0 z-0 opacity-60">
-            <svg class="absolute inset-0 h-full w-full stroke-indigo-300/30 text-indigo-300/25" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
-                <defs>
-                    <pattern id="edit-grid-pattern" width="28" height="28" patternUnits="userSpaceOnUse">
-                        <path d="M 28 0 L 0 0 0 28" fill="none" stroke="currentColor" stroke-width="0.75"></path>
-                        <circle cx="14" cy="14" r="1.25" fill="currentColor"></circle>
-                    </pattern>
-                </defs>
-                <rect width="100%" height="100%" stroke-width="0" fill="url(#edit-grid-pattern)"></rect>
-            </svg>
+<section class="grid @(Model.IsEnrolled ? "grid-cols-2" : "grid-cols-1") gap-4 items-stretch">
+    <div class="bg-white border-2 border-gray-200 p-6 rounded-2xl space-y-5">
+        <div class="flex items-center space-x-3 pb-4 border-b-2 border-gray-100">
+            <div class="size-10 rounded-xl bg-indigo-50 text-indigo-500 flex items-center justify-center shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+                </svg>
+            </div>
+            <div>
+                <h2 class="text-base font-bold text-gray-900">Kurs Gereksinimleri</h2>
+                <p class="text-xs text-gray-500">Kursa başlamadan önce sahip olunması gereken temel bilgiler.</p>
+            </div>
         </div>
 
-        <div class="relative z-10 space-y-5">
-            <div class="flex items-center space-x-4 pb-4 border-b-2 border-gray-200">
-                <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-500 flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
-                    </svg>
-                </div>
-                <div>
-                    <h2 class="text-base font-bold text-gray-900">Kurs Gereksinimleri</h2>
-                    <p class="text-xs text-gray-500">Kursa başlamadan önce sahip olunması gereken bilgiler ve beceriler.</p>
-                </div>
-            </div>
-            @if (Model.Requirements.Count == 0)
-            {
-                <div class="flex items-center gap-3 text-sm text-gray-600">
-                    <span class="flex size-5 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-3 stroke-2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-                        </svg>
-                    </span>
-                    <span class="leading-relaxed">Bu kurs için herhangi bir gereksinim belirtilmemiştir.</span>
-                </div>
-            }
-            else
-            {
-                <ul class="space-y-3">
-                    @foreach (var requirement in Model.Requirements)
-                    {
-                        <li class="flex items-center gap-3 text-sm text-gray-600">
-                            <span class="flex size-5 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-500">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="size-3">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"></path>
-                                </svg>
-                            </span>
-                            <span class="leading-relaxed">@requirement.Text</span>
-                        </li>
-                    }
-                </ul>
-            }
-        </div>
+        @if (Model.Requirements.Count == 0)
+        {
+            <p class="text-sm text-gray-500">Bu kurs için herhangi bir gereksinim belirtilmemiştir.</p>
+        }
+        else
+        {
+            <ul class="space-y-3">
+                @foreach (var requirement in Model.Requirements)
+                {
+                    <li class="flex items-center gap-3 text-sm text-gray-600">
+                        <span class="flex size-5 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="size-3">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"></path>
+                            </svg>
+                        </span>
+                        <span class="leading-relaxed">@requirement.Text</span>
+                    </li>
+                }
+            </ul>
+        }
     </div>
 
     @if (Model.IsEnrolled)
     {
-        <div class="relative overflow-hidden bg-white border-2 border-gray-200 p-6 rounded-2xl">
-            <div class="pointer-events-none absolute inset-0 z-0 opacity-60">
-                <svg class="absolute inset-0 h-full w-full stroke-indigo-300/30 text-indigo-300/25" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
-                    <defs>
-                        <pattern id="edit-grid-pattern" width="28" height="28" patternUnits="userSpaceOnUse">
-                            <path d="M 28 0 L 0 0 0 28" fill="none" stroke="currentColor" stroke-width="0.75"></path>
-                            <circle cx="14" cy="14" r="1.25" fill="currentColor"></circle>
-                        </pattern>
-                    </defs>
-                    <rect width="100%" height="100%" stroke-width="0" fill="url(#edit-grid-pattern)"></rect>
-                </svg>
+        <div class="bg-white border-2 border-gray-200 p-6 rounded-2xl flex flex-col justify-between space-y-5">
+            <div class="flex items-center space-x-3 pb-4 border-b-2 border-gray-100">
+                <div class="size-10 rounded-xl bg-indigo-50 text-indigo-500 flex items-center justify-center shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="text-base font-bold text-gray-900">Kurs İlerlemeniz</h2>
+                    <p class="text-xs text-gray-500">@Model.TotalLessonCount dersten @Model.CompletedLessonCount tanesini tamamladınız.</p>
+                </div>
+                <div class="ml-auto">
+                    <span class="inline-flex items-center rounded-xl border-2 @(Model.IsCourseCompleted ? "border-emerald-100 bg-emerald-50 text-emerald-600" : "border-indigo-100 bg-indigo-50 text-indigo-500") px-3 py-1.5 text-sm font-extrabold">
+                        %@Model.ProgressPercentage
+                    </span>
+                </div>
             </div>
 
-            <div class="relative z-10 space-y-5">
-                <div class="flex items-center space-x-4 pb-4 border-b-2 border-gray-200">
-                    <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-500 flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
-                        </svg>
-                    </div>
-                    <div>
-                        <h2 class="text-base font-bold text-gray-900">Kurs İlerlemeniz</h2>
-                        <p class="text-xs text-gray-500">@Model.TotalLessonCount dersten @Model.CompletedLessonCount tanesini tamamladınız.</p>
-                    </div>
-                    <div class="ml-auto">
-                        <div class="inline-flex items-center rounded-xl border-2 border-indigo-100 bg-indigo-50 px-3 py-2 text-sm font-extrabold uppercase tracking-wide text-indigo-500">
-                            %@Model.ProgressPercentage
-                        </div>
-                    </div>
-                </div>
-
-                <div class="h-3.5 overflow-hidden rounded-full border-2 border-indigo-100 bg-indigo-50 p-0.5">
-                    <div class="h-full rounded-full bg-indigo-500" style="width: @Model.ProgressPercentage%;"></div>
+            <div class="space-y-4">
+                <div class="h-3.5 overflow-hidden rounded-full border-2 @(Model.IsCourseCompleted ? "border-emerald-100 bg-emerald-50" : "border-indigo-100 bg-indigo-50") p-0.5">
+                    <div class="h-full rounded-full @(Model.IsCourseCompleted ? "bg-emerald-500" : "bg-indigo-500")" style="width: @Model.ProgressPercentage%;"></div>
                 </div>
 
                 @if (Model.TotalLessonCount == 0)
@@ -220,8 +236,8 @@
                 }
                 else if (Model.IsCourseCompleted)
                 {
-                    <p class="bg-emerald-50 border border-emerald-200 text-emerald-500 text-xs font-medium rounded-xl px-3.5 py-2.5">
-                        Tebrikler! Bu kursu tamamladınız.
+                    <p class="bg-emerald-50 border border-emerald-200 text-emerald-600 text-xs font-semibold rounded-xl px-3.5 py-2.5">
+                        Tebrikler! Bu kursu başarıyla tamamladınız.
                     </p>
                 }
             </div>
@@ -229,32 +245,26 @@
     }
 </section>
 
-<hr class="border-2 border-gray-200">
-
-<section>
-    <div class="flex items-center justify-between">
-        <div>
-            <h2 class="text-xl font-bold text-gray-900">Kurs İçeriği</h2>
-            <p class="text-sm text-gray-500">Kursun içerdiği bölümler ve dersler.</p>
-        </div>
-
-        @if (Model.CanManageCourse)
-        {
-            <div class="flex items-center">
-                <a asp-controller="CourseSections" asp-action="Create" asp-route-courseId="@Model.Id" class="h-11 px-4 flex items-center justify-center bg-white border-2 border-b-4 text-sm active:border-b-2 border-gray-200 font-bold text-gray-500 rounded-xl shrink-0">
-                    Yeni Bölüm Ekle
-                </a>
-            </div>
-        }
+<section class="flex items-center justify-between pt-2">
+    <div>
+        <h2 class="text-xl font-bold text-gray-900">Kurs İçeriği</h2>
+        <p class="text-xs text-gray-500">Sağdaki müfredattan ders seçerek içerik ve materyalleri takip edin.</p>
     </div>
+
+    @if (Model.CanManageCourse)
+    {
+        <a asp-controller="CourseSections" asp-action="Create" asp-route-courseId="@Model.Id" class="h-11 px-5 flex items-center justify-center bg-indigo-500 border-2 border-b-4 active:border-b-2 border-indigo-600 text-xs font-bold text-white rounded-xl shrink-0">
+            Yeni Bölüm Ekle
+        </a>
+    }
 </section>
 
-<section class="grid grid-cols-6 gap-4">
-    <div class="col-span-4">
+<section class="grid grid-cols-12 gap-6 items-start">
+    <div class="col-span-8">
         <partial name="_LessonContent" model="Model" />
     </div>
 
-    <div class="col-span-2">
+    <div class="col-span-4">
         <partial name="_CourseCurriculum" model="Model" />
     </div>
 </section>
