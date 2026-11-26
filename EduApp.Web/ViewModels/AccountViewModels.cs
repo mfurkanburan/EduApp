@@ -9,7 +9,7 @@ public class LoginViewModel
     [EmailAddress(ErrorMessage = "Geçerli bir e-posta adresi giriniz.")]
     public string Email { get; set; } = "";
 
-    [Required(ErrorMessage = "Şifre alanı boş bırakılamaz.")]
+    [Required(ErrorMessage = "Parola alanı boş bırakılamaz.")]
     [DataType(DataType.Password)]
     public string Password { get; set; } = "";
 
@@ -32,14 +32,14 @@ public class RegisterViewModel
     [StringLength(300, ErrorMessage = "E-posta alanı en fazla 300 karakter olabilir.")]
     public string Email { get; set; } = "";
 
-    [Required(ErrorMessage = "Şifre alanı boş bırakılamaz.")]
+    [Required(ErrorMessage = "Parola alanı boş bırakılamaz.")]
     [DataType(DataType.Password)]
-    [StringLength(100, MinimumLength = 8, ErrorMessage = "Şifre alanı en az 8 karakter olmalıdır.")]
+    [StringLength(100, MinimumLength = 8, ErrorMessage = "Parola en az 8 karakter olmalıdır.")]
     public string Password { get; set; } = "";
 
-    [Required(ErrorMessage = "Şifre tekrar alanı boş bırakılamaz.")]
+    [Required(ErrorMessage = "Parola tekrar alanı boş bırakılamaz.")]
     [DataType(DataType.Password)]
-    [Compare("Password", ErrorMessage = "Şifreler eşleşmiyor.")]
+    [Compare("Password", ErrorMessage = "Parolalar eşleşmiyor.")]
     public string ConfirmPassword { get; set; } = "";
 
     [Required(ErrorMessage = "Hesap türü alanı boş bırakılamaz.")]

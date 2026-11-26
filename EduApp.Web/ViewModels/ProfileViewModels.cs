@@ -45,17 +45,17 @@ public class EditProfileViewModel
 
 public class ChangePasswordViewModel
 {
-    [Required(ErrorMessage = "Lütfen mevcut şifrenizi girin.")]
+    [Required(ErrorMessage = "Lütfen mevcut parolanızı girin.")]
     [DataType(DataType.Password)]
     public string CurrentPassword { get; set; } = "";
 
-    [Required(ErrorMessage = "Lütfen yeni şifrenizi girin.")]
+    [Required(ErrorMessage = "Lütfen yeni parolanızı girin.")]
     [DataType(DataType.Password)]
-    [StringLength(100, MinimumLength = 8, ErrorMessage = "Şifreniz en az 8 karakter uzunluğunda olmalıdır.")]
+    [StringLength(100, MinimumLength = 8, ErrorMessage = "Parolanız en az 8 karakter uzunluğunda olmalıdır.")]
     public string NewPassword { get; set; } = "";
 
-    [Required(ErrorMessage = "Lütfen yeni şifrenizi tekrar girin.")]
+    [Required(ErrorMessage = "Lütfen yeni parolanızı tekrar girin.")]
     [DataType(DataType.Password)]
-    [Compare("NewPassword", ErrorMessage = "Yeni şifre ve tekrar şifre eşleşmiyor.")]
+    [Compare("NewPassword", ErrorMessage = "Yeni parola ve parola tekrarı eşleşmiyor.")]
     public string ConfirmNewPassword { get; set; } = "";
 }

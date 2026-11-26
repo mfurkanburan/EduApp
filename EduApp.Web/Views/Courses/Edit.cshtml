@@ -165,27 +165,27 @@
                             </svg>
                         </div>
                         <div>
-                            <h2 class="text-base font-bold text-gray-900">Kapak Resmi</h2>
-                            <p class="text-xs text-gray-500">Kurs listesinde görünecek kapak resmi.</p>
+                            <h2 class="text-base font-bold text-gray-900">Kapak Görseli</h2>
+                            <p class="text-xs text-gray-500">Kurs listesinde görünecek kapak görseli.</p>
                         </div>
                     </div>
                     
                     @if (!string.IsNullOrWhiteSpace(Model.ExistingCoverImagePath))
                     {
                         <div class="space-y-3">
-                            <span class="block text-xs font-bold text-gray-700 uppercase tracking-wide">Mevcut Kapak Resmi:</span>
+                            <span class="block text-xs font-bold text-gray-700 uppercase tracking-wide">Mevcut Kapak Görseli:</span>
                             <div class="relative overflow-hidden rounded-xl border-2 border-gray-200 bg-gray-200 aspect-video">
                                 <img src="@Url.Content("~/" + Model.ExistingCoverImagePath.TrimStart('/'))" alt="@Model.Title" class="w-full h-full object-cover" />
                             </div>
                             <label class="flex items-center space-x-3 rounded-xl p-3 bg-rose-50 text-rose-500 text-xs font-bold hover:bg-rose-100 border border-rose-200 cursor-pointer">
                                 <input asp-for="RemoveExistingCoverImage" class="h-4 w-4 text-rose-500 focus:ring-rose-500 border-2 border-rose-200 rounded" />
-                                <span>Mevcut kapak resmini kaldır</span>
+                                <span>Mevcut kapak görselini kaldır</span>
                             </label>
                         </div>
                     }
 
                     <div class="space-y-2">
-                        <label asp-for="CoverImage" class="block text-xs font-bold text-gray-700 uppercase tracking-wide">Yeni Kapak Resmi:</label>
+                        <label asp-for="CoverImage" class="block text-xs font-bold text-gray-700 uppercase tracking-wide">Yeni Kapak Görseli:</label>
                         <input asp-for="CoverImage" type="file" accept=".jpg,.jpeg,.png,.webp" class="cursor-pointer block w-full bg-white border-2 border-gray-200 rounded-lg text-xs text-gray-500 placeholder:text-gray-400 focus:outline-hidden focus:border-indigo-500 focus:ring-0.5 focus:ring-indigo-500
                                 file:bg-indigo-50
                                 file:text-indigo-500
@@ -197,7 +197,7 @@
                         <span asp-validation-for="CoverImage" class="text-xs text-rose-500 block"></span>
 
                         <p class="text-xs text-gray-500">
-                            Yeni görsel yüklediğinizde mevcut kapak resmi kaldırılacaktır. Yüklenen resmin boyutu 5 MB'yi geçmemelidir.
+                            Yeni görsel yüklediğinizde mevcut kapak görseli kaldırılacaktır. Yüklenen görselin boyutu 5 MB'yi geçmemelidir.
                         </p>
                     </div>
                 </div>

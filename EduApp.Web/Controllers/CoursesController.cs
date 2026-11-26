@@ -88,7 +88,7 @@ public class CoursesController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(CreateCourseViewModel model)
     {
-        string? coverImageError = _fileService.ValidateImage(model.CoverImage, true, "Kurs kapak resmi");
+        string? coverImageError = _fileService.ValidateImage(model.CoverImage, true, "Kurs kapak görseli");
 
         if (coverImageError is not null)
         {
@@ -311,7 +311,7 @@ public class CoursesController : Controller
 
         if (!User.CanManageCourse(existingCourse)) return Forbid();
 
-        string? coverImageError = _fileService.ValidateImage(model.CoverImage, false, "Kurs kapak resmi");
+        string? coverImageError = _fileService.ValidateImage(model.CoverImage, false, "Kurs kapak görseli");
 
         if (coverImageError is not null)
         {

@@ -15,7 +15,7 @@ public class FileService
         _environment = environment;
     }
 
-    public string? ValidateImage(IFormFile? file, bool isRequired = false, string label = "Resim")
+    public string? ValidateImage(IFormFile? file, bool isRequired = false, string label = "Görsel")
     {
         if (file is null)
         {

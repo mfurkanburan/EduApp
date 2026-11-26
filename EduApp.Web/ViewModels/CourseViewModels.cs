@@ -60,7 +60,7 @@ public class CourseDetailsViewModel
     [Display(Name = "Seviye")]
     public CourseLevel Level { get; set; }
 
-    [Display(Name = "Kapak Resmi Yolu")]
+    [Display(Name = "Kapak Görseli Yolu")]
     public string? CoverImagePath { get; set; }
 
     [Display(Name = "Gereksinimler")]

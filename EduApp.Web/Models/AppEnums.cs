@@ -83,7 +83,7 @@ public static class AppExtensions
     {
         return error.Code switch
         {
-            "PasswordMismatch" => "Mevcut şifreniz yanlış.",
+            "PasswordMismatch" => "Mevcut parolanız yanlış.",
             "PasswordTooShort" => "Parola en az 8 karakter olmalıdır.",
             "PasswordRequiresDigit" => "Parola en az bir rakam içermelidir.",
             "PasswordRequiresLower" => "Parola en az bir küçük harf içermelidir.",

@@ -96,13 +96,13 @@
 
             <div class="grid grid-cols-2 gap-6">
                 <div class="space-y-1.5">
-                    <label asp-for="Password" class="block text-xs font-bold text-gray-700 uppercase tracking-wide">Şifre</label>
+                    <label asp-for="Password" class="block text-xs font-bold text-gray-700 uppercase tracking-wide">Parola</label>
                     <input asp-for="Password" type="password" class="h-10 flex items-center w-full bg-gray-50 border-2 border-gray-200 rounded-xl text-sm font-medium focus:bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" />
                     <span asp-validation-for="Password" class="text-xs text-rose-500"></span>
                 </div>
 
                 <div class="space-y-1.5">
-                    <label asp-for="ConfirmPassword" class="block text-xs font-bold text-gray-700 uppercase tracking-wide">Şifreyi Onayla</label>
+                    <label asp-for="ConfirmPassword" class="block text-xs font-bold text-gray-700 uppercase tracking-wide">Parolayı Onayla</label>
                     <input asp-for="ConfirmPassword" type="password" class="h-10 flex items-center w-full bg-gray-50 border-2 border-gray-200 rounded-xl text-sm font-medium focus:bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" />
                     <span asp-validation-for="ConfirmPassword" class="text-xs text-rose-500"></span>
                 </div>
@@ -112,7 +112,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 stroke-2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
                 </svg>
-                <span>Şifre en az <strong>8 karakter</strong>, bir <strong>büyük harf</strong>, bir <strong>küçük harf</strong> ve bir <strong>rakam</strong> içermelidir.</span>
+                <span>Parola en az <strong>8 karakter</strong>, bir <strong>büyük harf</strong>, bir <strong>küçük harf</strong> ve bir <strong>rakam</strong> içermelidir.</span>
             </div>
 
             <button type="submit" class="mb-0 h-12 w-full flex items-center justify-center bg-indigo-500 border-2 border-b-4 text-sm cursor-pointer active:border-b-2 border-indigo-600 font-bold text-white rounded-xl">

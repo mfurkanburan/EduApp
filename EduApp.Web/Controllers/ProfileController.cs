@@ -132,7 +132,7 @@ public class ProfileController : Controller
 
         if (user is null) return Challenge();
 
-        string? profileImageError = _fileService.ValidateImage(model.ProfileImage, false, "Profil resmi");
+        string? profileImageError = _fileService.ValidateImage(model.ProfileImage, false, "Profil fotoğrafı");
 
         if (profileImageError is not null)
         {
@@ -210,7 +210,7 @@ public class ProfileController : Controller
 
         if (model.CurrentPassword == model.NewPassword)
         {
-            ModelState.AddModelError(nameof(model.NewPassword), "Yeni şifre mevcut şifrenizle aynı olamaz.");
+            ModelState.AddModelError(nameof(model.NewPassword), "Yeni parola mevcut parolanızla aynı olamaz.");
             return View(model);
         }
 
@@ -228,7 +228,7 @@ public class ProfileController : Controller
 
         await _signInManager.RefreshSignInAsync(user);
 
-        TempData["ProfileMessage"] = "Şifreniz başarıyla değiştirildi.";
+        TempData["ProfileMessage"] = "Parolanız başarıyla değiştirildi.";
 
         return RedirectToAction(nameof(Index));
     }

@@ -132,7 +132,7 @@ public class AccountController : Controller
 
         if (user is null)
         {
-            ModelState.AddModelError(string.Empty, "E-posta veya şifre hatalı.");
+            ModelState.AddModelError(string.Empty, "E-posta veya parola hatalı.");
 
             return View(model);
         }
@@ -163,7 +163,7 @@ public class AccountController : Controller
             return View(model);
         }
 
-        ModelState.AddModelError(string.Empty, "E-posta veya şifre hatalı.");
+        ModelState.AddModelError(string.Empty, "E-posta veya parola hatalı.");
 
         return View(model);
     }
