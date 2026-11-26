@@ -358,7 +358,7 @@ public class CoursesController : Controller
 
         if (model.CoverImage is not null)
         {
-            await _fileService.SaveFileAsync(model.CoverImage, "course-covers");
+            coverImagePath = await _fileService.SaveFileAsync(model.CoverImage, "course-covers");
         }
         else if (model.RemoveExistingCoverImage)
         {
