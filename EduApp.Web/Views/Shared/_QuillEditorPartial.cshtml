@@ -39,7 +39,7 @@
                 return;
             }
 
-            hiddenInput.value = quill.getSemanticHTML();
+            hiddenInput.value = quill.getSemanticHTML().replace(/&nbsp;/g, ' ');
         });
     }
 </script>

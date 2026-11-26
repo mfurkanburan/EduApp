@@ -21,19 +21,19 @@
 
 /* Editor */
 .ql-toolbar.ql-snow {
-    border: 2px solid #e5e7eb;
-    border-bottom: 1px solid #e5e7eb;
-    border-radius: 0.75rem 0.75rem 0 0;
-    background-color: #f9fafb;
-    font-family: 'Nunito', sans-serif;
+    border: 2px solid #e5e7eb !important;
+    border-bottom: 1px solid #e5e7eb !important;
+    border-radius: 0.75rem 0.75rem 0 0 !important;
+    background-color: #f9fafb !important;
+    font-family: 'Nunito', sans-serif !important;
 }
 
 .ql-container.ql-snow {
-    border: 2px solid #e5e7eb;
-    border-top: 0;
-    border-radius: 0 0 0.75rem 0.75rem;
-    background-color: #ffffff;
-    font-family: 'Nunito', sans-serif;
-    font-size: 0.875rem;
-    min-height: 260px;
+    border: 2px solid #e5e7eb !important;
+    border-top: 0 !important;
+    border-radius: 0 0 0.75rem 0.75rem !important;
+    background-color: #ffffff !important;
+    font-family: 'Nunito', sans-serif !important;
+    font-size: 0.875rem !important;
+    min-height: 260px !important;
 }

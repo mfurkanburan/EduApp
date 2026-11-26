@@ -102,7 +102,18 @@
         <div class="p-6 space-y-6">
             @if (!string.IsNullOrWhiteSpace(Model.SelectedLesson.Content))
             {
-                <div class="whitespace-pre-line text-sm leading-7 text-gray-600">@Model.SelectedLesson.Content</div>
+                bool isHtmlContent = Model.SelectedLesson.Content.Contains('<') && Model.SelectedLesson.Content.Contains('>');
+                
+                @if (isHtmlContent)
+                {
+                    <div class="prose prose-sm prose-indigo max-w-none wrap-break-word prose-headings:font-extrabold prose-headings:text-gray-900 prose-p:text-gray-600 prose-p:leading-7 prose-blockquote:border-l-4 prose-blockquote:border-indigo-400 prose-blockquote:bg-indigo-50/50 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r-xl prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-pre:rounded-xl prose-pre:overflow-x-auto">
+                        @Html.Raw(Model.SelectedLesson.Content)
+                    </div>
+                }
+                else
+                {
+                    <div class="whitespace-pre-line text-sm leading-7 text-gray-600">@Model.SelectedLesson.Content</div>
+                }
             }
             else
             {

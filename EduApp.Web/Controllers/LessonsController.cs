@@ -1,6 +1,8 @@
+using System.Text.RegularExpressions;
 using EduApp.Web.Models;
 using EduApp.Web.Services;
 using EduApp.Web.ViewModels;
+using Ganss.Xss;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -63,6 +65,8 @@ public class LessonsController : Controller
 
         string? materialFileError = _fileService.ValidateMaterial(model.MaterialFile);
 
+        string sanitizedContent = SanitizeLessonContent(model.Content);
+
         if (materialFileError is not null)
         {
             ModelState.AddModelError(nameof(CreateLessonViewModel.MaterialFile), materialFileError);
@@ -82,7 +86,7 @@ public class LessonsController : Controller
         Lesson lesson = new()
         {
             Title = model.Title.Trim(),
-            Content = model.Content.Trim(),
+            Content = sanitizedContent,
             MaterialPath = materialFilePath,
             Order = await _curriculumService.GetNextOrderAsync(sectionId),
             CourseSectionId = sectionId
@@ -149,6 +153,8 @@ public class LessonsController : Controller
 
         string? materialFileError = _fileService.ValidateMaterial(model.MaterialFile);
 
+        string sanitizedContent = SanitizeLessonContent(model.Content);
+
         if (materialFileError is not null)
         {
             ModelState.AddModelError(nameof(EditLessonViewModel.MaterialFile), materialFileError);
@@ -180,7 +186,7 @@ public class LessonsController : Controller
         {
             Id = existingLesson.Id,
             Title = model.Title.Trim(),
-            Content = model.Content.Trim(),
+            Content = sanitizedContent,
             MaterialPath = materialFilePath
         };
 
@@ -261,5 +267,18 @@ public class LessonsController : Controller
         _fileService.DeleteFile(materialPath, "materials");
 
         return RedirectToAction("Details", "Courses", new { id = course.Id });
+    }
+
+    private string SanitizeLessonContent(string? content)
+    {
+        string sanitized = new HtmlSanitizer().Sanitize(content ?? "").Trim();
+        string plainText = Regex.Replace(sanitized, "<[^>]*>", "").Replace("&nbsp;", "").Trim();
+
+        if (string.IsNullOrWhiteSpace(plainText))
+        {
+            ModelState.AddModelError("Content", "Ders içeriği boş bırakılamaz.");
+        }
+
+        return sanitized;
     }
 }

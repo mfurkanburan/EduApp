@@ -4,7 +4,7 @@
     ViewData["Title"] = "Yeni Ders Ekle";
 }
 
-<section class="relative overflow-hidden bg-white border-2 border-gray-200 p-6 rounded-2xl max-w-2xl mx-auto">
+<section class="relative overflow-hidden bg-white border-2 border-gray-200 p-6 rounded-2xl max-w-4xl mx-auto">
     <div class="pointer-events-none absolute inset-x-0 top-0 h-44 z-0 opacity-60">
         <svg class="h-full w-full stroke-indigo-300/30 text-indigo-300/25" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
             <defs>
@@ -46,7 +46,7 @@
             </div>
         </div>
 
-        <form asp-controller="Lessons" asp-action="Create" asp-route-sectionId="@Model.CourseSectionId" enctype="multipart/form-data" method="post" class="space-y-6">     
+        <form id="lesson-form" asp-controller="Lessons" asp-action="Create" asp-route-sectionId="@Model.CourseSectionId" enctype="multipart/form-data" method="post" class="space-y-6">     
             <input type="hidden" asp-for="CourseSectionId" />
             <input type="hidden" asp-for="CourseId" />       
 
@@ -58,8 +58,11 @@
 
             <div class="space-y-1.5">
                 <label asp-for="Content" class="block text-xs font-bold text-gray-700 uppercase tracking-wide">Ders İçeriği</label>
-                <textarea asp-for="Content" rows="10" class="h-40 flex items-center w-full bg-gray-50 border-2 border-gray-200 rounded-xl text-sm font-medium focus:bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"></textarea>
-                <span asp-validation-for="Content" class="text-xs text-rose-500"></span>
+                <input type="hidden" asp-for="Content" id="lesson-content-input" />
+                <div>
+                    <div id="lesson-editor"></div>
+                </div>
+                <span asp-validation-for="Content" id="lesson-editor-error" class="block text-xs text-rose-500"></span>
             </div>
 
             <div class="space-y-1.5">
@@ -93,8 +96,16 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <partial name="_QuillEditorPartial" />
 
     <script>
+        initLessonEditor({
+            formId: 'lesson-form',
+            holderId: 'lesson-editor',
+            inputId: 'lesson-content-input',
+            errorId: 'lesson-editor-error'
+        });
+
         const materialInput = document.querySelector('input[name="MaterialFile"]');
 
         materialInput.addEventListener('change', function () {
