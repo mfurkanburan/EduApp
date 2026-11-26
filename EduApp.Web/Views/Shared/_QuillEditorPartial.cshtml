@@ -1,0 +1,45 @@
+<link rel="stylesheet" href="~/lib/quill/quill.snow.css" asp-append-version="true" />
+<script src="~/lib/quill/quill.js" asp-append-version="true"></script>
+
+<script>
+    function initLessonEditor(options) {
+        const form = document.getElementById(options.formId);
+        const hiddenInput = document.getElementById(options.inputId);
+        const errorElement = document.getElementById(options.errorId);
+
+        if (!form || !hiddenInput) return;
+
+        const quill = new Quill('#' + options.holderId, {
+            theme: 'snow',
+            placeholder: 'Ders içeriğini buraya yazın...',
+            modules: {
+                toolbar: [
+                    [{ header: [2, 3, 4, false] }],
+                    ['bold', 'italic', 'underline'],
+                    [{ list: 'ordered' }, { list: 'bullet' }],
+                    ['blockquote', 'code-block'],
+                    ['link'],
+                    ['clean']
+                ]
+            }
+        });
+
+        if (hiddenInput.value && hiddenInput.value.trim().length > 0) {
+            quill.clipboard.dangerouslyPasteHTML(hiddenInput.value);
+        }
+
+        form.addEventListener('submit', function (e) {
+            if (errorElement) errorElement.textContent = '';
+
+            if (quill.getText().trim().length === 0) {
+                e.preventDefault();
+                if (errorElement) {
+                    errorElement.textContent = 'Ders içeriği boş bırakılamaz.';
+                }
+                return;
+            }
+
+            hiddenInput.value = quill.getSemanticHTML();
+        });
+    }
+</script>

@@ -219,7 +219,7 @@ public class CreateLessonViewModel
     public string Title { get; set; } = "";
 
     [Required(ErrorMessage = "Ders içeriği boş bırakılamaz.")]
-    [StringLength(5000, MinimumLength = 10, ErrorMessage = "Ders içeriği 10 ile 5000 karakter arasında olmalıdır.")]
+    [StringLength(50000, ErrorMessage = "Ders içeriği izin verilen maksimum uzunluğu aşıyor.")]
     public string Content { get; set; } = "";
 
     public IFormFile? MaterialFile { get; set; }
@@ -238,7 +238,7 @@ public class EditLessonViewModel
     public string Title { get; set; } = "";
 
     [Required(ErrorMessage = "Ders içeriği boş bırakılamaz.")]
-    [StringLength(5000, MinimumLength = 10, ErrorMessage = "Ders içeriği 10 ile 5000 karakter arasında olmalıdır.")]
+    [StringLength(50000, ErrorMessage = "Ders içeriği izin verilen maksimum uzunluğu aşıyor.")]
     public string Content { get; set; } = "";
 
     public string? ExistingMaterialPath { get; set; }

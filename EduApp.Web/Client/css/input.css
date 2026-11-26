@@ -8,6 +8,7 @@
 @source "../../node_modules/preline/dist/*.js";
 
 @plugin "@tailwindcss/forms";
+@plugin "@tailwindcss/typography";
 
 @import "../../node_modules/preline/theme.css";
 
@@ -16,4 +17,23 @@
     html {
         font-family: 'Nunito', sans-serif;
     }
+}
+
+/* Editor */
+.ql-toolbar.ql-snow {
+    border: 2px solid #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
+    border-radius: 0.75rem 0.75rem 0 0;
+    background-color: #f9fafb;
+    font-family: 'Nunito', sans-serif;
+}
+
+.ql-container.ql-snow {
+    border: 2px solid #e5e7eb;
+    border-top: 0;
+    border-radius: 0 0 0.75rem 0.75rem;
+    background-color: #ffffff;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.875rem;
+    min-height: 260px;
 }
